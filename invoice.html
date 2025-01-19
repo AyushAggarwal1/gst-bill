@@ -5,132 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agarwal Builders Invoice</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .invoice-container {
-            width: 80%;
-            margin: 40px auto;
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .header {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .details {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .details td,
-        .details th {
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-
-        .details td {
-            vertical-align: top;
-        }
-
-        .details th {
-            background-color: #f8f8f8;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .details strong {
-            color: #333;
-        }
-
-        .item-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .item-table th,
-        .item-table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .item-table th {
-            background-color: #f8f8f8;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .footer-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .footer-table th,
-        .footer-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .footer-table th {
-            background-color: #f8f8f8;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .footer-table .sub-header {
-            background-color: #f0f0f0;
-            font-weight: normal;
-            color: #333;
-        }
-
-        .bank-details {
-            margin-top: 20px;
-            line-height: 1.6;
-        }
-
-        .bank-details strong {
-            color: #333;
-        }
-
-        .centered {
-            margin: 0 auto;
-            /* Centers horizontally */
-            width: 300px;
-            height: 100px;
-        }
-
-        /* Hide elements in print view */
-        @media print {
-            .no-print {
-                display: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style/style_invoice.css">
 </head>
 
 <body>
@@ -233,73 +108,9 @@
 
     </div>
 
-    <script>
-        // Function to convert numbers to words
-
-
-
-
-
-        // function convertNumberToWords(number) {
-        //     const ones = [
-        //         '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-        //         'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-        //         'Seventeen', 'Eighteen', 'Nineteen'
-        //     ];
-        //     const tens = [
-        //         '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
-        //     ];
-        //     const thousands = [
-        //         '', 'Thousand', 'Million', 'Billion', 'Trillion'
-        //     ];
-
-        //     let words = '';
-        //     if (number === 0) return 'Zero';
-
-        //     // Function to handle the conversion for each chunk of 3 digits
-        //     function toWordsChunk(n, chunkIndex) {
-        //         if (n === 0) return '';
-
-        //         let chunkWords = '';
-        //         const hundred = Math.floor(n / 100);
-        //         n = n % 100;
-
-        //         if (hundred > 0) {
-        //             chunkWords += ones[hundred] + ' Hundred ';
-        //         }
-
-        //         if (n > 0 && n < 20) {
-        //             chunkWords += ones[n];
-        //         } else if (n >= 20) {
-        //             const ten = Math.floor(n / 10);
-        //             const one = n % 10;
-        //             chunkWords += tens[ten] + ' ' + ones[one];
-        //         }
-
-        //         if (chunkIndex > 0) {
-        //             chunkWords += ' ' + thousands[chunkIndex];
-        //         }
-
-        //         return chunkWords.trim();
-        //     }
-
-        //     // Split the number into chunks of 3 digits
-        //     let chunkIndex = 0;
-        //     while (number > 0) {
-        //         const chunk = number % 1000;
-        //         if (chunk > 0) {
-        //             words = toWordsChunk(chunk, chunkIndex) + ' ' + words;
-        //         }
-        //         number = Math.floor(number / 1000);
-        //         chunkIndex++;
-        //     }
-
-        //     return words.trim();
-        // }
-
-
-
-
+    <script src="script/script_invoice.js"></script>
+    <!-- <script>
+        // Function to convert number to words
         function convertNumberToWords(value) {
             const ones = [
                 '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
@@ -424,7 +235,7 @@
         // Convert total amount to words (optional, add a function for this if needed)
         // document.getElementById('amountInWords').textContent = convertNumberToWords(invoiceData.totalInvoiceAmount);
 
-    </script>
+    </script> -->
 
 </body>
 

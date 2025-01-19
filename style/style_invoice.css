@@ -1,0 +1,124 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.invoice-container {
+    width: 80%;
+    margin: 40px auto;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.header {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.details {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.details td,
+.details th {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.details td {
+    vertical-align: top;
+}
+
+.details th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #555;
+}
+
+.details strong {
+    color: #333;
+}
+
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.item-table th,
+.item-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+.item-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #555;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.footer-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.footer-table th,
+.footer-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.footer-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #555;
+}
+
+.footer-table .sub-header {
+    background-color: #f0f0f0;
+    font-weight: normal;
+    color: #333;
+}
+
+.bank-details {
+    margin-top: 20px;
+    line-height: 1.6;
+}
+
+.bank-details strong {
+    color: #333;
+}
+
+.centered {
+    margin: 0 auto;
+    /* Centers horizontally */
+    width: 300px;
+    height: 100px;
+}
+
+/* Hide elements in print view */
+@media print {
+    .no-print {
+        display: none;
+    }
+}
