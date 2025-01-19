@@ -13,12 +13,15 @@
         <div class="header">Invoice</div>
         <table class="details">
             <tr>
+                <!-- Agarwal Builders GST details -->
                 <td style="width: 50%;">
                     <strong>AGARWAL BUILDERS</strong><br>
                     BIJWASAN, NEW DELHI - 110061<br>
                     MOB. - 9810627331<br>
                     GSTIN: 07AGFPA6816P1Z5
                 </td>
+            
+                <!-- Invoice Details -->
                 <td style="width: 25%; border-right: none;">
                     <strong>Invoice No.:</strong> <span id="invoiceNo"></span><br><br>
                     <strong>Supplier’s Ref.:</strong> <span id="supplierRef"></span>
@@ -28,11 +31,15 @@
                     <strong>Other Reference (S):</strong> <span id="otherReference"></span>
                 </td>
             </tr>
+
+            <!-- Buyers Details -->
             <tr>
                 <td><strong>Buyer:</strong> <span id="buyer"></span></td>
                 <td colspan="2"><strong>Delivered Address:</strong> <span id="deliveredAddress"></span></td>
             </tr>
         </table>
+
+        <!-- Invoice Table -->
         <table class="item-table">
             <thead>
                 <tr>
@@ -51,10 +58,13 @@
                 </tr>
             </thead>
             <tbody id="invoice-table-body">
-                <!-- Dynamic rows will be added here -->
+                <!-- Dynamic rows will be added here / items that user adds -->
             </tbody>
         </table>
+
         <div class="footer">
+
+            <!-- Total Amount Details in Numbers/ In Words -->
             <table class="footer-table">
                 <tr>
                     <td colspan="3" style="text-align: right;"><strong>Total (Including GST)</strong></td>
@@ -65,6 +75,8 @@
                             id="amountInWords">______________________</span></td>
                 </tr>
             </table>
+
+            <!-- Tax Details CGST, SGST -->
             <table class="footer-table">
                 <thead>
                     <tr>
@@ -89,21 +101,26 @@
                         <td id="stateTaxAmount"></td>
                         <td id="totalTax"></td>
                     </tr>
+
+                    <!-- Total Tax Details in Numbers/ In Words -->
                     <tr>
                         <td colspan="6"><strong>Tax Amount in Words:</strong> <span
                                 id="amountTaxInWords">______________________</span></td>
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Bank Details -->
             <div class="bank-details">
                 <strong>Bank Name:</strong> CANARA BANK<br>
                 <strong>IFSC Code:</strong> CNRB0019012<br>
                 <strong>Account No.:</strong> 90121010003102
             </div>
+
         </div>
         <div class="centered"><Strong><i>**This is Computer Generated Invoice**</i></Strong></div>
 
-        <!-- print button to print the bill -->
+        <!-- Print Button to print the Generated Bill -->
         <button type="button" class="no-print" onclick="window.print()">Print the Generated Invoice</button>
 
     </div>
