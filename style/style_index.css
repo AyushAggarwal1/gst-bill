@@ -1,85 +1,140 @@
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
 
-        .form-container {
-            width: 80%;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
+.form-container {
+    width: 90%;
+    max-width: 650px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 30px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.3s ease-in-out;
+}
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
+.form-container:hover {
+    box-shadow: 0 8px 22px rgba(0, 128, 0, 0.2);
+}
 
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-            color: #555;
-        }
+h2 {
+    text-align: center;
+    color: #333;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
 
-        input,
-        textarea,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
 
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 15px;
-        }
+input,
+textarea,
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        button:hover {
-            background-color: #45a049;
-        }
+input:focus,
+textarea:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+    outline: none;
+}
 
-        .item-container {
-            margin-top: 20px;
-        }
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 15px;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.1);
+}
 
-        .item-row {
-            display: flex;
-            gap: 10px;
-        }
+button:hover {
+    background-color: #45a049;
+    box-shadow: 0 6px 12px rgba(76, 175, 80, 0.2);
+}
 
-        .item-row input {
-            flex: 1;
-        }
+button:active {
+    background-color: #388e3c;
+}
 
-        .remove-btn {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 5px;
-            width: auto;
-        }
+.item-container {
+    margin-top: 30px;
+}
 
-        .remove-btn:hover {
-            background-color: #ff1a1a;
-        }
+.item-row {
+    display: flex;
+    gap: 15px;
+}
 
-        .item {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
+.item-row input {
+    flex: 1;
+}
+
+.remove-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
+}
+
+.remove-btn:hover {
+    background-color: #ff1a1a;
+}
+
+.item {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Add a subtle animation for input fields */
+input, textarea {
+    transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    transform: scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-container {
+        width: 95%;
+        padding: 25px;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    button {
+        padding: 12px;
+    }
+}

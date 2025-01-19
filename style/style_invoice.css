@@ -1,28 +1,31 @@
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #f9f9f9;
+    color: #333;
 }
 
 .invoice-container {
     width: 80%;
     margin: 40px auto;
     background: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-size: 14px;
 }
 
 .header {
     text-align: center;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
 .details {
@@ -33,8 +36,8 @@ body {
 
 .details td,
 .details th {
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
 }
 
 .details td {
@@ -42,9 +45,10 @@ body {
 }
 
 .details th {
-    background-color: #f8f8f8;
+    background-color: #f7f7f7;
     font-weight: bold;
     color: #555;
+    text-align: left;
 }
 
 .details strong {
@@ -59,19 +63,19 @@ body {
 
 .item-table th,
 .item-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
     text-align: center;
 }
 
 .item-table th {
-    background-color: #f8f8f8;
+    background-color: #f7f7f7;
     font-weight: bold;
     color: #555;
 }
 
 .footer {
-    margin-top: 20px;
+    margin-top: 40px;
     font-size: 14px;
 }
 
@@ -83,13 +87,13 @@ body {
 
 .footer-table th,
 .footer-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
     text-align: center;
 }
 
 .footer-table th {
-    background-color: #f8f8f8;
+    background-color: #f7f7f7;
     font-weight: bold;
     color: #555;
 }
@@ -101,8 +105,9 @@ body {
 }
 
 .bank-details {
-    margin-top: 20px;
+    margin-top: 30px;
     line-height: 1.6;
+    font-size: 14px;
 }
 
 .bank-details strong {
@@ -110,15 +115,46 @@ body {
 }
 
 .centered {
-    margin: 0 auto;
-    /* Centers horizontally */
-    width: 300px;
-    height: 100px;
+    margin: 30px auto;
+    text-align: center;
+    font-size: 14px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
 }
 
 /* Hide elements in print view */
 @media print {
     .no-print {
         display: none;
+    }
+
+    .invoice-container {
+        box-shadow: none;
+        border: none;
+    }
+
+    .header {
+        font-size: 24px;
+    }
+
+    .details td, .details th, .item-table td, .item-table th {
+        padding: 8px;
+    }
+
+    .footer-table td, .footer-table th {
+        padding: 8px;
     }
 }
