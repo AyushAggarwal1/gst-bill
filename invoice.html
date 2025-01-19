@@ -123,6 +123,13 @@
             width: 300px;
             height: 100px;
         }
+
+        /* Hide elements in print view */
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -220,7 +227,12 @@
             </div>
         </div>
         <div class="centered"><Strong><i>**This is Computer Generated Invoice**</i></Strong></div>
+
+        <!-- print button to print the bill -->
+        <button type="button" class="no-print" onclick="window.print()">Print the Generated Invoice</button>
+
     </div>
+
     <script>
         // Function to convert numbers to words
 
@@ -289,75 +301,75 @@
 
 
         function convertNumberToWords(value) {
-    const ones = [
-        '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-        'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-        'Seventeen', 'Eighteen', 'Nineteen'
-    ];
-    const tens = [
-        '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
-    ];
-    const thousands = [
-        '', 'Thousand', 'Million', 'Billion', 'Trillion'
-    ];
+            const ones = [
+                '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+                'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+                'Seventeen', 'Eighteen', 'Nineteen'
+            ];
+            const tens = [
+                '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+            ];
+            const thousands = [
+                '', 'Thousand', 'Million', 'Billion', 'Trillion'
+            ];
 
-    // Function to handle conversion of numbers less than 1000
-    function toWordsChunk(n, chunkIndex) {
-        if (n === 0) return '';
+            // Function to handle conversion of numbers less than 1000
+            function toWordsChunk(n, chunkIndex) {
+                if (n === 0) return '';
 
-        let chunkWords = '';
-        const hundred = Math.floor(n / 100);
-        n = n % 100;
+                let chunkWords = '';
+                const hundred = Math.floor(n / 100);
+                n = n % 100;
 
-        if (hundred > 0) {
-            chunkWords += ones[hundred] + ' Hundred ';
+                if (hundred > 0) {
+                    chunkWords += ones[hundred] + ' Hundred ';
+                }
+
+                if (n > 0 && n < 20) {
+                    chunkWords += ones[n];
+                } else if (n >= 20) {
+                    const ten = Math.floor(n / 10);
+                    const one = n % 10;
+                    chunkWords += tens[ten] + (one > 0 ? ' ' + ones[one] : '');
+                }
+
+                if (chunkIndex > 0) {
+                    chunkWords += ' ' + thousands[chunkIndex];
+                }
+
+                return chunkWords.trim();
+            }
+
+            // Main function logic
+            value = parseFloat(value).toFixed(2); // Ensure two decimal places
+            const [rupeesPart, paisaPart] = value.split('.').map(Number); // Split into rupees and paisa
+
+            let words = '';
+            let chunkIndex = 0;
+            let rupees = rupeesPart;
+
+            // Convert rupees part
+            while (rupees > 0) {
+                const chunk = rupees % 1000;
+                if (chunk > 0) {
+                    words = toWordsChunk(chunk, chunkIndex) + ' ' + words;
+                }
+                rupees = Math.floor(rupees / 1000);
+                chunkIndex++;
+            }
+
+            words = words.trim();
+            const rupeesWords = words.length > 0 ? words + ' Rupees' : '';
+
+            // Convert paisa part
+            const paisaWords =
+                paisaPart > 0
+                    ? `${toWordsChunk(paisaPart, 0)} Paisa`
+                    : '';
+
+            // Combine rupees and paisa parts
+            return `${rupeesWords}${rupeesWords && paisaWords ? ' and ' : ''}${paisaWords} Only`.trim();
         }
-
-        if (n > 0 && n < 20) {
-            chunkWords += ones[n];
-        } else if (n >= 20) {
-            const ten = Math.floor(n / 10);
-            const one = n % 10;
-            chunkWords += tens[ten] + (one > 0 ? ' ' + ones[one] : '');
-        }
-
-        if (chunkIndex > 0) {
-            chunkWords += ' ' + thousands[chunkIndex];
-        }
-
-        return chunkWords.trim();
-    }
-
-    // Main function logic
-    value = parseFloat(value).toFixed(2); // Ensure two decimal places
-    const [rupeesPart, paisaPart] = value.split('.').map(Number); // Split into rupees and paisa
-
-    let words = '';
-    let chunkIndex = 0;
-    let rupees = rupeesPart;
-
-    // Convert rupees part
-    while (rupees > 0) {
-        const chunk = rupees % 1000;
-        if (chunk > 0) {
-            words = toWordsChunk(chunk, chunkIndex) + ' ' + words;
-        }
-        rupees = Math.floor(rupees / 1000);
-        chunkIndex++;
-    }
-
-    words = words.trim();
-    const rupeesWords = words.length > 0 ? words + ' Rupees' : '';
-
-    // Convert paisa part
-    const paisaWords =
-        paisaPart > 0
-            ? `${toWordsChunk(paisaPart, 0)} Paisa`
-            : '';
-
-    // Combine rupees and paisa parts
-    return `${rupeesWords}${rupeesWords && paisaWords ? ' and ' : ''}${paisaWords} Only`.trim();
-}
 
         // Retrieve data from localStorage
         const invoiceData = JSON.parse(localStorage.getItem('invoiceData'));
@@ -407,12 +419,13 @@
         totalTaxAmount = footerTaxDetails.centralTaxAmount + footerTaxDetails.stateTaxAmount;
         document.getElementById('totalTax').textContent = totalTaxAmount + " /-";
 
-        document.getElementById('amountTaxInWords').textContent = convertNumberToWords(totalTaxAmount) ;
+        document.getElementById('amountTaxInWords').textContent = convertNumberToWords(totalTaxAmount);
 
         // Convert total amount to words (optional, add a function for this if needed)
         // document.getElementById('amountInWords').textContent = convertNumberToWords(invoiceData.totalInvoiceAmount);
 
     </script>
+
 </body>
 
 </html>
