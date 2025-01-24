@@ -113,7 +113,7 @@ function generateInvoice() {
     };
 
     // Send data to server
-    fetch("http://127.0.0.1:8000/save-invoice", {
+    fetch("https://gst-bill.onrender.com/save-invoice", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
