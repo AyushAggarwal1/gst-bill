@@ -45,6 +45,10 @@ function removeItem(itemId) {
 
 // Function to generate invoice data
 function generateInvoice() {
+    if (!validateForm()) {
+        return; // Stop submission if validation fails
+    }
+
     const invoiceNo = document.getElementById('invoiceNo').value;
     const date = formatDate(document.getElementById('date').value);
     const supplierRef = document.getElementById('supplierRef').value;
@@ -108,6 +112,32 @@ function generateInvoice() {
         totalInvoiceAmount: totalInvoiceAmount.toFixed(2)
     };
 
+    // Send data to server
+    fetch("http://127.0.0.1:8000/save-invoice", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(invoiceData)
+    }).then((response) => {
+        console.log("Response Status:", response.status);
+        console.log("Response Headers:", response.headers);
+        return response.text(); // Get raw response text
+    })
+    .then((rawText) => {
+        console.log("Raw Response:", rawText);
+        const data = JSON.parse(rawText); // Manually parse JSON
+        if (!data.message) {
+            throw new Error("Missing message in response");
+        }
+        alert(data.message); // Success message
+    })
+    .catch((error) => {
+        console.error("Error:", error.message); // Log error message
+        // alert(`An error occurred: ${error.message}`);
+    });
+
+
     // Save invoice data to local storage
     localStorage.setItem('invoiceData', JSON.stringify(invoiceData));
 
@@ -119,4 +149,29 @@ function generateInvoice() {
 function formatDate(dateString) {
     const [year, month, day] = dateString.split('-');
     return `${day}-${month}-${year}`; // Rearrange to dd-mm-yyyy
+}
+
+// validate form 
+function validateForm() {
+    const invoiceNo = document.getElementById("invoiceNo").value.trim();
+    const date = document.getElementById("date").value.trim();
+    const buyer = document.getElementById("buyer").value.trim();
+
+    if (!invoiceNo) {
+        alert("Invoice number is required.");
+        return false;
+    }
+    if (!date) {
+        alert("Date is required.");
+        return false;
+    }
+    if (!buyer) {
+        alert("Buyer name is required.");
+        return false;
+    }
+    if (itemCount === 0) {
+        alert("At least one item is required.");
+        return false;
+    }
+    return true;
 }
