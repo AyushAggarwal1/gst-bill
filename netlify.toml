@@ -1,6 +1,2 @@
-[build]
-  command = "echo 'Skipping build step as no build command is required'"
-  publish = "/" # Replace with your directory containing the static files
-
-[build.environment]
-  GIT_SUBMODULE_STRATEGY = "none"
+[[plugins]]
+  package = "@netlify/plugin-git-submodule-ignore"
