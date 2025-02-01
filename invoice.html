@@ -20,7 +20,7 @@
                     MOB. - 9810627331<br>
                     GSTIN: 07AGFPA6816P1Z5
                 </td>
-            
+
                 <!-- Invoice Details -->
                 <td style="width: 25%; border-right: none;">
                     <strong>Invoice No.:</strong> <span id="invoiceNo"></span><br><br>
@@ -83,9 +83,12 @@
                         <th rowspan="2">HSN/SAC</th>
                         <th colspan="2">Central Tax</th>
                         <th colspan="2">State Tax</th>
+                        <th colspan="2">Integrated Tax</th>
                         <th rowspan="2">Total Tax on Goods</th>
                     </tr>
                     <tr class="sub-header">
+                        <th>Rate</th>
+                        <th>Amount</th>
                         <th>Rate</th>
                         <th>Amount</th>
                         <th>Rate</th>
@@ -99,12 +102,14 @@
                         <td id="centralTaxAmount"></td>
                         <td id="stateTaxRate"></td>
                         <td id="stateTaxAmount"></td>
+                        <td id="igstRate"></td>
+                        <td id="igstRateAmount"></td>
                         <td id="totalTax"></td>
                     </tr>
 
                     <!-- Total Tax Details in Numbers/ In Words -->
                     <tr>
-                        <td colspan="6"><strong>Tax Amount in Words:</strong> <span
+                        <td colspan="8"><strong>Tax Amount in Words:</strong> <span
                                 id="amountTaxInWords">______________________</span></td>
                     </tr>
                 </tbody>

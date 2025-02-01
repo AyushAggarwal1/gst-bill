@@ -105,8 +105,9 @@ document.getElementById('amountInWords').textContent = convertNumberToWords(invo
 const footerTaxDetails = invoiceData.items.reduce((totals, item) => {
     totals.centralTaxAmount += parseFloat(item.centralTaxAmount);
     totals.stateTaxAmount += parseFloat(item.stateTaxAmount);
+    totals.igstRateAmount += parseFloat(item.igstRateAmount);
     return totals;
-}, { centralTaxAmount: 0, stateTaxAmount: 0 });
+}, { centralTaxAmount: 0, stateTaxAmount: 0, igstRateAmount: 0 });
 
 document.getElementById('hsnCodeFooter').textContent = invoiceData.items[0].hsnCode;
 // Display footer tax details
@@ -114,8 +115,10 @@ document.getElementById('centralTaxRate').textContent = `${invoiceData.items[0].
 document.getElementById('centralTaxAmount').textContent = `₹${footerTaxDetails.centralTaxAmount.toFixed(2)}`;
 document.getElementById('stateTaxRate').textContent = `${invoiceData.items[0].stateTaxRate}%`;
 document.getElementById('stateTaxAmount').textContent = `₹${footerTaxDetails.stateTaxAmount.toFixed(2)}`;
+document.getElementById('igstRate').textContent = `${invoiceData.items[0].igstRate}%`;
+document.getElementById('igstRateAmount').textContent = `₹${footerTaxDetails.igstRateAmount.toFixed(2)}`;
 
-totalTaxAmount = footerTaxDetails.centralTaxAmount + footerTaxDetails.stateTaxAmount;
+totalTaxAmount = footerTaxDetails.centralTaxAmount + footerTaxDetails.stateTaxAmount + footerTaxDetails.igstRateAmount;
 document.getElementById('totalTax').textContent = totalTaxAmount + " /-";
 
 document.getElementById('amountTaxInWords').textContent = convertNumberToWords(totalTaxAmount);

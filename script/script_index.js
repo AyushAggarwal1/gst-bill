@@ -32,6 +32,9 @@ function addItem() {
                 <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
                 <input type="number" id="stateTaxRate${itemCount}" step="0.01" required>
 
+                <label for="igstRate${itemCount}">IGST %:</label>
+                <input type="number" id="igstRate${itemCount}" step="0.01" required>
+
                 <button type="button" onclick="removeItem(${itemCount})" class="remove-btn">Remove</button>
             `;
     itemsContainer.appendChild(newItem);
@@ -69,6 +72,7 @@ function generateInvoice() {
             const rate = parseFloat(document.getElementById(`rate${i}`).value) || 0;
             const centralTaxRate = parseFloat(document.getElementById(`centralTaxRate${i}`).value) || 0;
             const stateTaxRate = parseFloat(document.getElementById(`stateTaxRate${i}`).value) || 0;
+            const igstRate = parseFloat(document.getElementById(`igstRate${i}`).value) || 0;
 
             // Calculate amount for the item
             const amount = qty * rate;
@@ -76,9 +80,10 @@ function generateInvoice() {
             // Calculate the Central Tax and State Tax amounts
             const centralTaxAmount = (amount * centralTaxRate) / 100;
             const stateTaxAmount = (amount * stateTaxRate) / 100;
+            const igstRateAmount = (amount * igstRate) / 100;
 
-            // Total amount after including both Central Tax and State Tax
-            const totalAmount = amount + centralTaxAmount + stateTaxAmount;
+            // Total amount after including both Central Tax, State Tax, and IGST
+            const totalAmount = amount + centralTaxAmount + stateTaxAmount + igstRateAmount;
 
             // Add item details to the items array
             items.push({
@@ -92,6 +97,8 @@ function generateInvoice() {
                 centralTaxAmount: centralTaxAmount.toFixed(2),
                 stateTaxRate,
                 stateTaxAmount: stateTaxAmount.toFixed(2),
+                igstRate,
+                igstRateAmount: igstRateAmount.toFixed(2),
                 totalAmount: totalAmount.toFixed(2)
             });
 
