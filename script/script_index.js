@@ -32,7 +32,7 @@ function addItem() {
                 <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
                 <input type="number" id="stateTaxRate${itemCount}" step="0.01" required>
 
-                <label for="igstRate${itemCount}">IGST %:</label>
+                <label for="igstRate${itemCount}">Integrated Tax Rate %:</label>
                 <input type="number" id="igstRate${itemCount}" step="0.01" required>
 
                 <button type="button" onclick="removeItem(${itemCount})" class="remove-btn">Remove</button>
