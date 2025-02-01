@@ -118,7 +118,7 @@ function generateInvoice() {
         items,
         totalInvoiceAmount: totalInvoiceAmount.toFixed(2)
     };
-
+    console.log("Invoice Date Sent:", invoiceData);
     // Send data to server
     fetch("https://gst-bill.onrender.com/save-invoice", {
         method: "POST",
