@@ -24,7 +24,8 @@
             <input type="text" id="supplierRef" placeholder="Supplier Reference">
 
             <label for="buyer">Buyer:</label>
-            <input type="text" id="buyer" placeholder="Enter buyer's name" required>
+            <input type="text" id="buyer" list="buyerList" placeholder="Enter buyer's name" required data-gramm="false">
+            <datalist id="buyerList"></datalist>
 
             <label for="deliveredAddress">Delivered Address:</label>
             <textarea id="deliveredAddress" placeholder="Enter delivered address" required></textarea>

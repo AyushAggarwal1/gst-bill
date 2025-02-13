@@ -1,14 +1,7 @@
 let itemCount = 0; // Start with zero items
 
-// Predefined item data
-// const itemsData = [
-//     { name: "Cement", hsn: "2523", gst: "28" },
-//     { name: "Stone Chips", hsn: "2517", gst: "5" },
-//     { name: "Stone Dust", hsn: "2517", gst: "5" },
-//     { name: "TMT Bar", hsn: "7214", gst: "18" }
-// ];
-
 let itemsData = [];
+let customerData = [];
 
 // Load items data from JSON file
 async function loadItemsData() {
@@ -23,6 +16,24 @@ async function loadItemsData() {
 
 // Call function to load data when the script starts
 loadItemsData();
+
+// Load customer data from JSON file
+async function loadCustomerData() {
+    try {
+        const response = await fetch("items/customers.json");
+        customerData = await response.json();
+        console.log("Customer Data Loaded:", customerData);
+
+        // Populate datalist with customer names
+        const buyerList = document.getElementById('buyerList');
+        buyerList.innerHTML = customerData.map(c => `<option value="${c.data}"></option>`).join("");
+    
+    } catch (error) {
+        console.error("Error loading customer data:", error);
+    }
+}
+// Call function to load data when the script starts
+loadCustomerData();
 
 // Function to add an item row dynamically
 function addItem() {
@@ -143,6 +154,19 @@ function fillItemDetails(itemIndex) {
         gstInput.value = "";
     }
 }
+
+function fillCustomerDetails() {
+    const buyerInput = document.getElementById("buyer");
+    const buyerName = buyerInput.value.trim().toLowerCase();
+    const selectedItem = customerData.find(item => item.name.toLowerCase() === buyerName);
+
+    if (selectedItem) {
+        buyerInput.value = selectedItem.data;
+    } else {
+        buyerInput.value = "";
+    }
+}
+
 
 // Function to remove an item
 function removeItem(itemId) {
