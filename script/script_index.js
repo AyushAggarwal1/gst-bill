@@ -10,7 +10,7 @@ const itemsData = [
 
 // Function to add an item row dynamically
 function addItem() {
-    itemCount++; // Increment item count
+    itemCount++;
     const itemsContainer = document.getElementById('items-container');
 
     const newItem = document.createElement('div');
@@ -31,27 +31,58 @@ function addItem() {
 
         <label for="gstRate${itemCount}">GST Rate:</label>
         <input type="number" id="gstRate${itemCount}" placeholder="GST Rate" readonly required>
-
+        
         <label for="qty${itemCount}">Quantity:</label>
         <input type="number" id="qty${itemCount}" placeholder="Enter quantity" required>
 
         <label for="rate${itemCount}">Rate:</label>
         <input type="number" id="rate${itemCount}" step="0.01" placeholder="Enter rate" required>
+        
+        <label for="igstCheckbox${itemCount}">Enable IGST</label>
+        <input type="checkbox" id="igstCheckbox${itemCount}" onchange="toggleTaxFields(${itemCount})">
 
-        <label for="centralTaxRate${itemCount}">Central Tax Rate %:</label>
-        <input type="number" id="centralTaxRate${itemCount}" step="0.01" placeholder="Enter Central Tax Rate" required>
+        <!-- IGST Enabled message -->
+        <div id="igstMessage" class="hidden">
+            IGST Enabled
+        </div>
 
-        <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
-        <input type="number" id="stateTaxRate${itemCount}" step="0.01" placeholder="Enter State Tax Rate" required>
+        <div id="cgstSgstFields${itemCount}">
+            <label for="centralTaxRate${itemCount}">Central Tax Rate %:</label>
+            <input type="number" id="centralTaxRate${itemCount}" step="0.01" placeholder="Enter Central Tax Rate" required>
 
-        <label for="igstRate${itemCount}">Integrated Tax Rate %:</label>
-        <input type="number" id="igstRate${itemCount}" step="0.01" placeholder="Enter Integrated Tax Rate" required>
+            <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
+            <input type="number" id="stateTaxRate${itemCount}" step="0.01" placeholder="Enter State Tax Rate" required>
+        </div>
+
+        <div id="igstField${itemCount}" style="display: none;">
+            <label for="igstRate${itemCount}">Integrated Tax Rate %:</label>
+            <input type="number" id="igstRate${itemCount}" step="0.01" placeholder="Enter Integrated Tax Rate">
+        </div>
 
         <button type="button" onclick="removeItem(${itemCount})" class="remove-btn">Remove</button>
     `;
 
     itemsContainer.appendChild(newItem);
+    toggleTaxFields(); // Ensure the right fields are visible when adding a new item
 }
+
+// Function to toggle tax fields based on IGST checkbox
+function toggleTaxFields(itemIndex) {
+    const igstCheckbox = document.getElementById(`igstCheckbox${itemIndex}`);
+    const cgstSgstFields = document.getElementById(`cgstSgstFields${itemIndex}`);
+    const igstField = document.getElementById(`igstField${itemIndex}`);
+
+    if (igstCheckbox.checked) {
+        cgstSgstFields.style.display = "none";
+        igstField.style.display = "block";
+        igstMessage.classList.remove("hidden"); 
+    } else {
+        cgstSgstFields.style.display = "block";
+        igstField.style.display = "none";
+        igstMessage.classList.add("hidden"); 
+    }
+}
+
 
 // Function to auto-fill HSN Code & GST Rate based on item selection
 function fillItemDetails(itemIndex) {

@@ -18,10 +18,12 @@ body {
 .form-container {
     width: 90%;
     max-width: 600px;
-    background: rgba(255, 255, 255, 0.6); /* Light transparency */
+    background: rgba(255, 255, 255, 0.6);
+    /* Light transparency */
     padding: 35px;
     border-radius: 14px;
-    backdrop-filter: blur(10px); /* Blurred background */
+    backdrop-filter: blur(10px);
+    /* Blurred background */
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
@@ -65,7 +67,8 @@ button {
 }
 
 /* Input Styling */
-input, textarea {
+input,
+textarea {
     background: rgba(255, 255, 255, 0.7);
     border: 2px solid transparent;
     box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.08);
@@ -156,4 +159,44 @@ button:active {
     button {
         padding: 14px;
     }
+}
+
+/* Style for checkbox */
+input[type="checkbox"] {
+    width: auto;
+    margin-left: 10px;
+    transform: scale(1.2);
+    margin-top: 10px;
+}
+
+/* Label for checkbox */
+label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Tax rate fields for CGST/SGST and IGST */
+.hidden {
+    display: none;
+}
+
+.tax-fields {
+    margin-top: 10px;
+}
+
+/* Styling the tax fields */
+.tax-fields input {
+    margin-top: 5px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* Message when IGST is enabled */
+#igstMessage {
+    font-weight: bold;
+    color: green;
+    margin-top: 10px;
 }
