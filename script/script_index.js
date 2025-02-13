@@ -2,9 +2,9 @@ let itemCount = 0; // Start with zero items
 
 // Predefined item data
 const itemsData = [
-    { name: "Stone Dust", hsn: "2517", gst: "5" },
-    { name: "Stone Chips", hsn: "2517", gst: "5" },
     { name: "Cement", hsn: "2523", gst: "28" },
+    { name: "Stone Chips", hsn: "2517", gst: "5" },
+    { name: "Stone Dust", hsn: "2517", gst: "5" },
     { name: "TMT Bar", hsn: "7214", gst: "18" }
 ];
 
