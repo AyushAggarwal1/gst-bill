@@ -12,28 +12,28 @@ function addItem() {
     newItem.innerHTML = `
                 <h3>Item ${itemCount}</h3>
                 <label for="description${itemCount}">Description of Goods:</label>
-                <input type="text" id="description${itemCount}" required>
+                <input type="text" id="description${itemCount}" placeholder="Enter description" required>
 
                 <label for="hsnCode${itemCount}">HSN Code:</label>
-                <input type="text" id="hsnCode${itemCount}" required>
+                <input type="text" id="hsnCode${itemCount}" placeholder="Enter HSN code" required>
 
                 <label for="gstRate${itemCount}">GST Rate:</label>
-                <input type="number" id="gstRate${itemCount}" step="0.01" required>
+                <input type="number" id="gstRate${itemCount}" step="0.01" placeholder="Enter GST rate" required>
 
                 <label for="qty${itemCount}">Quantity:</label>
-                <input type="number" id="qty${itemCount}" required>
+                <input type="number" id="qty${itemCount}" placeholder="Enter quantity" required>
 
                 <label for="rate${itemCount}">Rate:</label>
-                <input type="number" id="rate${itemCount}" step="0.01" required>
+                <input type="number" id="rate${itemCount}" step="0.01" placeholder="Enter rate" required>
 
                 <label for="centralTaxRate${itemCount}">Central Tax Rate %:</label>
-                <input type="number" id="centralTaxRate${itemCount}" step="0.01" required>
+                <input type="number" id="centralTaxRate${itemCount}" step="0.01" placeholder="Enter Central Tax Rate" required>
 
                 <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
-                <input type="number" id="stateTaxRate${itemCount}" step="0.01" required>
+                <input type="number" id="stateTaxRate${itemCount}" step="0.01" placeholder="Enter State Tax Rate" required>
 
                 <label for="igstRate${itemCount}">Integrated Tax Rate %:</label>
-                <input type="number" id="igstRate${itemCount}" step="0.01" required>
+                <input type="number" id="igstRate${itemCount}" step="0.01" placeholder="Enter Integrated Tax Rate" required>
 
                 <button type="button" onclick="removeItem(${itemCount})" class="remove-btn">Remove</button>
             `;
