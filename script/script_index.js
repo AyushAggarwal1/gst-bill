@@ -42,7 +42,7 @@ function addItem() {
         <input type="checkbox" id="igstCheckbox${itemCount}" onchange="toggleTaxFields(${itemCount})">
 
         <!-- IGST Enabled message -->
-        <div id="igstMessage" class="hidden">
+        <div id="igstMessage${itemCount}" class="hidden">
             IGST Enabled
         </div>
 
@@ -63,25 +63,45 @@ function addItem() {
     `;
 
     itemsContainer.appendChild(newItem);
-    toggleTaxFields(); // Ensure the right fields are visible when adding a new item
+    toggleTaxFields(itemCount); // Ensure the right fields are visible when adding a new item
 }
+
 
 // Function to toggle tax fields based on IGST checkbox
 function toggleTaxFields(itemIndex) {
     const igstCheckbox = document.getElementById(`igstCheckbox${itemIndex}`);
+    const gstInput = document.getElementById(`gstRate${itemIndex}`);
     const cgstSgstFields = document.getElementById(`cgstSgstFields${itemIndex}`);
     const igstField = document.getElementById(`igstField${itemIndex}`);
+    const centralTaxRate = document.getElementById(`centralTaxRate${itemIndex}`);
+    const stateTaxRate = document.getElementById(`stateTaxRate${itemIndex}`);
+    const igstMessage = document.getElementById(`igstMessage${itemIndex}`);
+
+    const gstRate = parseFloat(gstInput.value) || 0;
 
     if (igstCheckbox.checked) {
-        cgstSgstFields.style.display = "none";
+        // IGST enabled: Show IGST field, hide CGST/SGST fields
         igstField.style.display = "block";
-        igstMessage.classList.remove("hidden"); 
+        cgstSgstFields.style.display = "none";
+        igstMessage.classList.remove("hidden");
+
+        // Set IGST rate based on the GST rate
+        document.getElementById(`igstRate${itemIndex}`).value = gstRate; // Set IGST value
     } else {
-        cgstSgstFields.style.display = "block";
+        // IGST disabled: Show CGST/SGST fields and calculate CGST/SGST rates
         igstField.style.display = "none";
-        igstMessage.classList.add("hidden"); 
+        cgstSgstFields.style.display = "block";
+        igstMessage.classList.add("hidden");
+
+        // Calculate CGST and SGST as half of the GST rate
+        const cgstRate = gstRate / 2;
+        const sgstRate = gstRate / 2;
+
+        centralTaxRate.value = cgstRate; // Set Central Tax Rate (CGST)
+        stateTaxRate.value = sgstRate; // Set State Tax Rate (SGST)
     }
 }
+
 
 
 // Function to auto-fill HSN Code & GST Rate based on item selection
@@ -95,6 +115,9 @@ function fillItemDetails(itemIndex) {
     if (selectedItem) {
         hsnInput.value = selectedItem.hsn;
         gstInput.value = selectedItem.gst;
+
+        // Call toggleTaxFields to ensure the tax fields are updated accordingly
+        toggleTaxFields(itemIndex);
     } else {
         hsnInput.value = "";
         gstInput.value = "";
