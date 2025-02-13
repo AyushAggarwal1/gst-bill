@@ -1,12 +1,28 @@
 let itemCount = 0; // Start with zero items
 
 // Predefined item data
-const itemsData = [
-    { name: "Cement", hsn: "2523", gst: "28" },
-    { name: "Stone Chips", hsn: "2517", gst: "5" },
-    { name: "Stone Dust", hsn: "2517", gst: "5" },
-    { name: "TMT Bar", hsn: "7214", gst: "18" }
-];
+// const itemsData = [
+//     { name: "Cement", hsn: "2523", gst: "28" },
+//     { name: "Stone Chips", hsn: "2517", gst: "5" },
+//     { name: "Stone Dust", hsn: "2517", gst: "5" },
+//     { name: "TMT Bar", hsn: "7214", gst: "18" }
+// ];
+
+let itemsData = [];
+
+// Load items data from JSON file
+async function loadItemsData() {
+    try {
+        const response = await fetch("items.json");
+        itemsData = await response.json();
+        console.log("Items Data Loaded:", itemsData);
+    } catch (error) {
+        console.error("Error loading item data:", error);
+    }
+}
+
+// Call function to load data when the script starts
+loadItemsData();
 
 // Function to add an item row dynamically
 function addItem() {
