@@ -1,7 +1,14 @@
-
 let itemCount = 0; // Start with zero items
 
-// Function to add more item details
+// Predefined item data
+const itemsData = [
+    { name: "Stone Dust", hsn: "2517", gst: "5" },
+    { name: "Stone Chips", hsn: "2517", gst: "5" },
+    { name: "Cement", hsn: "2523", gst: "28" },
+    { name: "TMT Bar", hsn: "7214", gst: "18" }
+];
+
+// Function to add an item row dynamically
 function addItem() {
     itemCount++; // Increment item count
     const itemsContainer = document.getElementById('items-container');
@@ -9,41 +16,67 @@ function addItem() {
     const newItem = document.createElement('div');
     newItem.classList.add('item');
     newItem.setAttribute('id', `item${itemCount}`);
+
     newItem.innerHTML = `
-                <h3>Item ${itemCount}</h3>
-                <label for="description${itemCount}">Description of Goods:</label>
-                <input type="text" id="description${itemCount}" placeholder="Enter description" required>
+        <h3>Item ${itemCount}</h3>
 
-                <label for="hsnCode${itemCount}">HSN Code:</label>
-                <input type="text" id="hsnCode${itemCount}" placeholder="Enter HSN code" required>
+        <label for="description${itemCount}">Description of Goods:</label>
+        <input type="text" id="description${itemCount}" list="itemList${itemCount}" oninput="fillItemDetails(${itemCount})" placeholder="Enter Goods" required>
+        <datalist id="itemList${itemCount}">
+            ${itemsData.map(item => `<option value="${item.name}"></option>`).join("")}
+        </datalist>
 
-                <label for="gstRate${itemCount}">GST Rate:</label>
-                <input type="number" id="gstRate${itemCount}" step="0.01" placeholder="Enter GST rate" required>
+        <label for="hsnCode${itemCount}">HSN Code:</label>
+        <input type="text" id="hsnCode${itemCount}" placeholder="HSN Code" readonly required>
 
-                <label for="qty${itemCount}">Quantity:</label>
-                <input type="number" id="qty${itemCount}" placeholder="Enter quantity" required>
+        <label for="gstRate${itemCount}">GST Rate:</label>
+        <input type="number" id="gstRate${itemCount}" placeholder="GST Rate" readonly required>
 
-                <label for="rate${itemCount}">Rate:</label>
-                <input type="number" id="rate${itemCount}" step="0.01" placeholder="Enter rate" required>
+        <label for="qty${itemCount}">Quantity:</label>
+        <input type="number" id="qty${itemCount}" placeholder="Enter quantity" required>
 
-                <label for="centralTaxRate${itemCount}">Central Tax Rate %:</label>
-                <input type="number" id="centralTaxRate${itemCount}" step="0.01" placeholder="Enter Central Tax Rate" required>
+        <label for="rate${itemCount}">Rate:</label>
+        <input type="number" id="rate${itemCount}" step="0.01" placeholder="Enter rate" required>
 
-                <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
-                <input type="number" id="stateTaxRate${itemCount}" step="0.01" placeholder="Enter State Tax Rate" required>
+        <label for="centralTaxRate${itemCount}">Central Tax Rate %:</label>
+        <input type="number" id="centralTaxRate${itemCount}" step="0.01" placeholder="Enter Central Tax Rate" required>
 
-                <label for="igstRate${itemCount}">Integrated Tax Rate %:</label>
-                <input type="number" id="igstRate${itemCount}" step="0.01" placeholder="Enter Integrated Tax Rate" required>
+        <label for="stateTaxRate${itemCount}">State Tax Rate %:</label>
+        <input type="number" id="stateTaxRate${itemCount}" step="0.01" placeholder="Enter State Tax Rate" required>
 
-                <button type="button" onclick="removeItem(${itemCount})" class="remove-btn">Remove</button>
-            `;
+        <label for="igstRate${itemCount}">Integrated Tax Rate %:</label>
+        <input type="number" id="igstRate${itemCount}" step="0.01" placeholder="Enter Integrated Tax Rate" required>
+
+        <button type="button" onclick="removeItem(${itemCount})" class="remove-btn">Remove</button>
+    `;
+
     itemsContainer.appendChild(newItem);
+}
+
+// Function to auto-fill HSN Code & GST Rate based on item selection
+function fillItemDetails(itemIndex) {
+    const descriptionInput = document.getElementById(`description${itemIndex}`);
+    const hsnInput = document.getElementById(`hsnCode${itemIndex}`);
+    const gstInput = document.getElementById(`gstRate${itemIndex}`);
+
+    const selectedItem = itemsData.find(item => item.name.toLowerCase() === descriptionInput.value.toLowerCase());
+
+    if (selectedItem) {
+        hsnInput.value = selectedItem.hsn;
+        gstInput.value = selectedItem.gst;
+    } else {
+        hsnInput.value = "";
+        gstInput.value = "";
+    }
 }
 
 // Function to remove an item
 function removeItem(itemId) {
     const itemToRemove = document.getElementById(`item${itemId}`);
-    itemToRemove.remove();
+    if (itemToRemove) {
+        itemToRemove.remove();
+        itemCount--; // Decrement item count
+    }
 }
 
 // Function to generate invoice data
@@ -131,18 +164,18 @@ function generateInvoice() {
         console.log("Response Headers:", response.headers);
         return response.text(); // Get raw response text
     })
-    .then((rawText) => {
-        console.log("Raw Response:", rawText);
-        const data = JSON.parse(rawText); // Manually parse JSON
-        if (!data.message) {
-            throw new Error("Missing message in response");
-        }
-        alert(data.message); // Success message
-    })
-    .catch((error) => {
-        console.error("Error:", error.message); // Log error message
-        // alert(`An error occurred: ${error.message}`);
-    });
+        .then((rawText) => {
+            console.log("Raw Response:", rawText);
+            const data = JSON.parse(rawText); // Manually parse JSON
+            if (!data.message) {
+                throw new Error("Missing message in response");
+            }
+            alert(data.message); // Success message
+        })
+        .catch((error) => {
+            console.error("Error:", error.message); // Log error message
+            // alert(`An error occurred: ${error.message}`);
+        });
 
 
     // Save invoice data to local storage
