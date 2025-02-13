@@ -42,9 +42,10 @@ function addItem() {
         <input type="checkbox" id="igstCheckbox${itemCount}" onchange="toggleTaxFields(${itemCount})">
 
         <!-- IGST Enabled message -->
-        <div id="igstMessage${itemCount}" class="hidden">
+        <div id="igstMessage${itemCount}" class="igst-message hidden">
             IGST Enabled
         </div>
+        <br>
 
         <div id="cgstSgstFields${itemCount}">
             <label for="centralTaxRate${itemCount}">Central Tax Rate %:</label>
