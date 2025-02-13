@@ -13,7 +13,7 @@ let itemsData = [];
 // Load items data from JSON file
 async function loadItemsData() {
     try {
-        const response = await fetch("items.json");
+        const response = await fetch("items/items.json");
         itemsData = await response.json();
         console.log("Items Data Loaded:", itemsData);
     } catch (error) {
