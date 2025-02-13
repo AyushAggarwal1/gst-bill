@@ -88,6 +88,8 @@ function toggleTaxFields(itemIndex) {
 
         // Set IGST rate based on the GST rate
         document.getElementById(`igstRate${itemIndex}`).value = gstRate; // Set IGST value
+        centralTaxRate.value = 0; // Set Central Tax Rate (CGST)
+        stateTaxRate.value = 0; // Set State Tax Rate (SGST)
     } else {
         // IGST disabled: Show CGST/SGST fields and calculate CGST/SGST rates
         igstField.style.display = "none";
@@ -100,6 +102,7 @@ function toggleTaxFields(itemIndex) {
 
         centralTaxRate.value = cgstRate; // Set Central Tax Rate (CGST)
         stateTaxRate.value = sgstRate; // Set State Tax Rate (SGST)
+        document.getElementById(`igstRate${itemIndex}`).value = 0;
     }
 }
 
