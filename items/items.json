@@ -10,7 +10,12 @@
         "gst": "5"
     },
     {
-        "name": "Stone Dust",
+        "name": "Stone Dust 1st",
+        "hsn": "2517",
+        "gst": "5"
+    },
+    {
+        "name": "Stone Dust 2nd",
         "hsn": "2517",
         "gst": "5"
     },
