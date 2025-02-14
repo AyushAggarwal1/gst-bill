@@ -5,6 +5,11 @@
         "gst": "28"
     },
     {
+        "name": "Bricks",
+        "hsn": "6901",
+        "gst": "12"
+    },
+    {
         "name": "Stone Chips",
         "hsn": "2517",
         "gst": "5"
@@ -20,7 +25,22 @@
         "gst": "5"
     },
     {
-        "name": "TMT Bar",
+        "name": "TMT Bar 8mm",
+        "hsn": "7214",
+        "gst": "18"
+    },
+    {
+        "name": "TMT Bar 10mm",
+        "hsn": "7214",
+        "gst": "18"
+    },
+    {
+        "name": "TMT Bar 12mm",
+        "hsn": "7214",
+        "gst": "18"
+    },
+    {
+        "name": "TMT Bar 16mm",
         "hsn": "7214",
         "gst": "18"
     }
