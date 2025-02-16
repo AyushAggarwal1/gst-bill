@@ -60,10 +60,10 @@ function addItem() {
         <input type="number" id="gstRate${itemCount}" placeholder="GST Rate" readonly required>
         
         <label for="qty${itemCount}">Quantity:</label>
-        <input type="number" id="qty${itemCount}" placeholder="Enter quantity" required>
+        <input type="number" id="qty${itemCount}" placeholder="Enter Quantity" required>
 
         <label for="rate${itemCount}">Rate:</label>
-        <input type="number" id="rate${itemCount}" step="0.01" placeholder="Enter rate" required>
+        <input type="number" id="rate${itemCount}" step="0.01" placeholder="Enter Rate" required>
         
         <label for="igstCheckbox${itemCount}">Enable IGST</label>
         <input type="checkbox" id="igstCheckbox${itemCount}" onchange="toggleTaxFields(${itemCount})">
