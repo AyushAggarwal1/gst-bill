@@ -51,9 +51,8 @@ type UserProfile = {
 };
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: { id: string }
+  searchParams?: { [key: string]: string | string[] | undefined }
 }
 
 export default function BillPage({ params }: PageProps) {
