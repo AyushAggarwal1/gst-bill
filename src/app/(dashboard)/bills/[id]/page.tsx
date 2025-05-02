@@ -55,7 +55,7 @@ interface PageProps {
   searchParams?: { [key: string]: string | string[] | undefined }
 }
 
-export default function BillPage({ params }: PageProps) {
+export default async function BillPage({ params }: PageProps) {
   const router = useRouter();
   const [bill, setBill] = useState<Bill | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
