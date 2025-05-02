@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firmName  String?
+  address   String?
+  gstNo     String?
+  bankName  String?
+  accountNo String?
+  ifscCode  String?
+  bills     Bill[]
+  customers Customer[]
+  items     Item[]
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  gstNo     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bills     Bill[]
+}
+
+model Item {
+  id           String       @id @default(uuid())
+  name         String
+  hsnCode      String
+  gstPercentage Float
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  billItems    BillItem[]
+}
+
+model Bill {
+  id          String     @id @default(uuid())
+  invoiceNo   String
+  date        DateTime
+  customerId  String
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  billItems   BillItem[]
+  totalAmount Float
+  totalTax    Float
+  grandTotal  Float
+}
+
+model BillItem {
+  id          String   @id @default(uuid())
+  billId      String
+  bill        Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        Item     @relation(fields: [itemId], references: [id])
+  quantity    Int
+  rate        Float
+  amount      Float
+  taxAmount   Float
+  totalAmount Float
+}
