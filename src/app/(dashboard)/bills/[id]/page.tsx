@@ -50,34 +50,28 @@ type UserProfile = {
   ifscCode: string;
 };
 
-interface PageProps {
-  params: { id: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
+interface Props {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function BillPage({ params }: PageProps) {
+export default function BillPage({ params }: Props) {
   const router = useRouter();
   const [bill, setBill] = useState<Bill | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [billId, setBillId] = useState<string>("");
-  
-  // Set the billId state as soon as the component mounts
+
   useEffect(() => {
-    if (params?.id) {
-      setBillId(params.id);
-    }
-  }, [params]);
-  
-  useEffect(() => {
-    // Only proceed if billId is available
-    if (!billId) return;
-    
     const fetchData = async () => {
       try {
+        const resolvedParams = await params;
+        const billId = resolvedParams.id;
+        if (!billId) return;
+
         setIsLoading(true);
-        
+        setError("");
+
         // Fetch bill data and user profile in parallel
         const [billResponse, profileResponse] = await Promise.all([
           fetch(`/api/bills/${billId}`),
@@ -108,7 +102,7 @@ export default async function BillPage({ params }: PageProps) {
     };
 
     fetchData();
-  }, [billId]); // Changed dependency to billId state
+  }, [params]);
 
   const handleDownload = () => {
     if (!bill || !userProfile) return;
@@ -152,10 +146,12 @@ export default async function BillPage({ params }: PageProps) {
     }
   };
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     if (!bill || !userProfile) return;
 
     try {
+      const resolvedParams = await params;
+      const billId = resolvedParams.id;
       // Navigate to the print page which will handle the printing
       router.push(`/bills/${billId}/print`);
     } catch (error: any) {
@@ -295,31 +291,31 @@ export default async function BillPage({ params }: PageProps) {
             <tbody className="bg-white divide-y divide-gray-200">
               {bill.billItems.map((item, index) => (
                 <tr key={item.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.item.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.item.hsnCode}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.quantity}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ₹{item.rate.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ₹{item.amount.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.item.gstPercentage}%
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ₹{item.taxAmount.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ₹{item.totalAmount.toFixed(2)}
                   </td>
                 </tr>
@@ -328,46 +324,32 @@ export default async function BillPage({ params }: PageProps) {
           </table>
         </div>
 
-        {/* Totals */}
-        <div className="flex justify-end mb-8">
-          <div className="w-64">
-            <div className="flex justify-between py-2 border-t">
-              <span className="font-medium">Subtotal:</span>
-              <span>₹{bill.totalAmount.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between py-2 border-t">
-              <span className="font-medium">Total Tax:</span>
-              <span>₹{bill.totalTax.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between py-2 border-t border-double border-t-2">
-              <span className="font-bold">Grand Total:</span>
-              <span className="font-bold">₹{bill.grandTotal.toFixed(2)}</span>
+        {/* Bill Summary */}
+        <div className="flex justify-end">
+          <div className="w-full max-w-xs">
+            <div className="border-t border-gray-200 pt-4">
+              <div className="flex justify-between py-1">
+                <span className="text-gray-600">Subtotal:</span>
+                <span className="font-medium">₹{bill.totalAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-gray-600">GST:</span>
+                <span className="font-medium">₹{bill.totalTax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-2 border-t border-gray-200 font-bold">
+                <span>Total:</span>
+                <span>₹{bill.grandTotal.toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bank Details & Signature */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-4 border-t">
-          <div>
-            <h4 className="font-semibold mb-2">Bank Details:</h4>
-            <p className="text-sm text-gray-600">
-              Bank Name: {userProfile.bankName}
-            </p>
-            <p className="text-sm text-gray-600">
-              Account No: {userProfile.accountNo}
-            </p>
-            <p className="text-sm text-gray-600">
-              IFSC Code: {userProfile.ifscCode}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="font-semibold mb-8">For {userProfile.firmName}</p>
-            <p className="font-medium">Authorized Signatory</p>
-          </div>
-        </div>
-
-        <div className="text-center text-gray-500 text-xs mt-8">
-          This is a computer generated invoice.
+        {/* Bank Details */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <h4 className="font-semibold mb-2">Bank Details:</h4>
+          <p className="text-gray-600">Bank Name: {userProfile.bankName}</p>
+          <p className="text-gray-600">Account No: {userProfile.accountNo}</p>
+          <p className="text-gray-600">IFSC Code: {userProfile.ifscCode}</p>
         </div>
       </div>
     </div>

@@ -47,32 +47,23 @@ type UserProfile = {
   ifscCode: string;
 };
 
-interface PageProps {
-  params: {
-    id: string;
-  };
+interface Props {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function BillPrintPage({ params }: PageProps) {
+export default function BillPrintPage({ params }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [billId, setBillId] = useState<string>("");
   
-  // Set the billId state as soon as the component mounts
   useEffect(() => {
-    if (params?.id) {
-      // In client components we can use params.id directly
-      setBillId(params.id);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    // Only proceed if billId is available
-    if (!billId) return;
-    
     const printBill = async () => {
       try {
+        const resolvedParams = await params;
+        const billId = resolvedParams.id;
+        if (!billId) return;
+        
         setIsLoading(true);
         setError("");
         
@@ -98,125 +89,66 @@ export default function BillPrintPage({ params }: PageProps) {
         const profileData = await profileResponse.json();
 
         if (!billData.bill) {
-          throw new Error("Bill data is missing or invalid");
+          throw new Error("Bill data not found");
         }
 
         if (!profileData.user) {
-          throw new Error("User profile data is missing or invalid");
+          throw new Error("User profile not found");
         }
-
-        const bill = billData.bill as Bill;
-        const userProfile = profileData.user as UserProfile;
-
-        console.log("Successfully fetched bill data:", bill.invoiceNo);
 
         // Prepare data for PDF
         const pdfData = {
-          invoiceNo: bill.invoiceNo,
-          date: new Date(bill.date),
-          customerName: bill.customer.name,
-          customerAddress: bill.customer.address,
-          customerGst: bill.customer.gstNo,
-          firmName: userProfile.firmName || 'Your Business',
-          firmAddress: userProfile.address || 'Your Address',
-          firmGst: userProfile.gstNo || 'GSTIN',
-          bankName: userProfile.bankName || 'Bank Name',
-          accountNo: userProfile.accountNo || 'Account Number',
-          ifscCode: userProfile.ifscCode || 'IFSC Code',
-          items: bill.billItems,
-          totalAmount: bill.totalAmount,
-          totalTax: bill.totalTax,
-          grandTotal: bill.grandTotal,
+          invoiceNo: billData.bill.invoiceNo,
+          date: new Date(billData.bill.date),
+          customerName: billData.bill.customer.name,
+          customerAddress: billData.bill.customer.address,
+          customerGst: billData.bill.customer.gstNo,
+          firmName: profileData.user.firmName || "Your Business",
+          firmAddress: profileData.user.address || "Your Address",
+          firmGst: profileData.user.gstNo || "GSTIN",
+          bankName: profileData.user.bankName || "Bank Name",
+          accountNo: profileData.user.accountNo || "Account Number",
+          ifscCode: profileData.user.ifscCode || "IFSC Code",
+          items: billData.bill.billItems.map((item: BillItem) => ({
+            ...item,
+            item: {
+              name: item.item.name,
+              hsnCode: item.item.hsnCode,
+              gstPercentage: item.item.gstPercentage
+            }
+          })),
+          totalAmount: billData.bill.totalAmount,
+          totalTax: billData.bill.totalTax,
+          grandTotal: billData.bill.grandTotal,
         };
 
-        // Automatically print the bill
-        console.log("Generating PDF for printing...");
+        // Print the bill
+        await printBillPdf(pdfData);
         
-        try {
-          await new Promise<void>((resolve) => {
-            // Small delay to ensure UI updates before PDF processing
-            setTimeout(() => {
-              try {
-                printBillPdf(pdfData);
-                resolve();
-              } catch (err) {
-                console.error("Error in printBillPdf:", err);
-                throw err;
-              }
-            }, 500);
-          });
-          
-          console.log("PDF printed successfully");
-        } catch (err: any) {
-          console.error("PDF printing error:", err);
-          setError(err.message || "There was an error printing your bill. Please try again.");
-          
-          // Still redirect back to bill view after a delay
-          setTimeout(() => {
-            router.push(`/bills/${billId}`);
-          }, 3000);
-          return;
-        }
-
-        // Redirect back to bill view
-        setTimeout(() => {
-          router.push(`/bills/${billId}`);
-        }, 1000);
-      } catch (err: any) {
-        console.error("Error in print process:", err);
-        setError(err.message || "There was an error loading bill data. Please try again.");
-        
-        // Redirect with a delay
-        setTimeout(() => {
-          router.push(`/bills/${billId}`);
-        }, 3000);
+        // Navigate back to the bill page
+        router.push(`/bills/${billId}`);
+      } catch (error: any) {
+        console.error("Error printing bill:", error);
+        setError(error.message || "Failed to print bill");
       } finally {
         setIsLoading(false);
       }
     };
 
     printBill();
-  }, [billId, router]);
+  }, [params, router]);
 
-  if (error) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center max-w-lg p-8 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-4 text-red-600">Printing Error</h1>
-          <FormError message={error} />
-          <p className="mt-4 text-gray-600">
-            You will be redirected back to the bill page automatically.
-          </p>
-          <button 
-            onClick={() => router.push(`/bills/${billId}`)}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Return to Bill
-          </button>
-        </div>
+      <div className="text-center py-10">
+        <p>Preparing bill for printing...</p>
       </div>
     );
   }
 
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center p-8 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Preparing Your Invoice...</h1>
-        <p className="text-gray-600">
-          {isLoading ? "Please wait while we generate your invoice..." : "Printing your invoice..."}
-        </p>
-        <p className="text-gray-500 text-sm mt-4">
-          You will be redirected automatically.
-        </p>
-        <div className="mt-4">
-          <button 
-            onClick={() => router.push(`/bills/${billId}`)}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  if (error) {
+    return <FormError message={error} />;
+  }
+
+  return null;
 } 
