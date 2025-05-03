@@ -91,3 +91,12 @@ model BillItem {
   taxAmount Float
   amount    Float
 }
+
+model AuthLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  event     String
+  email     String
+  details   String?
+  createdAt DateTime @default(now())
+}

@@ -181,6 +181,15 @@ exports.Prisma.BillItemScalarFieldEnum = {
   amount: 'amount'
 };
 
+exports.Prisma.AuthLogScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  event: 'event',
+  email: 'email',
+  details: 'details',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -198,7 +207,8 @@ exports.Prisma.ModelName = {
   Customer: 'Customer',
   Item: 'Item',
   Bill: 'Bill',
-  BillItem: 'BillItem'
+  BillItem: 'BillItem',
+  AuthLog: 'AuthLog'
 };
 
 /**
