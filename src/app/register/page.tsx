@@ -1,158 +1,145 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { FormError } from "@/components/ui/FormError";
-import { FormSuccess } from "@/components/ui/FormSuccess";
-
-const formSchema = z
-  .object({
-    name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email format"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type FormValues = z.infer<typeof formSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  const onSubmit = async (data: FormValues) => {
     try {
-      setError("");
-      setSuccess("");
-      setIsLoading(true);
-
-      const response = await fetch("/api/register", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          password: data.password,
+          name,
+          email,
+          password,
         }),
       });
 
-      const responseData = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        setError(responseData.error || "Something went wrong");
-        return;
+      if (!res.ok) {
+        throw new Error(data.message || "Registration failed");
       }
 
-      setSuccess("Registration successful! Redirecting to login...");
-      
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      router.push("/login?success=Account created successfully");
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError(error instanceof Error ? error.message : "Registration failed");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Register</h1>
-          <p className="mt-2 text-gray-600">
-            Create your GST Bill Builder account
+          <h1 className="text-2xl font-bold text-gray-900">Register</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Create your GST Bill Maker account
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
-            <Input
-              label="Name"
-              {...register("name")}
-              error={errors.name?.message}
-              disabled={isLoading}
-            />
+        {error && (
+          <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+            {error}
+          </div>
+        )}
 
-            <Input
-              label="Email"
-              type="email"
-              {...register("email")}
-              error={errors.email?.message}
-              disabled={isLoading}
-            />
-
-            <Input
-              label="Password"
-              type="password"
-              {...register("password")}
-              error={errors.password?.message}
-              disabled={isLoading}
-            />
-
-            <Input
-              label="Confirm Password"
-              type="password"
-              {...register("confirmPassword")}
-              error={errors.confirmPassword?.message}
-              disabled={isLoading}
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              required
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
-
-          <FormError message={error} />
-          <FormSuccess message={success} />
 
           <div>
-            <Button
-              type="submit"
-              className="w-full"
-              isLoading={isLoading}
-              disabled={isLoading}
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
             >
-              Register
-            </Button>
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
-          <div className="text-center mt-4">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link 
-                href="/login" 
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Login
-              </Link>
-            </p>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            >
+              {loading ? "Creating account..." : "Create account"}
+            </button>
           </div>
         </form>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

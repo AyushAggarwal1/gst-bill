@@ -1,29 +1,40 @@
 import { NextResponse } from "next/server";
-import { getServerAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
 
-export async function POST(req: Request) {
+// GET all items for the current user
+export async function GET() {
   try {
-    const session = await getServerAuthSession();
+    const session = await getServerSession();
 
-    if (!session) {
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, hsnCode, gstPercentage } = await req.json();
-
-    const item = await prisma.item.create({
-      data: {
-        name,
-        hsnCode,
-        gstPercentage: parseFloat(gstPercentage),
-        userId: session.user.id,
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
       },
     });
 
-    return NextResponse.json({ item }, { status: 201 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Get all items for this user
+    const items = await prisma.item.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json(items);
   } catch (error) {
-    console.error("Create item error:", error);
+    console.error("Error fetching items:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -31,26 +42,61 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+// POST to create a new item
+export async function POST(req: Request) {
   try {
-    const session = await getServerAuthSession();
+    const session = await getServerSession();
 
-    if (!session) {
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const items = await prisma.item.findMany({
+    const { name, hsnCode, taxRate } = await req.json();
+
+    // Validate input
+    if (!name || !hsnCode || taxRate === undefined) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate tax rate is a number between 0 and 100
+    const taxRateFloat = parseFloat(String(taxRate));
+    if (isNaN(taxRateFloat) || taxRateFloat < 0 || taxRateFloat > 100) {
+      return NextResponse.json(
+        { error: "Tax rate must be a number between 0 and 100" },
+        { status: 400 }
+      );
+    }
+
+    // Find the user by email
+    const user = await prisma.user.findUnique({
       where: {
-        userId: session.user.id,
-      },
-      orderBy: {
-        createdAt: "desc",
+        email: session.user.email,
       },
     });
 
-    return NextResponse.json({ items }, { status: 200 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Create the item
+    const item = await prisma.item.create({
+      data: {
+        name,
+        hsnCode,
+        taxRate: taxRateFloat,
+        userId: user.id,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Item created successfully", item },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Get items error:", error);
+    console.error("Error creating item:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

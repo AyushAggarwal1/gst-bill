@@ -1,29 +1,40 @@
 import { NextResponse } from "next/server";
-import { getServerAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
 
-export async function POST(req: Request) {
+// GET all customers for the current user
+export async function GET() {
   try {
-    const session = await getServerAuthSession();
+    const session = await getServerSession();
 
-    if (!session) {
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, address, gstNo } = await req.json();
-
-    const customer = await prisma.customer.create({
-      data: {
-        name,
-        address,
-        gstNo,
-        userId: session.user.id,
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
       },
     });
 
-    return NextResponse.json({ customer }, { status: 201 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Get all customers for this user
+    const customers = await prisma.customer.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json(customers);
   } catch (error) {
-    console.error("Create customer error:", error);
+    console.error("Error fetching customers:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -31,26 +42,62 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+// POST to create a new customer
+export async function POST(req: Request) {
   try {
-    const session = await getServerAuthSession();
+    const session = await getServerSession();
 
-    if (!session) {
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const customers = await prisma.customer.findMany({
+    const { name, address, deliveryAddress, gstNo } = await req.json();
+
+    // Validate input
+    if (!name || !address || !deliveryAddress || !gstNo) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate GST Number format (simple regex)
+    const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    if (!gstRegex.test(gstNo)) {
+      return NextResponse.json(
+        { error: "Invalid GST Number format" },
+        { status: 400 }
+      );
+    }
+
+    // Find the user by email
+    const user = await prisma.user.findUnique({
       where: {
-        userId: session.user.id,
-      },
-      orderBy: {
-        createdAt: "desc",
+        email: session.user.email,
       },
     });
 
-    return NextResponse.json({ customers }, { status: 200 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Create the customer
+    const customer = await prisma.customer.create({
+      data: {
+        name,
+        address,
+        deliveryAddress,
+        gstNo,
+        userId: user.id,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Customer created successfully", customer },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Get customers error:", error);
+    console.error("Error creating customer:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

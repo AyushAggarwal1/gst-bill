@@ -119,50 +119,56 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   email: 'email',
   password: 'password',
+  name: 'name',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProfileScalarFieldEnum = {
+  id: 'id',
   firmName: 'firmName',
   address: 'address',
   gstNo: 'gstNo',
-  bankName: 'bankName',
-  accountNo: 'accountNo',
-  ifscCode: 'ifscCode'
+  userId: 'userId'
 };
 
 exports.Prisma.CustomerScalarFieldEnum = {
   id: 'id',
   name: 'name',
   address: 'address',
+  deliveryAddress: 'deliveryAddress',
   gstNo: 'gstNo',
+  userId: 'userId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  userId: 'userId'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ItemScalarFieldEnum = {
   id: 'id',
   name: 'name',
   hsnCode: 'hsnCode',
-  gstPercentage: 'gstPercentage',
+  taxRate: 'taxRate',
+  userId: 'userId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  userId: 'userId'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
-  invoiceNo: 'invoiceNo',
-  date: 'date',
+  billNumber: 'billNumber',
+  billDate: 'billDate',
   customerId: 'customerId',
   userId: 'userId',
+  isIGST: 'isIGST',
+  subtotal: 'subtotal',
+  cgst: 'cgst',
+  sgst: 'sgst',
+  igst: 'igst',
+  total: 'total',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  totalAmount: 'totalAmount',
-  totalTax: 'totalTax',
-  grandTotal: 'grandTotal'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.BillItemScalarFieldEnum = {
@@ -170,10 +176,9 @@ exports.Prisma.BillItemScalarFieldEnum = {
   billId: 'billId',
   itemId: 'itemId',
   quantity: 'quantity',
-  rate: 'rate',
-  amount: 'amount',
+  price: 'price',
   taxAmount: 'taxAmount',
-  totalAmount: 'totalAmount'
+  amount: 'amount'
 };
 
 exports.Prisma.SortOrder = {
@@ -189,6 +194,7 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Profile: 'Profile',
   Customer: 'Customer',
   Item: 'Item',
   Bill: 'Bill',

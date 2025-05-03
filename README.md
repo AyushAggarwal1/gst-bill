@@ -1,75 +1,36 @@
-# GST Bill Builder
-
-A full-featured GST billing application that allows businesses to create, manage, and print GST-compliant invoices.
-
-## Features
-
-- **User Authentication**: Secure login and signup functionality
-- **Customer Management**: Add and manage customer details
-- **Item Management**: Maintain a database of products with HSN codes and GST percentages
-- **Business Profile**: Set up your business details that appear on invoices
-- **Bill Generation**: Create professional GST bills with all required tax details
-- **Bill History**: View, download and print previous bills
-
-## Technologies Used
-
-- **Frontend**: React, Next.js, Tailwind CSS
-- **Backend**: Next.js API Routes
-- **Database**: SQLite with Prisma ORM
-- **Authentication**: NextAuth.js
-- **Form Handling**: React Hook Form with Zod validation
-- **PDF Generation**: jsPDF for bill printing
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-### Prerequisites
+First, run the development server:
 
-- Node.js (v18 or newer)
-- npm or yarn
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-### Installation
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/gst-bill.git
-   cd gst-bill
-   ```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-3. Set up environment variables:
-   ```
-   cp .env.example .env.local
-   ```
-   Then edit `.env.local` with your specific configuration.
+## Learn More
 
-4. Initialize the database:
-   ```
-   npx prisma db push
-   ```
+To learn more about Next.js, take a look at the following resources:
 
-5. Start the development server:
-   ```
-   npm run dev
-   ```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Usage
+## Deploy on Vercel
 
-1. Register a new account
-2. Complete your business profile
-3. Add your customers and products
-4. Start creating bills!
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-For any questions or support, please contact [ayushaggarwal1136@gmail.com
-](mailto:ayushaggarwal1136@gmail.com).
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

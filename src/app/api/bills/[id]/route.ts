@@ -1,38 +1,42 @@
 import { NextResponse } from "next/server";
-import { getServerAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
 
-interface RouteContext {
-  params: { id: string }
+interface RouteParams {
+  params: {
+    id: string;
+  };
 }
 
-export async function GET(
-  req: Request,
-  context: RouteContext
-) {
+// GET a specific bill
+export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const session = await getServerAuthSession();
-    
-    if (!session) {
+    const id = params.id;
+    const session = await getServerSession();
+
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get params after awaiting the context
-    const params = await context.params;
-    const id = params.id;
-    
-    if (!id) {
-      return NextResponse.json({ error: "Bill ID is required" }, { status: 400 });
+    // Find the user
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Get the bill with all related data
     const bill = await prisma.bill.findUnique({
       where: {
         id,
-        userId: session.user.id,
       },
       include: {
         customer: true,
-        billItems: {
+        items: {
           include: {
             item: true,
           },
@@ -44,9 +48,14 @@ export async function GET(
       return NextResponse.json({ error: "Bill not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ bill }, { status: 200 });
+    // Check if this bill belongs to the current user
+    if (bill.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    return NextResponse.json(bill);
   } catch (error) {
-    console.error("Get bill error:", error);
+    console.error("Error fetching bill:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -54,29 +63,31 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  context: RouteContext
-) {
+// DELETE a bill
+export async function DELETE(req: Request, { params }: RouteParams) {
   try {
-    const session = await getServerAuthSession();
-    
-    if (!session) {
+    const id = params.id;
+    const session = await getServerSession();
+
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get params after awaiting the context
-    const params = await context.params;
-    const id = params.id;
-    
-    if (!id) {
-      return NextResponse.json({ error: "Bill ID is required" }, { status: 400 });
+    // Find the user
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Find the bill
     const bill = await prisma.bill.findUnique({
       where: {
         id,
-        userId: session.user.id,
       },
     });
 
@@ -84,15 +95,23 @@ export async function DELETE(
       return NextResponse.json({ error: "Bill not found" }, { status: 404 });
     }
 
+    // Check if this bill belongs to the current user
+    if (bill.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    // Delete the bill (bill items will be cascade deleted due to the relation)
     await prisma.bill.delete({
       where: {
         id,
       },
     });
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({
+      message: "Bill deleted successfully",
+    });
   } catch (error) {
-    console.error("Delete bill error:", error);
+    console.error("Error deleting bill:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

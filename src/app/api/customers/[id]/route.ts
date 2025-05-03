@@ -1,42 +1,37 @@
 import { NextResponse } from "next/server";
-import { getServerAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/db";
-import { Prisma } from "@/generated/prisma";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
 
-interface RouteContext {
-  params: { id: string }
+interface RouteParams {
+  params: {
+    id: string;
+  };
 }
 
-export async function GET(
-  req: Request,
-  context: RouteContext
-) {
+// GET a specific customer
+export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const session = await getServerAuthSession();
-    
-    if (!session) {
+    const id = params.id;
+    const session = await getServerSession();
+
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get params after awaiting the context
-    const params = await context.params;
-    const id = params.id;
-    
-    if (!id) {
-      return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const customer = await prisma.customer.findUnique({
       where: {
         id,
-        userId: session.user.id,
-      },
-      include: {
-        bills: {
-          select: {
-            id: true,
-          },
-        },
       },
     });
 
@@ -44,9 +39,14 @@ export async function GET(
       return NextResponse.json({ error: "Customer not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ customer }, { status: 200 });
+    // Check if this customer belongs to the current user
+    if (customer.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    return NextResponse.json(customer);
   } catch (error) {
-    console.error("Get customer error:", error);
+    console.error("Error fetching customer:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -54,38 +54,63 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: Request,
-  context: RouteContext
-) {
+// PUT to update a customer
+export async function PUT(req: Request, { params }: RouteParams) {
   try {
-    const session = await getServerAuthSession();
-    
-    if (!session) {
+    const id = params.id;
+    const session = await getServerSession();
+
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get params after awaiting the context
-    const params = await context.params;
-    const id = params.id;
-    
-    if (!id) {
-      return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
+    const { name, address, deliveryAddress, gstNo } = await req.json();
+
+    // Validate input
+    if (!name || !address || !deliveryAddress || !gstNo) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
     }
 
-    const { name, address, gstNo } = await req.json();
+    // Validate GST Number format
+    const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    if (!gstRegex.test(gstNo)) {
+      return NextResponse.json(
+        { error: "Invalid GST Number format" },
+        { status: 400 }
+      );
+    }
 
-    const customer = await prisma.customer.findUnique({
+    // Find the user by email
+    const user = await prisma.user.findUnique({
       where: {
-        id,
-        userId: session.user.id,
+        email: session.user.email,
       },
     });
 
-    if (!customer) {
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Find the customer
+    const existingCustomer = await prisma.customer.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingCustomer) {
       return NextResponse.json({ error: "Customer not found" }, { status: 404 });
     }
 
+    // Check if this customer belongs to the current user
+    if (existingCustomer.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    // Update the customer
     const updatedCustomer = await prisma.customer.update({
       where: {
         id,
@@ -93,13 +118,17 @@ export async function PUT(
       data: {
         name,
         address,
+        deliveryAddress,
         gstNo,
       },
     });
 
-    return NextResponse.json({ customer: updatedCustomer }, { status: 200 });
+    return NextResponse.json({
+      message: "Customer updated successfully",
+      customer: updatedCustomer,
+    });
   } catch (error) {
-    console.error("Update customer error:", error);
+    console.error("Error updating customer:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -107,36 +136,31 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  context: RouteContext
-) {
+// DELETE a customer
+export async function DELETE(req: Request, { params }: RouteParams) {
   try {
-    const session = await getServerAuthSession();
-    
-    if (!session) {
+    const id = params.id;
+    const session = await getServerSession();
+
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get params after awaiting the context
-    const params = await context.params;
-    const id = params.id;
-    
-    if (!id) {
-      return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Find the customer
     const customer = await prisma.customer.findUnique({
       where: {
         id,
-        userId: session.user.id,
-      },
-      include: {
-        bills: {
-          select: {
-            id: true,
-          },
-        },
       },
     });
 
@@ -144,32 +168,40 @@ export async function DELETE(
       return NextResponse.json({ error: "Customer not found" }, { status: 404 });
     }
 
-    // Check if customer has associated bills
-    if (customer.bills.length > 0) {
-      return NextResponse.json({ 
-        error: "Cannot delete customer with existing bills. Please delete all bills for this customer first." 
-      }, { status: 400 });
+    // Check if this customer belongs to the current user
+    if (customer.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
+    // Check if this customer has any associated bills
+    const billCount = await prisma.bill.count({
+      where: {
+        customerId: id,
+      },
+    });
+
+    if (billCount > 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Cannot delete customer because they have associated bills. Delete the bills first.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Delete the customer
     await prisma.customer.delete({
       where: {
         id,
       },
     });
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({
+      message: "Customer deleted successfully",
+    });
   } catch (error) {
-    console.error("Delete customer error:", error);
-    
-    // Check if this is a foreign key constraint error
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2003') {
-        return NextResponse.json({ 
-          error: "Cannot delete customer with existing bills. Please delete all bills for this customer first." 
-        }, { status: 400 });
-      }
-    }
-    
+    console.error("Error deleting customer:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

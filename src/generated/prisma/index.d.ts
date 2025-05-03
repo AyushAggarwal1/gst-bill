@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model Profile
+ * 
+ */
+export type Profile = $Result.DefaultSelection<Prisma.$ProfilePayload>
+/**
  * Model Customer
  * 
  */
@@ -173,6 +178,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.profile`: Exposes CRUD operations for the **Profile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Profiles
+    * const profiles = await prisma.profile.findMany()
+    * ```
+    */
+  get profile(): Prisma.ProfileDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.customer`: Exposes CRUD operations for the **Customer** model.
@@ -654,6 +669,7 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    Profile: 'Profile',
     Customer: 'Customer',
     Item: 'Item',
     Bill: 'Bill',
@@ -676,7 +692,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "customer" | "item" | "bill" | "billItem"
+      modelProps: "user" | "profile" | "customer" | "item" | "bill" | "billItem"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -751,6 +767,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      Profile: {
+        payload: Prisma.$ProfilePayload<ExtArgs>
+        fields: Prisma.ProfileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProfileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProfileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>
+          }
+          findFirst: {
+            args: Prisma.ProfileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProfileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>
+          }
+          findMany: {
+            args: Prisma.ProfileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>[]
+          }
+          create: {
+            args: Prisma.ProfileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>
+          }
+          createMany: {
+            args: Prisma.ProfileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProfileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>[]
+          }
+          delete: {
+            args: Prisma.ProfileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>
+          }
+          update: {
+            args: Prisma.ProfileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>
+          }
+          deleteMany: {
+            args: Prisma.ProfileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProfileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProfileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>[]
+          }
+          upsert: {
+            args: Prisma.ProfileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfilePayload>
+          }
+          aggregate: {
+            args: Prisma.ProfileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProfile>
+          }
+          groupBy: {
+            args: Prisma.ProfileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProfileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProfileCountArgs<ExtArgs>
+            result: $Utils.Optional<ProfileCountAggregateOutputType> | number
           }
         }
       }
@@ -1135,6 +1225,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    profile?: ProfileOmit
     customer?: CustomerOmit
     item?: ItemOmit
     bill?: BillOmit
@@ -1233,15 +1324,15 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    bills: number
     customers: number
     items: number
+    bills: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bills?: boolean | UserCountOutputTypeCountBillsArgs
     customers?: boolean | UserCountOutputTypeCountCustomersArgs
     items?: boolean | UserCountOutputTypeCountItemsArgs
+    bills?: boolean | UserCountOutputTypeCountBillsArgs
   }
 
   // Custom InputTypes
@@ -1258,13 +1349,6 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountBillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BillWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountCustomersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CustomerWhereInput
   }
@@ -1274,6 +1358,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ItemWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillWhereInput
   }
 
 
@@ -1344,11 +1435,11 @@ export namespace Prisma {
    */
 
   export type BillCountOutputType = {
-    billItems: number
+    items: number
   }
 
   export type BillCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    billItems?: boolean | BillCountOutputTypeCountBillItemsArgs
+    items?: boolean | BillCountOutputTypeCountItemsArgs
   }
 
   // Custom InputTypes
@@ -1365,7 +1456,7 @@ export namespace Prisma {
   /**
    * BillCountOutputType without action
    */
-  export type BillCountOutputTypeCountBillItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type BillCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BillItemWhereInput
   }
 
@@ -1386,94 +1477,58 @@ export namespace Prisma {
 
   export type UserMinAggregateOutputType = {
     id: string | null
-    name: string | null
     email: string | null
     password: string | null
+    name: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    firmName: string | null
-    address: string | null
-    gstNo: string | null
-    bankName: string | null
-    accountNo: string | null
-    ifscCode: string | null
   }
 
   export type UserMaxAggregateOutputType = {
     id: string | null
-    name: string | null
     email: string | null
     password: string | null
+    name: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    firmName: string | null
-    address: string | null
-    gstNo: string | null
-    bankName: string | null
-    accountNo: string | null
-    ifscCode: string | null
   }
 
   export type UserCountAggregateOutputType = {
     id: number
-    name: number
     email: number
     password: number
+    name: number
     createdAt: number
     updatedAt: number
-    firmName: number
-    address: number
-    gstNo: number
-    bankName: number
-    accountNo: number
-    ifscCode: number
     _all: number
   }
 
 
   export type UserMinAggregateInputType = {
     id?: true
-    name?: true
     email?: true
     password?: true
+    name?: true
     createdAt?: true
     updatedAt?: true
-    firmName?: true
-    address?: true
-    gstNo?: true
-    bankName?: true
-    accountNo?: true
-    ifscCode?: true
   }
 
   export type UserMaxAggregateInputType = {
     id?: true
-    name?: true
     email?: true
     password?: true
+    name?: true
     createdAt?: true
     updatedAt?: true
-    firmName?: true
-    address?: true
-    gstNo?: true
-    bankName?: true
-    accountNo?: true
-    ifscCode?: true
   }
 
   export type UserCountAggregateInputType = {
     id?: true
-    name?: true
     email?: true
     password?: true
+    name?: true
     createdAt?: true
     updatedAt?: true
-    firmName?: true
-    address?: true
-    gstNo?: true
-    bankName?: true
-    accountNo?: true
-    ifscCode?: true
     _all?: true
   }
 
@@ -1551,17 +1606,11 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: string
-    name: string
     email: string
     password: string
+    name: string | null
     createdAt: Date
     updatedAt: Date
-    firmName: string | null
-    address: string | null
-    gstNo: string | null
-    bankName: string | null
-    accountNo: string | null
-    ifscCode: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1583,73 +1632,51 @@ export namespace Prisma {
 
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
     email?: boolean
     password?: boolean
+    name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    firmName?: boolean
-    address?: boolean
-    gstNo?: boolean
-    bankName?: boolean
-    accountNo?: boolean
-    ifscCode?: boolean
-    bills?: boolean | User$billsArgs<ExtArgs>
+    profile?: boolean | User$profileArgs<ExtArgs>
     customers?: boolean | User$customersArgs<ExtArgs>
     items?: boolean | User$itemsArgs<ExtArgs>
+    bills?: boolean | User$billsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
     email?: boolean
     password?: boolean
+    name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    firmName?: boolean
-    address?: boolean
-    gstNo?: boolean
-    bankName?: boolean
-    accountNo?: boolean
-    ifscCode?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
     email?: boolean
     password?: boolean
+    name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    firmName?: boolean
-    address?: boolean
-    gstNo?: boolean
-    bankName?: boolean
-    accountNo?: boolean
-    ifscCode?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
     id?: boolean
-    name?: boolean
     email?: boolean
     password?: boolean
+    name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    firmName?: boolean
-    address?: boolean
-    gstNo?: boolean
-    bankName?: boolean
-    accountNo?: boolean
-    ifscCode?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "updatedAt" | "firmName" | "address" | "gstNo" | "bankName" | "accountNo" | "ifscCode", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bills?: boolean | User$billsArgs<ExtArgs>
+    profile?: boolean | User$profileArgs<ExtArgs>
     customers?: boolean | User$customersArgs<ExtArgs>
     items?: boolean | User$itemsArgs<ExtArgs>
+    bills?: boolean | User$billsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1658,23 +1685,18 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      bills: Prisma.$BillPayload<ExtArgs>[]
+      profile: Prisma.$ProfilePayload<ExtArgs> | null
       customers: Prisma.$CustomerPayload<ExtArgs>[]
       items: Prisma.$ItemPayload<ExtArgs>[]
+      bills: Prisma.$BillPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      name: string
       email: string
       password: string
+      name: string | null
       createdAt: Date
       updatedAt: Date
-      firmName: string | null
-      address: string | null
-      gstNo: string | null
-      bankName: string | null
-      accountNo: string | null
-      ifscCode: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2069,9 +2091,10 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    bills<T extends User$billsArgs<ExtArgs> = {}>(args?: Subset<T, User$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    profile<T extends User$profileArgs<ExtArgs> = {}>(args?: Subset<T, User$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     customers<T extends User$customersArgs<ExtArgs> = {}>(args?: Subset<T, User$customersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     items<T extends User$itemsArgs<ExtArgs> = {}>(args?: Subset<T, User$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    bills<T extends User$billsArgs<ExtArgs> = {}>(args?: Subset<T, User$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2102,17 +2125,11 @@ export namespace Prisma {
    */
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
-    readonly name: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
+    readonly name: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
-    readonly firmName: FieldRef<"User", 'String'>
-    readonly address: FieldRef<"User", 'String'>
-    readonly gstNo: FieldRef<"User", 'String'>
-    readonly bankName: FieldRef<"User", 'String'>
-    readonly accountNo: FieldRef<"User", 'String'>
-    readonly ifscCode: FieldRef<"User", 'String'>
   }
     
 
@@ -2499,27 +2516,22 @@ export namespace Prisma {
   }
 
   /**
-   * User.bills
+   * User.profile
    */
-  export type User$billsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$profileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bill
+     * Select specific fields to fetch from the Profile
      */
-    select?: BillSelect<ExtArgs> | null
+    select?: ProfileSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bill
+     * Omit specific fields from the Profile
      */
-    omit?: BillOmit<ExtArgs> | null
+    omit?: ProfileOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BillInclude<ExtArgs> | null
-    where?: BillWhereInput
-    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
-    cursor?: BillWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+    include?: ProfileInclude<ExtArgs> | null
+    where?: ProfileWhereInput
   }
 
   /**
@@ -2571,6 +2583,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.bills
+   */
+  export type User$billsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bill
+     */
+    omit?: BillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    where?: BillWhereInput
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    cursor?: BillWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2590,6 +2626,1062 @@ export namespace Prisma {
 
 
   /**
+   * Model Profile
+   */
+
+  export type AggregateProfile = {
+    _count: ProfileCountAggregateOutputType | null
+    _min: ProfileMinAggregateOutputType | null
+    _max: ProfileMaxAggregateOutputType | null
+  }
+
+  export type ProfileMinAggregateOutputType = {
+    id: string | null
+    firmName: string | null
+    address: string | null
+    gstNo: string | null
+    userId: string | null
+  }
+
+  export type ProfileMaxAggregateOutputType = {
+    id: string | null
+    firmName: string | null
+    address: string | null
+    gstNo: string | null
+    userId: string | null
+  }
+
+  export type ProfileCountAggregateOutputType = {
+    id: number
+    firmName: number
+    address: number
+    gstNo: number
+    userId: number
+    _all: number
+  }
+
+
+  export type ProfileMinAggregateInputType = {
+    id?: true
+    firmName?: true
+    address?: true
+    gstNo?: true
+    userId?: true
+  }
+
+  export type ProfileMaxAggregateInputType = {
+    id?: true
+    firmName?: true
+    address?: true
+    gstNo?: true
+    userId?: true
+  }
+
+  export type ProfileCountAggregateInputType = {
+    id?: true
+    firmName?: true
+    address?: true
+    gstNo?: true
+    userId?: true
+    _all?: true
+  }
+
+  export type ProfileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Profile to aggregate.
+     */
+    where?: ProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Profiles to fetch.
+     */
+    orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Profiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Profiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Profiles
+    **/
+    _count?: true | ProfileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProfileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProfileMaxAggregateInputType
+  }
+
+  export type GetProfileAggregateType<T extends ProfileAggregateArgs> = {
+        [P in keyof T & keyof AggregateProfile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProfile[P]>
+      : GetScalarType<T[P], AggregateProfile[P]>
+  }
+
+
+
+
+  export type ProfileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProfileWhereInput
+    orderBy?: ProfileOrderByWithAggregationInput | ProfileOrderByWithAggregationInput[]
+    by: ProfileScalarFieldEnum[] | ProfileScalarFieldEnum
+    having?: ProfileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProfileCountAggregateInputType | true
+    _min?: ProfileMinAggregateInputType
+    _max?: ProfileMaxAggregateInputType
+  }
+
+  export type ProfileGroupByOutputType = {
+    id: string
+    firmName: string
+    address: string
+    gstNo: string
+    userId: string
+    _count: ProfileCountAggregateOutputType | null
+    _min: ProfileMinAggregateOutputType | null
+    _max: ProfileMaxAggregateOutputType | null
+  }
+
+  type GetProfileGroupByPayload<T extends ProfileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProfileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProfileGroupByOutputType[P]>
+            : GetScalarType<T[P], ProfileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firmName?: boolean
+    address?: boolean
+    gstNo?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["profile"]>
+
+  export type ProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firmName?: boolean
+    address?: boolean
+    gstNo?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["profile"]>
+
+  export type ProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firmName?: boolean
+    address?: boolean
+    gstNo?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["profile"]>
+
+  export type ProfileSelectScalar = {
+    id?: boolean
+    firmName?: boolean
+    address?: boolean
+    gstNo?: boolean
+    userId?: boolean
+  }
+
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "userId", ExtArgs["result"]["profile"]>
+  export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Profile"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      firmName: string
+      address: string
+      gstNo: string
+      userId: string
+    }, ExtArgs["result"]["profile"]>
+    composites: {}
+  }
+
+  type ProfileGetPayload<S extends boolean | null | undefined | ProfileDefaultArgs> = $Result.GetResult<Prisma.$ProfilePayload, S>
+
+  type ProfileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProfileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProfileCountAggregateInputType | true
+    }
+
+  export interface ProfileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Profile'], meta: { name: 'Profile' } }
+    /**
+     * Find zero or one Profile that matches the filter.
+     * @param {ProfileFindUniqueArgs} args - Arguments to find a Profile
+     * @example
+     * // Get one Profile
+     * const profile = await prisma.profile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProfileFindUniqueArgs>(args: SelectSubset<T, ProfileFindUniqueArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Profile that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProfileFindUniqueOrThrowArgs} args - Arguments to find a Profile
+     * @example
+     * // Get one Profile
+     * const profile = await prisma.profile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProfileFindUniqueOrThrowArgs>(args: SelectSubset<T, ProfileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Profile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileFindFirstArgs} args - Arguments to find a Profile
+     * @example
+     * // Get one Profile
+     * const profile = await prisma.profile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProfileFindFirstArgs>(args?: SelectSubset<T, ProfileFindFirstArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Profile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileFindFirstOrThrowArgs} args - Arguments to find a Profile
+     * @example
+     * // Get one Profile
+     * const profile = await prisma.profile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProfileFindFirstOrThrowArgs>(args?: SelectSubset<T, ProfileFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Profiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Profiles
+     * const profiles = await prisma.profile.findMany()
+     * 
+     * // Get first 10 Profiles
+     * const profiles = await prisma.profile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const profileWithIdOnly = await prisma.profile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProfileFindManyArgs>(args?: SelectSubset<T, ProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Profile.
+     * @param {ProfileCreateArgs} args - Arguments to create a Profile.
+     * @example
+     * // Create one Profile
+     * const Profile = await prisma.profile.create({
+     *   data: {
+     *     // ... data to create a Profile
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProfileCreateArgs>(args: SelectSubset<T, ProfileCreateArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Profiles.
+     * @param {ProfileCreateManyArgs} args - Arguments to create many Profiles.
+     * @example
+     * // Create many Profiles
+     * const profile = await prisma.profile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProfileCreateManyArgs>(args?: SelectSubset<T, ProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Profiles and returns the data saved in the database.
+     * @param {ProfileCreateManyAndReturnArgs} args - Arguments to create many Profiles.
+     * @example
+     * // Create many Profiles
+     * const profile = await prisma.profile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Profiles and only return the `id`
+     * const profileWithIdOnly = await prisma.profile.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Profile.
+     * @param {ProfileDeleteArgs} args - Arguments to delete one Profile.
+     * @example
+     * // Delete one Profile
+     * const Profile = await prisma.profile.delete({
+     *   where: {
+     *     // ... filter to delete one Profile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProfileDeleteArgs>(args: SelectSubset<T, ProfileDeleteArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Profile.
+     * @param {ProfileUpdateArgs} args - Arguments to update one Profile.
+     * @example
+     * // Update one Profile
+     * const profile = await prisma.profile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProfileUpdateArgs>(args: SelectSubset<T, ProfileUpdateArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Profiles.
+     * @param {ProfileDeleteManyArgs} args - Arguments to filter Profiles to delete.
+     * @example
+     * // Delete a few Profiles
+     * const { count } = await prisma.profile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProfileDeleteManyArgs>(args?: SelectSubset<T, ProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Profiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Profiles
+     * const profile = await prisma.profile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProfileUpdateManyArgs>(args: SelectSubset<T, ProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Profiles and returns the data updated in the database.
+     * @param {ProfileUpdateManyAndReturnArgs} args - Arguments to update many Profiles.
+     * @example
+     * // Update many Profiles
+     * const profile = await prisma.profile.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Profiles and only return the `id`
+     * const profileWithIdOnly = await prisma.profile.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProfileUpdateManyAndReturnArgs>(args: SelectSubset<T, ProfileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Profile.
+     * @param {ProfileUpsertArgs} args - Arguments to update or create a Profile.
+     * @example
+     * // Update or create a Profile
+     * const profile = await prisma.profile.upsert({
+     *   create: {
+     *     // ... data to create a Profile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Profile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProfileUpsertArgs>(args: SelectSubset<T, ProfileUpsertArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Profiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileCountArgs} args - Arguments to filter Profiles to count.
+     * @example
+     * // Count the number of Profiles
+     * const count = await prisma.profile.count({
+     *   where: {
+     *     // ... the filter for the Profiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProfileCountArgs>(
+      args?: Subset<T, ProfileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProfileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Profile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProfileAggregateArgs>(args: Subset<T, ProfileAggregateArgs>): Prisma.PrismaPromise<GetProfileAggregateType<T>>
+
+    /**
+     * Group by Profile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProfileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProfileGroupByArgs['orderBy'] }
+        : { orderBy?: ProfileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Profile model
+   */
+  readonly fields: ProfileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Profile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Profile model
+   */
+  interface ProfileFieldRefs {
+    readonly id: FieldRef<"Profile", 'String'>
+    readonly firmName: FieldRef<"Profile", 'String'>
+    readonly address: FieldRef<"Profile", 'String'>
+    readonly gstNo: FieldRef<"Profile", 'String'>
+    readonly userId: FieldRef<"Profile", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Profile findUnique
+   */
+  export type ProfileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which Profile to fetch.
+     */
+    where: ProfileWhereUniqueInput
+  }
+
+  /**
+   * Profile findUniqueOrThrow
+   */
+  export type ProfileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which Profile to fetch.
+     */
+    where: ProfileWhereUniqueInput
+  }
+
+  /**
+   * Profile findFirst
+   */
+  export type ProfileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which Profile to fetch.
+     */
+    where?: ProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Profiles to fetch.
+     */
+    orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Profiles.
+     */
+    cursor?: ProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Profiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Profiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Profiles.
+     */
+    distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Profile findFirstOrThrow
+   */
+  export type ProfileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which Profile to fetch.
+     */
+    where?: ProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Profiles to fetch.
+     */
+    orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Profiles.
+     */
+    cursor?: ProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Profiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Profiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Profiles.
+     */
+    distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Profile findMany
+   */
+  export type ProfileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which Profiles to fetch.
+     */
+    where?: ProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Profiles to fetch.
+     */
+    orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Profiles.
+     */
+    cursor?: ProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Profiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Profiles.
+     */
+    skip?: number
+    distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Profile create
+   */
+  export type ProfileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Profile.
+     */
+    data: XOR<ProfileCreateInput, ProfileUncheckedCreateInput>
+  }
+
+  /**
+   * Profile createMany
+   */
+  export type ProfileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Profiles.
+     */
+    data: ProfileCreateManyInput | ProfileCreateManyInput[]
+  }
+
+  /**
+   * Profile createManyAndReturn
+   */
+  export type ProfileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * The data used to create many Profiles.
+     */
+    data: ProfileCreateManyInput | ProfileCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Profile update
+   */
+  export type ProfileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Profile.
+     */
+    data: XOR<ProfileUpdateInput, ProfileUncheckedUpdateInput>
+    /**
+     * Choose, which Profile to update.
+     */
+    where: ProfileWhereUniqueInput
+  }
+
+  /**
+   * Profile updateMany
+   */
+  export type ProfileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Profiles.
+     */
+    data: XOR<ProfileUpdateManyMutationInput, ProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which Profiles to update
+     */
+    where?: ProfileWhereInput
+    /**
+     * Limit how many Profiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Profile updateManyAndReturn
+   */
+  export type ProfileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * The data used to update Profiles.
+     */
+    data: XOR<ProfileUpdateManyMutationInput, ProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which Profiles to update
+     */
+    where?: ProfileWhereInput
+    /**
+     * Limit how many Profiles to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Profile upsert
+   */
+  export type ProfileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Profile to update in case it exists.
+     */
+    where: ProfileWhereUniqueInput
+    /**
+     * In case the Profile found by the `where` argument doesn't exist, create a new Profile with this data.
+     */
+    create: XOR<ProfileCreateInput, ProfileUncheckedCreateInput>
+    /**
+     * In case the Profile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProfileUpdateInput, ProfileUncheckedUpdateInput>
+  }
+
+  /**
+   * Profile delete
+   */
+  export type ProfileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    /**
+     * Filter which Profile to delete.
+     */
+    where: ProfileWhereUniqueInput
+  }
+
+  /**
+   * Profile deleteMany
+   */
+  export type ProfileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Profiles to delete
+     */
+    where?: ProfileWhereInput
+    /**
+     * Limit how many Profiles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Profile without action
+   */
+  export type ProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Customer
    */
 
@@ -2603,30 +3695,33 @@ export namespace Prisma {
     id: string | null
     name: string | null
     address: string | null
+    deliveryAddress: string | null
     gstNo: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type CustomerMaxAggregateOutputType = {
     id: string | null
     name: string | null
     address: string | null
+    deliveryAddress: string | null
     gstNo: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type CustomerCountAggregateOutputType = {
     id: number
     name: number
     address: number
+    deliveryAddress: number
     gstNo: number
+    userId: number
     createdAt: number
     updatedAt: number
-    userId: number
     _all: number
   }
 
@@ -2635,30 +3730,33 @@ export namespace Prisma {
     id?: true
     name?: true
     address?: true
+    deliveryAddress?: true
     gstNo?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type CustomerMaxAggregateInputType = {
     id?: true
     name?: true
     address?: true
+    deliveryAddress?: true
     gstNo?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type CustomerCountAggregateInputType = {
     id?: true
     name?: true
     address?: true
+    deliveryAddress?: true
     gstNo?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
     _all?: true
   }
 
@@ -2738,10 +3836,11 @@ export namespace Prisma {
     id: string
     name: string
     address: string
-    gstNo: string | null
+    deliveryAddress: string
+    gstNo: string
+    userId: string
     createdAt: Date
     updatedAt: Date
-    userId: string
     _count: CustomerCountAggregateOutputType | null
     _min: CustomerMinAggregateOutputType | null
     _max: CustomerMaxAggregateOutputType | null
@@ -2765,10 +3864,11 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     address?: boolean
+    deliveryAddress?: boolean
     gstNo?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     bills?: boolean | Customer$billsArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
@@ -2778,10 +3878,11 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     address?: boolean
+    deliveryAddress?: boolean
     gstNo?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
@@ -2789,10 +3890,11 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     address?: boolean
+    deliveryAddress?: boolean
     gstNo?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
@@ -2800,13 +3902,14 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     address?: boolean
+    deliveryAddress?: boolean
     gstNo?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
   }
 
-  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "address" | "gstNo" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["customer"]>
+  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "address" | "deliveryAddress" | "gstNo" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
   export type CustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     bills?: boolean | Customer$billsArgs<ExtArgs>
@@ -2829,10 +3932,11 @@ export namespace Prisma {
       id: string
       name: string
       address: string
-      gstNo: string | null
+      deliveryAddress: string
+      gstNo: string
+      userId: string
       createdAt: Date
       updatedAt: Date
-      userId: string
     }, ExtArgs["result"]["customer"]>
     composites: {}
   }
@@ -3261,10 +4365,11 @@ export namespace Prisma {
     readonly id: FieldRef<"Customer", 'String'>
     readonly name: FieldRef<"Customer", 'String'>
     readonly address: FieldRef<"Customer", 'String'>
+    readonly deliveryAddress: FieldRef<"Customer", 'String'>
     readonly gstNo: FieldRef<"Customer", 'String'>
+    readonly userId: FieldRef<"Customer", 'String'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
     readonly updatedAt: FieldRef<"Customer", 'DateTime'>
-    readonly userId: FieldRef<"Customer", 'String'>
   }
     
 
@@ -3714,81 +4819,81 @@ export namespace Prisma {
   }
 
   export type ItemAvgAggregateOutputType = {
-    gstPercentage: number | null
+    taxRate: number | null
   }
 
   export type ItemSumAggregateOutputType = {
-    gstPercentage: number | null
+    taxRate: number | null
   }
 
   export type ItemMinAggregateOutputType = {
     id: string | null
     name: string | null
     hsnCode: string | null
-    gstPercentage: number | null
+    taxRate: number | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type ItemMaxAggregateOutputType = {
     id: string | null
     name: string | null
     hsnCode: string | null
-    gstPercentage: number | null
+    taxRate: number | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type ItemCountAggregateOutputType = {
     id: number
     name: number
     hsnCode: number
-    gstPercentage: number
+    taxRate: number
+    userId: number
     createdAt: number
     updatedAt: number
-    userId: number
     _all: number
   }
 
 
   export type ItemAvgAggregateInputType = {
-    gstPercentage?: true
+    taxRate?: true
   }
 
   export type ItemSumAggregateInputType = {
-    gstPercentage?: true
+    taxRate?: true
   }
 
   export type ItemMinAggregateInputType = {
     id?: true
     name?: true
     hsnCode?: true
-    gstPercentage?: true
+    taxRate?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type ItemMaxAggregateInputType = {
     id?: true
     name?: true
     hsnCode?: true
-    gstPercentage?: true
+    taxRate?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type ItemCountAggregateInputType = {
     id?: true
     name?: true
     hsnCode?: true
-    gstPercentage?: true
+    taxRate?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
     _all?: true
   }
 
@@ -3882,10 +4987,10 @@ export namespace Prisma {
     id: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
+    userId: string
     createdAt: Date
     updatedAt: Date
-    userId: string
     _count: ItemCountAggregateOutputType | null
     _avg: ItemAvgAggregateOutputType | null
     _sum: ItemSumAggregateOutputType | null
@@ -3911,10 +5016,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hsnCode?: boolean
-    gstPercentage?: boolean
+    taxRate?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     billItems?: boolean | Item$billItemsArgs<ExtArgs>
     _count?: boolean | ItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -3924,10 +5029,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hsnCode?: boolean
-    gstPercentage?: boolean
+    taxRate?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["item"]>
 
@@ -3935,10 +5040,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hsnCode?: boolean
-    gstPercentage?: boolean
+    taxRate?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["item"]>
 
@@ -3946,13 +5051,13 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hsnCode?: boolean
-    gstPercentage?: boolean
+    taxRate?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
   }
 
-  export type ItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "hsnCode" | "gstPercentage" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["item"]>
+  export type ItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "hsnCode" | "taxRate" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["item"]>
   export type ItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     billItems?: boolean | Item$billItemsArgs<ExtArgs>
@@ -3975,10 +5080,10 @@ export namespace Prisma {
       id: string
       name: string
       hsnCode: string
-      gstPercentage: number
+      taxRate: number
+      userId: string
       createdAt: Date
       updatedAt: Date
-      userId: string
     }, ExtArgs["result"]["item"]>
     composites: {}
   }
@@ -4407,10 +5512,10 @@ export namespace Prisma {
     readonly id: FieldRef<"Item", 'String'>
     readonly name: FieldRef<"Item", 'String'>
     readonly hsnCode: FieldRef<"Item", 'String'>
-    readonly gstPercentage: FieldRef<"Item", 'Float'>
+    readonly taxRate: FieldRef<"Item", 'Float'>
+    readonly userId: FieldRef<"Item", 'String'>
     readonly createdAt: FieldRef<"Item", 'DateTime'>
     readonly updatedAt: FieldRef<"Item", 'DateTime'>
-    readonly userId: FieldRef<"Item", 'String'>
   }
     
 
@@ -4860,107 +5965,133 @@ export namespace Prisma {
   }
 
   export type BillAvgAggregateOutputType = {
-    totalAmount: number | null
-    totalTax: number | null
-    grandTotal: number | null
+    subtotal: number | null
+    cgst: number | null
+    sgst: number | null
+    igst: number | null
+    total: number | null
   }
 
   export type BillSumAggregateOutputType = {
-    totalAmount: number | null
-    totalTax: number | null
-    grandTotal: number | null
+    subtotal: number | null
+    cgst: number | null
+    sgst: number | null
+    igst: number | null
+    total: number | null
   }
 
   export type BillMinAggregateOutputType = {
     id: string | null
-    invoiceNo: string | null
-    date: Date | null
+    billNumber: string | null
+    billDate: Date | null
     customerId: string | null
     userId: string | null
+    isIGST: boolean | null
+    subtotal: number | null
+    cgst: number | null
+    sgst: number | null
+    igst: number | null
+    total: number | null
     createdAt: Date | null
     updatedAt: Date | null
-    totalAmount: number | null
-    totalTax: number | null
-    grandTotal: number | null
   }
 
   export type BillMaxAggregateOutputType = {
     id: string | null
-    invoiceNo: string | null
-    date: Date | null
+    billNumber: string | null
+    billDate: Date | null
     customerId: string | null
     userId: string | null
+    isIGST: boolean | null
+    subtotal: number | null
+    cgst: number | null
+    sgst: number | null
+    igst: number | null
+    total: number | null
     createdAt: Date | null
     updatedAt: Date | null
-    totalAmount: number | null
-    totalTax: number | null
-    grandTotal: number | null
   }
 
   export type BillCountAggregateOutputType = {
     id: number
-    invoiceNo: number
-    date: number
+    billNumber: number
+    billDate: number
     customerId: number
     userId: number
+    isIGST: number
+    subtotal: number
+    cgst: number
+    sgst: number
+    igst: number
+    total: number
     createdAt: number
     updatedAt: number
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
     _all: number
   }
 
 
   export type BillAvgAggregateInputType = {
-    totalAmount?: true
-    totalTax?: true
-    grandTotal?: true
+    subtotal?: true
+    cgst?: true
+    sgst?: true
+    igst?: true
+    total?: true
   }
 
   export type BillSumAggregateInputType = {
-    totalAmount?: true
-    totalTax?: true
-    grandTotal?: true
+    subtotal?: true
+    cgst?: true
+    sgst?: true
+    igst?: true
+    total?: true
   }
 
   export type BillMinAggregateInputType = {
     id?: true
-    invoiceNo?: true
-    date?: true
+    billNumber?: true
+    billDate?: true
     customerId?: true
     userId?: true
+    isIGST?: true
+    subtotal?: true
+    cgst?: true
+    sgst?: true
+    igst?: true
+    total?: true
     createdAt?: true
     updatedAt?: true
-    totalAmount?: true
-    totalTax?: true
-    grandTotal?: true
   }
 
   export type BillMaxAggregateInputType = {
     id?: true
-    invoiceNo?: true
-    date?: true
+    billNumber?: true
+    billDate?: true
     customerId?: true
     userId?: true
+    isIGST?: true
+    subtotal?: true
+    cgst?: true
+    sgst?: true
+    igst?: true
+    total?: true
     createdAt?: true
     updatedAt?: true
-    totalAmount?: true
-    totalTax?: true
-    grandTotal?: true
   }
 
   export type BillCountAggregateInputType = {
     id?: true
-    invoiceNo?: true
-    date?: true
+    billNumber?: true
+    billDate?: true
     customerId?: true
     userId?: true
+    isIGST?: true
+    subtotal?: true
+    cgst?: true
+    sgst?: true
+    igst?: true
+    total?: true
     createdAt?: true
     updatedAt?: true
-    totalAmount?: true
-    totalTax?: true
-    grandTotal?: true
     _all?: true
   }
 
@@ -5052,15 +6183,18 @@ export namespace Prisma {
 
   export type BillGroupByOutputType = {
     id: string
-    invoiceNo: string
-    date: Date
+    billNumber: string
+    billDate: Date
     customerId: string
     userId: string
+    isIGST: boolean
+    subtotal: number
+    cgst: number
+    sgst: number
+    igst: number
+    total: number
     createdAt: Date
     updatedAt: Date
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
     _count: BillCountAggregateOutputType | null
     _avg: BillAvgAggregateOutputType | null
     _sum: BillSumAggregateOutputType | null
@@ -5084,69 +6218,81 @@ export namespace Prisma {
 
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    invoiceNo?: boolean
-    date?: boolean
+    billNumber?: boolean
+    billDate?: boolean
     customerId?: boolean
     userId?: boolean
+    isIGST?: boolean
+    subtotal?: boolean
+    cgst?: boolean
+    sgst?: boolean
+    igst?: boolean
+    total?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    totalAmount?: boolean
-    totalTax?: boolean
-    grandTotal?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
-    billItems?: boolean | Bill$billItemsArgs<ExtArgs>
+    items?: boolean | Bill$itemsArgs<ExtArgs>
     _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    invoiceNo?: boolean
-    date?: boolean
+    billNumber?: boolean
+    billDate?: boolean
     customerId?: boolean
     userId?: boolean
+    isIGST?: boolean
+    subtotal?: boolean
+    cgst?: boolean
+    sgst?: boolean
+    igst?: boolean
+    total?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    totalAmount?: boolean
-    totalTax?: boolean
-    grandTotal?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    invoiceNo?: boolean
-    date?: boolean
+    billNumber?: boolean
+    billDate?: boolean
     customerId?: boolean
     userId?: boolean
+    isIGST?: boolean
+    subtotal?: boolean
+    cgst?: boolean
+    sgst?: boolean
+    igst?: boolean
+    total?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    totalAmount?: boolean
-    totalTax?: boolean
-    grandTotal?: boolean
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectScalar = {
     id?: boolean
-    invoiceNo?: boolean
-    date?: boolean
+    billNumber?: boolean
+    billDate?: boolean
     customerId?: boolean
     userId?: boolean
+    isIGST?: boolean
+    subtotal?: boolean
+    cgst?: boolean
+    sgst?: boolean
+    igst?: boolean
+    total?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    totalAmount?: boolean
-    totalTax?: boolean
-    grandTotal?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "invoiceNo" | "date" | "customerId" | "userId" | "createdAt" | "updatedAt" | "totalAmount" | "totalTax" | "grandTotal", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billNumber" | "billDate" | "customerId" | "userId" | "isIGST" | "subtotal" | "cgst" | "sgst" | "igst" | "total" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
-    billItems?: boolean | Bill$billItemsArgs<ExtArgs>
+    items?: boolean | Bill$itemsArgs<ExtArgs>
     _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BillIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5163,19 +6309,22 @@ export namespace Prisma {
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
-      billItems: Prisma.$BillItemPayload<ExtArgs>[]
+      items: Prisma.$BillItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      invoiceNo: string
-      date: Date
+      billNumber: string
+      billDate: Date
       customerId: string
       userId: string
+      isIGST: boolean
+      subtotal: number
+      cgst: number
+      sgst: number
+      igst: number
+      total: number
       createdAt: Date
       updatedAt: Date
-      totalAmount: number
-      totalTax: number
-      grandTotal: number
     }, ExtArgs["result"]["bill"]>
     composites: {}
   }
@@ -5572,7 +6721,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    billItems<T extends Bill$billItemsArgs<ExtArgs> = {}>(args?: Subset<T, Bill$billItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    items<T extends Bill$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Bill$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5603,15 +6752,18 @@ export namespace Prisma {
    */
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'String'>
-    readonly invoiceNo: FieldRef<"Bill", 'String'>
-    readonly date: FieldRef<"Bill", 'DateTime'>
+    readonly billNumber: FieldRef<"Bill", 'String'>
+    readonly billDate: FieldRef<"Bill", 'DateTime'>
     readonly customerId: FieldRef<"Bill", 'String'>
     readonly userId: FieldRef<"Bill", 'String'>
+    readonly isIGST: FieldRef<"Bill", 'Boolean'>
+    readonly subtotal: FieldRef<"Bill", 'Float'>
+    readonly cgst: FieldRef<"Bill", 'Float'>
+    readonly sgst: FieldRef<"Bill", 'Float'>
+    readonly igst: FieldRef<"Bill", 'Float'>
+    readonly total: FieldRef<"Bill", 'Float'>
     readonly createdAt: FieldRef<"Bill", 'DateTime'>
     readonly updatedAt: FieldRef<"Bill", 'DateTime'>
-    readonly totalAmount: FieldRef<"Bill", 'Float'>
-    readonly totalTax: FieldRef<"Bill", 'Float'>
-    readonly grandTotal: FieldRef<"Bill", 'Float'>
   }
     
 
@@ -6006,9 +7158,9 @@ export namespace Prisma {
   }
 
   /**
-   * Bill.billItems
+   * Bill.items
    */
-  export type Bill$billItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Bill$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the BillItem
      */
@@ -6062,18 +7214,16 @@ export namespace Prisma {
 
   export type BillItemAvgAggregateOutputType = {
     quantity: number | null
-    rate: number | null
-    amount: number | null
+    price: number | null
     taxAmount: number | null
-    totalAmount: number | null
+    amount: number | null
   }
 
   export type BillItemSumAggregateOutputType = {
     quantity: number | null
-    rate: number | null
-    amount: number | null
+    price: number | null
     taxAmount: number | null
-    totalAmount: number | null
+    amount: number | null
   }
 
   export type BillItemMinAggregateOutputType = {
@@ -6081,10 +7231,9 @@ export namespace Prisma {
     billId: string | null
     itemId: string | null
     quantity: number | null
-    rate: number | null
-    amount: number | null
+    price: number | null
     taxAmount: number | null
-    totalAmount: number | null
+    amount: number | null
   }
 
   export type BillItemMaxAggregateOutputType = {
@@ -6092,10 +7241,9 @@ export namespace Prisma {
     billId: string | null
     itemId: string | null
     quantity: number | null
-    rate: number | null
-    amount: number | null
+    price: number | null
     taxAmount: number | null
-    totalAmount: number | null
+    amount: number | null
   }
 
   export type BillItemCountAggregateOutputType = {
@@ -6103,28 +7251,25 @@ export namespace Prisma {
     billId: number
     itemId: number
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
     _all: number
   }
 
 
   export type BillItemAvgAggregateInputType = {
     quantity?: true
-    rate?: true
-    amount?: true
+    price?: true
     taxAmount?: true
-    totalAmount?: true
+    amount?: true
   }
 
   export type BillItemSumAggregateInputType = {
     quantity?: true
-    rate?: true
-    amount?: true
+    price?: true
     taxAmount?: true
-    totalAmount?: true
+    amount?: true
   }
 
   export type BillItemMinAggregateInputType = {
@@ -6132,10 +7277,9 @@ export namespace Prisma {
     billId?: true
     itemId?: true
     quantity?: true
-    rate?: true
-    amount?: true
+    price?: true
     taxAmount?: true
-    totalAmount?: true
+    amount?: true
   }
 
   export type BillItemMaxAggregateInputType = {
@@ -6143,10 +7287,9 @@ export namespace Prisma {
     billId?: true
     itemId?: true
     quantity?: true
-    rate?: true
-    amount?: true
+    price?: true
     taxAmount?: true
-    totalAmount?: true
+    amount?: true
   }
 
   export type BillItemCountAggregateInputType = {
@@ -6154,10 +7297,9 @@ export namespace Prisma {
     billId?: true
     itemId?: true
     quantity?: true
-    rate?: true
-    amount?: true
+    price?: true
     taxAmount?: true
-    totalAmount?: true
+    amount?: true
     _all?: true
   }
 
@@ -6252,10 +7394,9 @@ export namespace Prisma {
     billId: string
     itemId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
     _count: BillItemCountAggregateOutputType | null
     _avg: BillItemAvgAggregateOutputType | null
     _sum: BillItemSumAggregateOutputType | null
@@ -6282,10 +7423,9 @@ export namespace Prisma {
     billId?: boolean
     itemId?: boolean
     quantity?: boolean
-    rate?: boolean
-    amount?: boolean
+    price?: boolean
     taxAmount?: boolean
-    totalAmount?: boolean
+    amount?: boolean
     bill?: boolean | BillDefaultArgs<ExtArgs>
     item?: boolean | ItemDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["billItem"]>
@@ -6295,10 +7435,9 @@ export namespace Prisma {
     billId?: boolean
     itemId?: boolean
     quantity?: boolean
-    rate?: boolean
-    amount?: boolean
+    price?: boolean
     taxAmount?: boolean
-    totalAmount?: boolean
+    amount?: boolean
     bill?: boolean | BillDefaultArgs<ExtArgs>
     item?: boolean | ItemDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["billItem"]>
@@ -6308,10 +7447,9 @@ export namespace Prisma {
     billId?: boolean
     itemId?: boolean
     quantity?: boolean
-    rate?: boolean
-    amount?: boolean
+    price?: boolean
     taxAmount?: boolean
-    totalAmount?: boolean
+    amount?: boolean
     bill?: boolean | BillDefaultArgs<ExtArgs>
     item?: boolean | ItemDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["billItem"]>
@@ -6321,13 +7459,12 @@ export namespace Prisma {
     billId?: boolean
     itemId?: boolean
     quantity?: boolean
-    rate?: boolean
-    amount?: boolean
+    price?: boolean
     taxAmount?: boolean
-    totalAmount?: boolean
+    amount?: boolean
   }
 
-  export type BillItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "itemId" | "quantity" | "rate" | "amount" | "taxAmount" | "totalAmount", ExtArgs["result"]["billItem"]>
+  export type BillItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "itemId" | "quantity" | "price" | "taxAmount" | "amount", ExtArgs["result"]["billItem"]>
   export type BillItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bill?: boolean | BillDefaultArgs<ExtArgs>
     item?: boolean | ItemDefaultArgs<ExtArgs>
@@ -6352,10 +7489,9 @@ export namespace Prisma {
       billId: string
       itemId: string
       quantity: number
-      rate: number
-      amount: number
+      price: number
       taxAmount: number
-      totalAmount: number
+      amount: number
     }, ExtArgs["result"]["billItem"]>
     composites: {}
   }
@@ -6785,10 +7921,9 @@ export namespace Prisma {
     readonly billId: FieldRef<"BillItem", 'String'>
     readonly itemId: FieldRef<"BillItem", 'String'>
     readonly quantity: FieldRef<"BillItem", 'Int'>
-    readonly rate: FieldRef<"BillItem", 'Float'>
-    readonly amount: FieldRef<"BillItem", 'Float'>
+    readonly price: FieldRef<"BillItem", 'Float'>
     readonly taxAmount: FieldRef<"BillItem", 'Float'>
-    readonly totalAmount: FieldRef<"BillItem", 'Float'>
+    readonly amount: FieldRef<"BillItem", 'Float'>
   }
     
 
@@ -7214,30 +8349,36 @@ export namespace Prisma {
 
   export const UserScalarFieldEnum: {
     id: 'id',
-    name: 'name',
     email: 'email',
     password: 'password',
+    name: 'name',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    firmName: 'firmName',
-    address: 'address',
-    gstNo: 'gstNo',
-    bankName: 'bankName',
-    accountNo: 'accountNo',
-    ifscCode: 'ifscCode'
+    updatedAt: 'updatedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const ProfileScalarFieldEnum: {
+    id: 'id',
+    firmName: 'firmName',
+    address: 'address',
+    gstNo: 'gstNo',
+    userId: 'userId'
+  };
+
+  export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
 
 
   export const CustomerScalarFieldEnum: {
     id: 'id',
     name: 'name',
     address: 'address',
+    deliveryAddress: 'deliveryAddress',
     gstNo: 'gstNo',
+    userId: 'userId',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    userId: 'userId'
+    updatedAt: 'updatedAt'
   };
 
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
@@ -7247,10 +8388,10 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     hsnCode: 'hsnCode',
-    gstPercentage: 'gstPercentage',
+    taxRate: 'taxRate',
+    userId: 'userId',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    userId: 'userId'
+    updatedAt: 'updatedAt'
   };
 
   export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof ItemScalarFieldEnum]
@@ -7258,15 +8399,18 @@ export namespace Prisma {
 
   export const BillScalarFieldEnum: {
     id: 'id',
-    invoiceNo: 'invoiceNo',
-    date: 'date',
+    billNumber: 'billNumber',
+    billDate: 'billDate',
     customerId: 'customerId',
     userId: 'userId',
+    isIGST: 'isIGST',
+    subtotal: 'subtotal',
+    cgst: 'cgst',
+    sgst: 'sgst',
+    igst: 'igst',
+    total: 'total',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    totalAmount: 'totalAmount',
-    totalTax: 'totalTax',
-    grandTotal: 'grandTotal'
+    updatedAt: 'updatedAt'
   };
 
   export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
@@ -7277,10 +8421,9 @@ export namespace Prisma {
     billId: 'billId',
     itemId: 'itemId',
     quantity: 'quantity',
-    rate: 'rate',
-    amount: 'amount',
+    price: 'price',
     taxAmount: 'taxAmount',
-    totalAmount: 'totalAmount'
+    amount: 'amount'
   };
 
   export type BillItemScalarFieldEnum = (typeof BillItemScalarFieldEnum)[keyof typeof BillItemScalarFieldEnum]
@@ -7329,6 +8472,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -7343,38 +8493,28 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
-    name?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
+    name?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    firmName?: StringNullableFilter<"User"> | string | null
-    address?: StringNullableFilter<"User"> | string | null
-    gstNo?: StringNullableFilter<"User"> | string | null
-    bankName?: StringNullableFilter<"User"> | string | null
-    accountNo?: StringNullableFilter<"User"> | string | null
-    ifscCode?: StringNullableFilter<"User"> | string | null
-    bills?: BillListRelationFilter
+    profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
     customers?: CustomerListRelationFilter
     items?: ItemListRelationFilter
+    bills?: BillListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
-    name?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    name?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    firmName?: SortOrderInput | SortOrder
-    address?: SortOrderInput | SortOrder
-    gstNo?: SortOrderInput | SortOrder
-    bankName?: SortOrderInput | SortOrder
-    accountNo?: SortOrderInput | SortOrder
-    ifscCode?: SortOrderInput | SortOrder
-    bills?: BillOrderByRelationAggregateInput
+    profile?: ProfileOrderByWithRelationInput
     customers?: CustomerOrderByRelationAggregateInput
     items?: ItemOrderByRelationAggregateInput
+    bills?: BillOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7383,34 +8523,23 @@ export namespace Prisma {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    name?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
+    name?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    firmName?: StringNullableFilter<"User"> | string | null
-    address?: StringNullableFilter<"User"> | string | null
-    gstNo?: StringNullableFilter<"User"> | string | null
-    bankName?: StringNullableFilter<"User"> | string | null
-    accountNo?: StringNullableFilter<"User"> | string | null
-    ifscCode?: StringNullableFilter<"User"> | string | null
-    bills?: BillListRelationFilter
+    profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
     customers?: CustomerListRelationFilter
     items?: ItemListRelationFilter
+    bills?: BillListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
-    name?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    name?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    firmName?: SortOrderInput | SortOrder
-    address?: SortOrderInput | SortOrder
-    gstNo?: SortOrderInput | SortOrder
-    bankName?: SortOrderInput | SortOrder
-    accountNo?: SortOrderInput | SortOrder
-    ifscCode?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -7421,17 +8550,66 @@ export namespace Prisma {
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
-    name?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
+    name?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
-    firmName?: StringNullableWithAggregatesFilter<"User"> | string | null
-    address?: StringNullableWithAggregatesFilter<"User"> | string | null
-    gstNo?: StringNullableWithAggregatesFilter<"User"> | string | null
-    bankName?: StringNullableWithAggregatesFilter<"User"> | string | null
-    accountNo?: StringNullableWithAggregatesFilter<"User"> | string | null
-    ifscCode?: StringNullableWithAggregatesFilter<"User"> | string | null
+  }
+
+  export type ProfileWhereInput = {
+    AND?: ProfileWhereInput | ProfileWhereInput[]
+    OR?: ProfileWhereInput[]
+    NOT?: ProfileWhereInput | ProfileWhereInput[]
+    id?: StringFilter<"Profile"> | string
+    firmName?: StringFilter<"Profile"> | string
+    address?: StringFilter<"Profile"> | string
+    gstNo?: StringFilter<"Profile"> | string
+    userId?: StringFilter<"Profile"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ProfileOrderByWithRelationInput = {
+    id?: SortOrder
+    firmName?: SortOrder
+    address?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ProfileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: ProfileWhereInput | ProfileWhereInput[]
+    OR?: ProfileWhereInput[]
+    NOT?: ProfileWhereInput | ProfileWhereInput[]
+    firmName?: StringFilter<"Profile"> | string
+    address?: StringFilter<"Profile"> | string
+    gstNo?: StringFilter<"Profile"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId">
+
+  export type ProfileOrderByWithAggregationInput = {
+    id?: SortOrder
+    firmName?: SortOrder
+    address?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
+    _count?: ProfileCountOrderByAggregateInput
+    _max?: ProfileMaxOrderByAggregateInput
+    _min?: ProfileMinOrderByAggregateInput
+  }
+
+  export type ProfileScalarWhereWithAggregatesInput = {
+    AND?: ProfileScalarWhereWithAggregatesInput | ProfileScalarWhereWithAggregatesInput[]
+    OR?: ProfileScalarWhereWithAggregatesInput[]
+    NOT?: ProfileScalarWhereWithAggregatesInput | ProfileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Profile"> | string
+    firmName?: StringWithAggregatesFilter<"Profile"> | string
+    address?: StringWithAggregatesFilter<"Profile"> | string
+    gstNo?: StringWithAggregatesFilter<"Profile"> | string
+    userId?: StringWithAggregatesFilter<"Profile"> | string
   }
 
   export type CustomerWhereInput = {
@@ -7441,10 +8619,11 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     address?: StringFilter<"Customer"> | string
-    gstNo?: StringNullableFilter<"Customer"> | string | null
+    deliveryAddress?: StringFilter<"Customer"> | string
+    gstNo?: StringFilter<"Customer"> | string
+    userId?: StringFilter<"Customer"> | string
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
-    userId?: StringFilter<"Customer"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     bills?: BillListRelationFilter
   }
@@ -7453,10 +8632,11 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
-    gstNo?: SortOrderInput | SortOrder
+    deliveryAddress?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     user?: UserOrderByWithRelationInput
     bills?: BillOrderByRelationAggregateInput
   }
@@ -7468,10 +8648,11 @@ export namespace Prisma {
     NOT?: CustomerWhereInput | CustomerWhereInput[]
     name?: StringFilter<"Customer"> | string
     address?: StringFilter<"Customer"> | string
-    gstNo?: StringNullableFilter<"Customer"> | string | null
+    deliveryAddress?: StringFilter<"Customer"> | string
+    gstNo?: StringFilter<"Customer"> | string
+    userId?: StringFilter<"Customer"> | string
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
-    userId?: StringFilter<"Customer"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     bills?: BillListRelationFilter
   }, "id">
@@ -7480,10 +8661,11 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
-    gstNo?: SortOrderInput | SortOrder
+    deliveryAddress?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     _count?: CustomerCountOrderByAggregateInput
     _max?: CustomerMaxOrderByAggregateInput
     _min?: CustomerMinOrderByAggregateInput
@@ -7496,10 +8678,11 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Customer"> | string
     name?: StringWithAggregatesFilter<"Customer"> | string
     address?: StringWithAggregatesFilter<"Customer"> | string
-    gstNo?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    deliveryAddress?: StringWithAggregatesFilter<"Customer"> | string
+    gstNo?: StringWithAggregatesFilter<"Customer"> | string
+    userId?: StringWithAggregatesFilter<"Customer"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
-    userId?: StringWithAggregatesFilter<"Customer"> | string
   }
 
   export type ItemWhereInput = {
@@ -7509,10 +8692,10 @@ export namespace Prisma {
     id?: StringFilter<"Item"> | string
     name?: StringFilter<"Item"> | string
     hsnCode?: StringFilter<"Item"> | string
-    gstPercentage?: FloatFilter<"Item"> | number
+    taxRate?: FloatFilter<"Item"> | number
+    userId?: StringFilter<"Item"> | string
     createdAt?: DateTimeFilter<"Item"> | Date | string
     updatedAt?: DateTimeFilter<"Item"> | Date | string
-    userId?: StringFilter<"Item"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     billItems?: BillItemListRelationFilter
   }
@@ -7521,10 +8704,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     hsnCode?: SortOrder
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     user?: UserOrderByWithRelationInput
     billItems?: BillItemOrderByRelationAggregateInput
   }
@@ -7536,10 +8719,10 @@ export namespace Prisma {
     NOT?: ItemWhereInput | ItemWhereInput[]
     name?: StringFilter<"Item"> | string
     hsnCode?: StringFilter<"Item"> | string
-    gstPercentage?: FloatFilter<"Item"> | number
+    taxRate?: FloatFilter<"Item"> | number
+    userId?: StringFilter<"Item"> | string
     createdAt?: DateTimeFilter<"Item"> | Date | string
     updatedAt?: DateTimeFilter<"Item"> | Date | string
-    userId?: StringFilter<"Item"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     billItems?: BillItemListRelationFilter
   }, "id">
@@ -7548,10 +8731,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     hsnCode?: SortOrder
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     _count?: ItemCountOrderByAggregateInput
     _avg?: ItemAvgOrderByAggregateInput
     _max?: ItemMaxOrderByAggregateInput
@@ -7566,10 +8749,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Item"> | string
     name?: StringWithAggregatesFilter<"Item"> | string
     hsnCode?: StringWithAggregatesFilter<"Item"> | string
-    gstPercentage?: FloatWithAggregatesFilter<"Item"> | number
+    taxRate?: FloatWithAggregatesFilter<"Item"> | number
+    userId?: StringWithAggregatesFilter<"Item"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Item"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Item"> | Date | string
-    userId?: StringWithAggregatesFilter<"Item"> | string
   }
 
   export type BillWhereInput = {
@@ -7577,66 +8760,78 @@ export namespace Prisma {
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     id?: StringFilter<"Bill"> | string
-    invoiceNo?: StringFilter<"Bill"> | string
-    date?: DateTimeFilter<"Bill"> | Date | string
+    billNumber?: StringFilter<"Bill"> | string
+    billDate?: DateTimeFilter<"Bill"> | Date | string
     customerId?: StringFilter<"Bill"> | string
     userId?: StringFilter<"Bill"> | string
+    isIGST?: BoolFilter<"Bill"> | boolean
+    subtotal?: FloatFilter<"Bill"> | number
+    cgst?: FloatFilter<"Bill"> | number
+    sgst?: FloatFilter<"Bill"> | number
+    igst?: FloatFilter<"Bill"> | number
+    total?: FloatFilter<"Bill"> | number
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
-    totalAmount?: FloatFilter<"Bill"> | number
-    totalTax?: FloatFilter<"Bill"> | number
-    grandTotal?: FloatFilter<"Bill"> | number
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    billItems?: BillItemListRelationFilter
+    items?: BillItemListRelationFilter
   }
 
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
-    invoiceNo?: SortOrder
-    date?: SortOrder
+    billNumber?: SortOrder
+    billDate?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
+    isIGST?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
     customer?: CustomerOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
-    billItems?: BillItemOrderByRelationAggregateInput
+    items?: BillItemOrderByRelationAggregateInput
   }
 
   export type BillWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    billNumber?: string
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
-    invoiceNo?: StringFilter<"Bill"> | string
-    date?: DateTimeFilter<"Bill"> | Date | string
+    billDate?: DateTimeFilter<"Bill"> | Date | string
     customerId?: StringFilter<"Bill"> | string
     userId?: StringFilter<"Bill"> | string
+    isIGST?: BoolFilter<"Bill"> | boolean
+    subtotal?: FloatFilter<"Bill"> | number
+    cgst?: FloatFilter<"Bill"> | number
+    sgst?: FloatFilter<"Bill"> | number
+    igst?: FloatFilter<"Bill"> | number
+    total?: FloatFilter<"Bill"> | number
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
-    totalAmount?: FloatFilter<"Bill"> | number
-    totalTax?: FloatFilter<"Bill"> | number
-    grandTotal?: FloatFilter<"Bill"> | number
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    billItems?: BillItemListRelationFilter
-  }, "id">
+    items?: BillItemListRelationFilter
+  }, "id" | "billNumber">
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
-    invoiceNo?: SortOrder
-    date?: SortOrder
+    billNumber?: SortOrder
+    billDate?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
+    isIGST?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
     _count?: BillCountOrderByAggregateInput
     _avg?: BillAvgOrderByAggregateInput
     _max?: BillMaxOrderByAggregateInput
@@ -7649,15 +8844,18 @@ export namespace Prisma {
     OR?: BillScalarWhereWithAggregatesInput[]
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Bill"> | string
-    invoiceNo?: StringWithAggregatesFilter<"Bill"> | string
-    date?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
+    billNumber?: StringWithAggregatesFilter<"Bill"> | string
+    billDate?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     customerId?: StringWithAggregatesFilter<"Bill"> | string
     userId?: StringWithAggregatesFilter<"Bill"> | string
+    isIGST?: BoolWithAggregatesFilter<"Bill"> | boolean
+    subtotal?: FloatWithAggregatesFilter<"Bill"> | number
+    cgst?: FloatWithAggregatesFilter<"Bill"> | number
+    sgst?: FloatWithAggregatesFilter<"Bill"> | number
+    igst?: FloatWithAggregatesFilter<"Bill"> | number
+    total?: FloatWithAggregatesFilter<"Bill"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
-    totalAmount?: FloatWithAggregatesFilter<"Bill"> | number
-    totalTax?: FloatWithAggregatesFilter<"Bill"> | number
-    grandTotal?: FloatWithAggregatesFilter<"Bill"> | number
   }
 
   export type BillItemWhereInput = {
@@ -7668,10 +8866,9 @@ export namespace Prisma {
     billId?: StringFilter<"BillItem"> | string
     itemId?: StringFilter<"BillItem"> | string
     quantity?: IntFilter<"BillItem"> | number
-    rate?: FloatFilter<"BillItem"> | number
-    amount?: FloatFilter<"BillItem"> | number
+    price?: FloatFilter<"BillItem"> | number
     taxAmount?: FloatFilter<"BillItem"> | number
-    totalAmount?: FloatFilter<"BillItem"> | number
+    amount?: FloatFilter<"BillItem"> | number
     bill?: XOR<BillScalarRelationFilter, BillWhereInput>
     item?: XOR<ItemScalarRelationFilter, ItemWhereInput>
   }
@@ -7681,10 +8878,9 @@ export namespace Prisma {
     billId?: SortOrder
     itemId?: SortOrder
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
     bill?: BillOrderByWithRelationInput
     item?: ItemOrderByWithRelationInput
   }
@@ -7697,10 +8893,9 @@ export namespace Prisma {
     billId?: StringFilter<"BillItem"> | string
     itemId?: StringFilter<"BillItem"> | string
     quantity?: IntFilter<"BillItem"> | number
-    rate?: FloatFilter<"BillItem"> | number
-    amount?: FloatFilter<"BillItem"> | number
+    price?: FloatFilter<"BillItem"> | number
     taxAmount?: FloatFilter<"BillItem"> | number
-    totalAmount?: FloatFilter<"BillItem"> | number
+    amount?: FloatFilter<"BillItem"> | number
     bill?: XOR<BillScalarRelationFilter, BillWhereInput>
     item?: XOR<ItemScalarRelationFilter, ItemWhereInput>
   }, "id">
@@ -7710,10 +8905,9 @@ export namespace Prisma {
     billId?: SortOrder
     itemId?: SortOrder
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
     _count?: BillItemCountOrderByAggregateInput
     _avg?: BillItemAvgOrderByAggregateInput
     _max?: BillItemMaxOrderByAggregateInput
@@ -7729,134 +8923,151 @@ export namespace Prisma {
     billId?: StringWithAggregatesFilter<"BillItem"> | string
     itemId?: StringWithAggregatesFilter<"BillItem"> | string
     quantity?: IntWithAggregatesFilter<"BillItem"> | number
-    rate?: FloatWithAggregatesFilter<"BillItem"> | number
-    amount?: FloatWithAggregatesFilter<"BillItem"> | number
+    price?: FloatWithAggregatesFilter<"BillItem"> | number
     taxAmount?: FloatWithAggregatesFilter<"BillItem"> | number
-    totalAmount?: FloatWithAggregatesFilter<"BillItem"> | number
+    amount?: FloatWithAggregatesFilter<"BillItem"> | number
   }
 
   export type UserCreateInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
-    bills?: BillCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
     customers?: CustomerCreateNestedManyWithoutUserInput
     items?: ItemCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
-    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     customers?: CustomerUncheckedCreateNestedManyWithoutUserInput
     items?: ItemUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
-    bills?: BillUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
     customers?: CustomerUpdateManyWithoutUserNestedInput
     items?: ItemUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
-    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     customers?: CustomerUncheckedUpdateManyWithoutUserNestedInput
     items?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProfileCreateInput = {
+    id?: string
+    firmName: string
+    address: string
+    gstNo: string
+    user: UserCreateNestedOneWithoutProfileInput
+  }
+
+  export type ProfileUncheckedCreateInput = {
+    id?: string
+    firmName: string
+    address: string
+    gstNo: string
+    userId: string
+  }
+
+  export type ProfileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firmName?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+    user?: UserUpdateOneRequiredWithoutProfileNestedInput
+  }
+
+  export type ProfileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firmName?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProfileCreateManyInput = {
+    id?: string
+    firmName: string
+    address: string
+    gstNo: string
+    userId: string
+  }
+
+  export type ProfileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firmName?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProfileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firmName?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type CustomerCreateInput = {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutCustomersInput
@@ -7867,10 +9078,11 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
     bills?: BillUncheckedCreateNestedManyWithoutCustomerInput
   }
 
@@ -7878,7 +9090,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutCustomersNestedInput
@@ -7889,10 +9102,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
     bills?: BillUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
@@ -7900,17 +9114,19 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type CustomerUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7919,17 +9135,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ItemCreateInput = {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutItemsInput
@@ -7940,10 +9157,10 @@ export namespace Prisma {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
     billItems?: BillItemUncheckedCreateNestedManyWithoutItemInput
   }
 
@@ -7951,7 +9168,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutItemsNestedInput
@@ -7962,10 +9179,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
     billItems?: BillItemUncheckedUpdateManyWithoutItemNestedInput
   }
 
@@ -7973,17 +9190,17 @@ export namespace Prisma {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type ItemUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7992,113 +9209,133 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type BillCreateInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
     customer: CustomerCreateNestedOneWithoutBillsInput
     user: UserCreateNestedOneWithoutBillsInput
-    billItems?: BillItemCreateNestedManyWithoutBillInput
+    items?: BillItemCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
     customerId: string
     userId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
-    billItems?: BillItemUncheckedCreateNestedManyWithoutBillInput
+    items?: BillItemUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
     customer?: CustomerUpdateOneRequiredWithoutBillsNestedInput
     user?: UserUpdateOneRequiredWithoutBillsNestedInput
-    billItems?: BillItemUpdateManyWithoutBillNestedInput
+    items?: BillItemUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
-    billItems?: BillItemUncheckedUpdateManyWithoutBillNestedInput
+    items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillCreateManyInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
     customerId: string
     userId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
   }
 
   export type BillUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemCreateInput = {
     id?: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
-    bill: BillCreateNestedOneWithoutBillItemsInput
+    amount: number
+    bill: BillCreateNestedOneWithoutItemsInput
     item: ItemCreateNestedOneWithoutBillItemsInput
   }
 
@@ -8107,20 +9344,18 @@ export namespace Prisma {
     billId: string
     itemId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
   }
 
   export type BillItemUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    bill?: BillUpdateOneRequiredWithoutBillItemsNestedInput
+    amount?: FloatFieldUpdateOperationsInput | number
+    bill?: BillUpdateOneRequiredWithoutItemsNestedInput
     item?: ItemUpdateOneRequiredWithoutBillItemsNestedInput
   }
 
@@ -8129,10 +9364,9 @@ export namespace Prisma {
     billId?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemCreateManyInput = {
@@ -8140,19 +9374,17 @@ export namespace Prisma {
     billId: string
     itemId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
   }
 
   export type BillItemUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemUncheckedUpdateManyInput = {
@@ -8160,10 +9392,9 @@ export namespace Prisma {
     billId?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -8180,17 +9411,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -8205,10 +9425,20 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type BillListRelationFilter = {
-    every?: BillWhereInput
-    some?: BillWhereInput
-    none?: BillWhereInput
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type ProfileNullableScalarRelationFilter = {
+    is?: ProfileWhereInput | null
+    isNot?: ProfileWhereInput | null
   }
 
   export type CustomerListRelationFilter = {
@@ -8223,13 +9453,15 @@ export namespace Prisma {
     none?: ItemWhereInput
   }
 
+  export type BillListRelationFilter = {
+    every?: BillWhereInput
+    some?: BillWhereInput
+    none?: BillWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
-  }
-
-  export type BillOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type CustomerOrderByRelationAggregateInput = {
@@ -8240,49 +9472,35 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type BillOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    firmName?: SortOrder
-    address?: SortOrder
-    gstNo?: SortOrder
-    bankName?: SortOrder
-    accountNo?: SortOrder
-    ifscCode?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    firmName?: SortOrder
-    address?: SortOrder
-    gstNo?: SortOrder
-    bankName?: SortOrder
-    accountNo?: SortOrder
-    ifscCode?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    firmName?: SortOrder
-    address?: SortOrder
-    gstNo?: SortOrder
-    bankName?: SortOrder
-    accountNo?: SortOrder
-    ifscCode?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -8302,20 +9520,6 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -8333,39 +9537,80 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type ProfileCountOrderByAggregateInput = {
+    id?: SortOrder
+    firmName?: SortOrder
+    address?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ProfileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    firmName?: SortOrder
+    address?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ProfileMinOrderByAggregateInput = {
+    id?: SortOrder
+    firmName?: SortOrder
+    address?: SortOrder
+    gstNo?: SortOrder
+    userId?: SortOrder
   }
 
   export type CustomerCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
+    deliveryAddress?: SortOrder
     gstNo?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type CustomerMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
+    deliveryAddress?: SortOrder
     gstNo?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type CustomerMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
+    deliveryAddress?: SortOrder
     gstNo?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -8393,38 +9638,38 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     hsnCode?: SortOrder
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type ItemAvgOrderByAggregateInput = {
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
   }
 
   export type ItemMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     hsnCode?: SortOrder
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type ItemMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     hsnCode?: SortOrder
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type ItemSumOrderByAggregateInput = {
-    gstPercentage?: SortOrder
+    taxRate?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -8443,6 +9688,11 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type CustomerScalarRelationFilter = {
     is?: CustomerWhereInput
     isNot?: CustomerWhereInput
@@ -8450,53 +9700,74 @@ export namespace Prisma {
 
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
-    invoiceNo?: SortOrder
-    date?: SortOrder
+    billNumber?: SortOrder
+    billDate?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
+    isIGST?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
   }
 
   export type BillAvgOrderByAggregateInput = {
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
   }
 
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
-    invoiceNo?: SortOrder
-    date?: SortOrder
+    billNumber?: SortOrder
+    billDate?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
+    isIGST?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
   }
 
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
-    invoiceNo?: SortOrder
-    date?: SortOrder
+    billNumber?: SortOrder
+    billDate?: SortOrder
     customerId?: SortOrder
     userId?: SortOrder
+    isIGST?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
   }
 
   export type BillSumOrderByAggregateInput = {
-    totalAmount?: SortOrder
-    totalTax?: SortOrder
-    grandTotal?: SortOrder
+    subtotal?: SortOrder
+    cgst?: SortOrder
+    sgst?: SortOrder
+    igst?: SortOrder
+    total?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -8525,18 +9796,16 @@ export namespace Prisma {
     billId?: SortOrder
     itemId?: SortOrder
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
   }
 
   export type BillItemAvgOrderByAggregateInput = {
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
   }
 
   export type BillItemMaxOrderByAggregateInput = {
@@ -8544,10 +9813,9 @@ export namespace Prisma {
     billId?: SortOrder
     itemId?: SortOrder
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
   }
 
   export type BillItemMinOrderByAggregateInput = {
@@ -8555,18 +9823,16 @@ export namespace Prisma {
     billId?: SortOrder
     itemId?: SortOrder
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
   }
 
   export type BillItemSumOrderByAggregateInput = {
     quantity?: SortOrder
-    rate?: SortOrder
-    amount?: SortOrder
+    price?: SortOrder
     taxAmount?: SortOrder
-    totalAmount?: SortOrder
+    amount?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -8585,11 +9851,10 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type BillCreateNestedManyWithoutUserInput = {
-    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
-    createMany?: BillCreateManyUserInputEnvelope
-    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  export type ProfileCreateNestedOneWithoutUserInput = {
+    create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
+    connect?: ProfileWhereUniqueInput
   }
 
   export type CustomerCreateNestedManyWithoutUserInput = {
@@ -8606,11 +9871,17 @@ export namespace Prisma {
     connect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
   }
 
-  export type BillUncheckedCreateNestedManyWithoutUserInput = {
+  export type BillCreateNestedManyWithoutUserInput = {
     create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
     createMany?: BillCreateManyUserInputEnvelope
     connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
+  export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
+    connect?: ProfileWhereUniqueInput
   }
 
   export type CustomerUncheckedCreateNestedManyWithoutUserInput = {
@@ -8627,30 +9898,33 @@ export namespace Prisma {
     connect?: ItemWhereUniqueInput | ItemWhereUniqueInput[]
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
+  export type BillUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
+    createMany?: BillCreateManyUserInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
   }
 
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
 
-  export type BillUpdateManyWithoutUserNestedInput = {
-    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
-    upsert?: BillUpsertWithWhereUniqueWithoutUserInput | BillUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: BillCreateManyUserInputEnvelope
-    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    update?: BillUpdateWithWhereUniqueWithoutUserInput | BillUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: BillUpdateManyWithWhereWithoutUserInput | BillUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type ProfileUpdateOneWithoutUserNestedInput = {
+    create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
+    upsert?: ProfileUpsertWithoutUserInput
+    disconnect?: ProfileWhereInput | boolean
+    delete?: ProfileWhereInput | boolean
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutUserInput, ProfileUpdateWithoutUserInput>, ProfileUncheckedUpdateWithoutUserInput>
   }
 
   export type CustomerUpdateManyWithoutUserNestedInput = {
@@ -8681,7 +9955,7 @@ export namespace Prisma {
     deleteMany?: ItemScalarWhereInput | ItemScalarWhereInput[]
   }
 
-  export type BillUncheckedUpdateManyWithoutUserNestedInput = {
+  export type BillUpdateManyWithoutUserNestedInput = {
     create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
     connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
     upsert?: BillUpsertWithWhereUniqueWithoutUserInput | BillUpsertWithWhereUniqueWithoutUserInput[]
@@ -8693,6 +9967,16 @@ export namespace Prisma {
     update?: BillUpdateWithWhereUniqueWithoutUserInput | BillUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: BillUpdateManyWithWhereWithoutUserInput | BillUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
+    upsert?: ProfileUpsertWithoutUserInput
+    disconnect?: ProfileWhereInput | boolean
+    delete?: ProfileWhereInput | boolean
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutUserInput, ProfileUpdateWithoutUserInput>, ProfileUncheckedUpdateWithoutUserInput>
   }
 
   export type CustomerUncheckedUpdateManyWithoutUserNestedInput = {
@@ -8721,6 +10005,34 @@ export namespace Prisma {
     update?: ItemUpdateWithWhereUniqueWithoutUserInput | ItemUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ItemUpdateManyWithWhereWithoutUserInput | ItemUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ItemScalarWhereInput | ItemScalarWhereInput[]
+  }
+
+  export type BillUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutUserInput | BillUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BillCreateManyUserInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutUserInput | BillUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutUserInput | BillUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutProfileInput = {
+    create?: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutProfileInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutProfileNestedInput = {
+    create?: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutProfileInput
+    upsert?: UserUpsertWithoutProfileInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProfileInput, UserUpdateWithoutProfileInput>, UserUncheckedUpdateWithoutProfileInput>
   }
 
   export type UserCreateNestedOneWithoutCustomersInput = {
@@ -8869,6 +10181,10 @@ export namespace Prisma {
     connect?: BillItemWhereUniqueInput | BillItemWhereUniqueInput[]
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type CustomerUpdateOneRequiredWithoutBillsNestedInput = {
     create?: XOR<CustomerCreateWithoutBillsInput, CustomerUncheckedCreateWithoutBillsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutBillsInput
@@ -8913,9 +10229,9 @@ export namespace Prisma {
     deleteMany?: BillItemScalarWhereInput | BillItemScalarWhereInput[]
   }
 
-  export type BillCreateNestedOneWithoutBillItemsInput = {
-    create?: XOR<BillCreateWithoutBillItemsInput, BillUncheckedCreateWithoutBillItemsInput>
-    connectOrCreate?: BillCreateOrConnectWithoutBillItemsInput
+  export type BillCreateNestedOneWithoutItemsInput = {
+    create?: XOR<BillCreateWithoutItemsInput, BillUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: BillCreateOrConnectWithoutItemsInput
     connect?: BillWhereUniqueInput
   }
 
@@ -8933,12 +10249,12 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type BillUpdateOneRequiredWithoutBillItemsNestedInput = {
-    create?: XOR<BillCreateWithoutBillItemsInput, BillUncheckedCreateWithoutBillItemsInput>
-    connectOrCreate?: BillCreateOrConnectWithoutBillItemsInput
-    upsert?: BillUpsertWithoutBillItemsInput
+  export type BillUpdateOneRequiredWithoutItemsNestedInput = {
+    create?: XOR<BillCreateWithoutItemsInput, BillUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: BillCreateOrConnectWithoutItemsInput
+    upsert?: BillUpsertWithoutItemsInput
     connect?: BillWhereUniqueInput
-    update?: XOR<XOR<BillUpdateToOneWithWhereWithoutBillItemsInput, BillUpdateWithoutBillItemsInput>, BillUncheckedUpdateWithoutBillItemsInput>
+    update?: XOR<XOR<BillUpdateToOneWithWhereWithoutItemsInput, BillUpdateWithoutItemsInput>, BillUncheckedUpdateWithoutItemsInput>
   }
 
   export type ItemUpdateOneRequiredWithoutBillItemsNestedInput = {
@@ -8963,17 +10279,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -8986,6 +10291,17 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -9016,20 +10332,6 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -9056,6 +10358,20 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -9085,6 +10401,19 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -9101,46 +10430,31 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type BillCreateWithoutUserInput = {
+  export type ProfileCreateWithoutUserInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
-    customer: CustomerCreateNestedOneWithoutBillsInput
-    billItems?: BillItemCreateNestedManyWithoutBillInput
+    firmName: string
+    address: string
+    gstNo: string
   }
 
-  export type BillUncheckedCreateWithoutUserInput = {
+  export type ProfileUncheckedCreateWithoutUserInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
-    customerId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
-    billItems?: BillItemUncheckedCreateNestedManyWithoutBillInput
+    firmName: string
+    address: string
+    gstNo: string
   }
 
-  export type BillCreateOrConnectWithoutUserInput = {
-    where: BillWhereUniqueInput
-    create: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput>
-  }
-
-  export type BillCreateManyUserInputEnvelope = {
-    data: BillCreateManyUserInput | BillCreateManyUserInput[]
+  export type ProfileCreateOrConnectWithoutUserInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
   }
 
   export type CustomerCreateWithoutUserInput = {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
     bills?: BillCreateNestedManyWithoutCustomerInput
@@ -9150,7 +10464,8 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
     bills?: BillUncheckedCreateNestedManyWithoutCustomerInput
@@ -9169,7 +10484,7 @@ export namespace Prisma {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
     createdAt?: Date | string
     updatedAt?: Date | string
     billItems?: BillItemCreateNestedManyWithoutItemInput
@@ -9179,7 +10494,7 @@ export namespace Prisma {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
     createdAt?: Date | string
     updatedAt?: Date | string
     billItems?: BillItemUncheckedCreateNestedManyWithoutItemInput
@@ -9194,36 +10509,70 @@ export namespace Prisma {
     data: ItemCreateManyUserInput | ItemCreateManyUserInput[]
   }
 
-  export type BillUpsertWithWhereUniqueWithoutUserInput = {
+  export type BillCreateWithoutUserInput = {
+    id?: string
+    billNumber: string
+    billDate?: Date | string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutBillsInput
+    items?: BillItemCreateNestedManyWithoutBillInput
+  }
+
+  export type BillUncheckedCreateWithoutUserInput = {
+    id?: string
+    billNumber: string
+    billDate?: Date | string
+    customerId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: BillItemUncheckedCreateNestedManyWithoutBillInput
+  }
+
+  export type BillCreateOrConnectWithoutUserInput = {
     where: BillWhereUniqueInput
-    update: XOR<BillUpdateWithoutUserInput, BillUncheckedUpdateWithoutUserInput>
     create: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput>
   }
 
-  export type BillUpdateWithWhereUniqueWithoutUserInput = {
-    where: BillWhereUniqueInput
-    data: XOR<BillUpdateWithoutUserInput, BillUncheckedUpdateWithoutUserInput>
+  export type BillCreateManyUserInputEnvelope = {
+    data: BillCreateManyUserInput | BillCreateManyUserInput[]
   }
 
-  export type BillUpdateManyWithWhereWithoutUserInput = {
-    where: BillScalarWhereInput
-    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutUserInput>
+  export type ProfileUpsertWithoutUserInput = {
+    update: XOR<ProfileUpdateWithoutUserInput, ProfileUncheckedUpdateWithoutUserInput>
+    create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
+    where?: ProfileWhereInput
   }
 
-  export type BillScalarWhereInput = {
-    AND?: BillScalarWhereInput | BillScalarWhereInput[]
-    OR?: BillScalarWhereInput[]
-    NOT?: BillScalarWhereInput | BillScalarWhereInput[]
-    id?: StringFilter<"Bill"> | string
-    invoiceNo?: StringFilter<"Bill"> | string
-    date?: DateTimeFilter<"Bill"> | Date | string
-    customerId?: StringFilter<"Bill"> | string
-    userId?: StringFilter<"Bill"> | string
-    createdAt?: DateTimeFilter<"Bill"> | Date | string
-    updatedAt?: DateTimeFilter<"Bill"> | Date | string
-    totalAmount?: FloatFilter<"Bill"> | number
-    totalTax?: FloatFilter<"Bill"> | number
-    grandTotal?: FloatFilter<"Bill"> | number
+  export type ProfileUpdateToOneWithWhereWithoutUserInput = {
+    where?: ProfileWhereInput
+    data: XOR<ProfileUpdateWithoutUserInput, ProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ProfileUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firmName?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProfileUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firmName?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
   }
 
   export type CustomerUpsertWithWhereUniqueWithoutUserInput = {
@@ -9249,10 +10598,11 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     address?: StringFilter<"Customer"> | string
-    gstNo?: StringNullableFilter<"Customer"> | string | null
+    deliveryAddress?: StringFilter<"Customer"> | string
+    gstNo?: StringFilter<"Customer"> | string
+    userId?: StringFilter<"Customer"> | string
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
-    userId?: StringFilter<"Customer"> | string
   }
 
   export type ItemUpsertWithWhereUniqueWithoutUserInput = {
@@ -9278,44 +10628,133 @@ export namespace Prisma {
     id?: StringFilter<"Item"> | string
     name?: StringFilter<"Item"> | string
     hsnCode?: StringFilter<"Item"> | string
-    gstPercentage?: FloatFilter<"Item"> | number
+    taxRate?: FloatFilter<"Item"> | number
+    userId?: StringFilter<"Item"> | string
     createdAt?: DateTimeFilter<"Item"> | Date | string
     updatedAt?: DateTimeFilter<"Item"> | Date | string
-    userId?: StringFilter<"Item"> | string
+  }
+
+  export type BillUpsertWithWhereUniqueWithoutUserInput = {
+    where: BillWhereUniqueInput
+    update: XOR<BillUpdateWithoutUserInput, BillUncheckedUpdateWithoutUserInput>
+    create: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput>
+  }
+
+  export type BillUpdateWithWhereUniqueWithoutUserInput = {
+    where: BillWhereUniqueInput
+    data: XOR<BillUpdateWithoutUserInput, BillUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BillUpdateManyWithWhereWithoutUserInput = {
+    where: BillScalarWhereInput
+    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type BillScalarWhereInput = {
+    AND?: BillScalarWhereInput | BillScalarWhereInput[]
+    OR?: BillScalarWhereInput[]
+    NOT?: BillScalarWhereInput | BillScalarWhereInput[]
+    id?: StringFilter<"Bill"> | string
+    billNumber?: StringFilter<"Bill"> | string
+    billDate?: DateTimeFilter<"Bill"> | Date | string
+    customerId?: StringFilter<"Bill"> | string
+    userId?: StringFilter<"Bill"> | string
+    isIGST?: BoolFilter<"Bill"> | boolean
+    subtotal?: FloatFilter<"Bill"> | number
+    cgst?: FloatFilter<"Bill"> | number
+    sgst?: FloatFilter<"Bill"> | number
+    igst?: FloatFilter<"Bill"> | number
+    total?: FloatFilter<"Bill"> | number
+    createdAt?: DateTimeFilter<"Bill"> | Date | string
+    updatedAt?: DateTimeFilter<"Bill"> | Date | string
+  }
+
+  export type UserCreateWithoutProfileInput = {
+    id?: string
+    email: string
+    password: string
+    name?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customers?: CustomerCreateNestedManyWithoutUserInput
+    items?: ItemCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutProfileInput = {
+    id?: string
+    email: string
+    password: string
+    name?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customers?: CustomerUncheckedCreateNestedManyWithoutUserInput
+    items?: ItemUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutProfileInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
+  }
+
+  export type UserUpsertWithoutProfileInput = {
+    update: XOR<UserUpdateWithoutProfileInput, UserUncheckedUpdateWithoutProfileInput>
+    create: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutProfileInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutProfileInput, UserUncheckedUpdateWithoutProfileInput>
+  }
+
+  export type UserUpdateWithoutProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customers?: CustomerUpdateManyWithoutUserNestedInput
+    items?: ItemUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customers?: CustomerUncheckedUpdateManyWithoutUserNestedInput
+    items?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCustomersInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
-    bills?: BillCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
     items?: ItemCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCustomersInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
-    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     items?: ItemUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCustomersInput = {
@@ -9325,28 +10764,34 @@ export namespace Prisma {
 
   export type BillCreateWithoutCustomerInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
     user: UserCreateNestedOneWithoutBillsInput
-    billItems?: BillItemCreateNestedManyWithoutBillInput
+    items?: BillItemCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateWithoutCustomerInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
     userId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
-    billItems?: BillItemUncheckedCreateNestedManyWithoutBillInput
+    items?: BillItemUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillCreateOrConnectWithoutCustomerInput = {
@@ -9371,36 +10816,26 @@ export namespace Prisma {
 
   export type UserUpdateWithoutCustomersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
-    bills?: BillUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
     items?: ItemUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCustomersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
-    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     items?: ItemUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BillUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -9421,36 +10856,26 @@ export namespace Prisma {
 
   export type UserCreateWithoutItemsInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
-    bills?: BillCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
     customers?: CustomerCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutItemsInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
-    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     customers?: CustomerUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutItemsInput = {
@@ -9461,21 +10886,19 @@ export namespace Prisma {
   export type BillItemCreateWithoutItemInput = {
     id?: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
-    bill: BillCreateNestedOneWithoutBillItemsInput
+    amount: number
+    bill: BillCreateNestedOneWithoutItemsInput
   }
 
   export type BillItemUncheckedCreateWithoutItemInput = {
     id?: string
     billId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
   }
 
   export type BillItemCreateOrConnectWithoutItemInput = {
@@ -9500,36 +10923,26 @@ export namespace Prisma {
 
   export type UserUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
-    bills?: BillUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
     customers?: CustomerUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
-    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     customers?: CustomerUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BillItemUpsertWithWhereUniqueWithoutItemInput = {
@@ -9556,17 +10969,17 @@ export namespace Prisma {
     billId?: StringFilter<"BillItem"> | string
     itemId?: StringFilter<"BillItem"> | string
     quantity?: IntFilter<"BillItem"> | number
-    rate?: FloatFilter<"BillItem"> | number
-    amount?: FloatFilter<"BillItem"> | number
+    price?: FloatFilter<"BillItem"> | number
     taxAmount?: FloatFilter<"BillItem"> | number
-    totalAmount?: FloatFilter<"BillItem"> | number
+    amount?: FloatFilter<"BillItem"> | number
   }
 
   export type CustomerCreateWithoutBillsInput = {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutCustomersInput
@@ -9576,10 +10989,11 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type CustomerCreateOrConnectWithoutBillsInput = {
@@ -9589,34 +11003,24 @@ export namespace Prisma {
 
   export type UserCreateWithoutBillsInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
+    profile?: ProfileCreateNestedOneWithoutUserInput
     customers?: CustomerCreateNestedManyWithoutUserInput
     items?: ItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBillsInput = {
     id?: string
-    name: string
     email: string
     password: string
+    name?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    firmName?: string | null
-    address?: string | null
-    gstNo?: string | null
-    bankName?: string | null
-    accountNo?: string | null
-    ifscCode?: string | null
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     customers?: CustomerUncheckedCreateNestedManyWithoutUserInput
     items?: ItemUncheckedCreateNestedManyWithoutUserInput
   }
@@ -9629,10 +11033,9 @@ export namespace Prisma {
   export type BillItemCreateWithoutBillInput = {
     id?: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
     item: ItemCreateNestedOneWithoutBillItemsInput
   }
 
@@ -9640,10 +11043,9 @@ export namespace Prisma {
     id?: string
     itemId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
   }
 
   export type BillItemCreateOrConnectWithoutBillInput = {
@@ -9670,7 +11072,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutCustomersNestedInput
@@ -9680,10 +11083,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserUpsertWithoutBillsInput = {
@@ -9699,34 +11103,24 @@ export namespace Prisma {
 
   export type UserUpdateWithoutBillsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
+    profile?: ProfileUpdateOneWithoutUserNestedInput
     customers?: CustomerUpdateManyWithoutUserNestedInput
     items?: ItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBillsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    firmName?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
-    bankName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountNo?: NullableStringFieldUpdateOperationsInput | string | null
-    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     customers?: CustomerUncheckedUpdateManyWithoutUserNestedInput
     items?: ItemUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -9747,42 +11141,48 @@ export namespace Prisma {
     data: XOR<BillItemUpdateManyMutationInput, BillItemUncheckedUpdateManyWithoutBillInput>
   }
 
-  export type BillCreateWithoutBillItemsInput = {
+  export type BillCreateWithoutItemsInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
     customer: CustomerCreateNestedOneWithoutBillsInput
     user: UserCreateNestedOneWithoutBillsInput
   }
 
-  export type BillUncheckedCreateWithoutBillItemsInput = {
+  export type BillUncheckedCreateWithoutItemsInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
     customerId: string
     userId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
   }
 
-  export type BillCreateOrConnectWithoutBillItemsInput = {
+  export type BillCreateOrConnectWithoutItemsInput = {
     where: BillWhereUniqueInput
-    create: XOR<BillCreateWithoutBillItemsInput, BillUncheckedCreateWithoutBillItemsInput>
+    create: XOR<BillCreateWithoutItemsInput, BillUncheckedCreateWithoutItemsInput>
   }
 
   export type ItemCreateWithoutBillItemsInput = {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutItemsInput
@@ -9792,10 +11192,10 @@ export namespace Prisma {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type ItemCreateOrConnectWithoutBillItemsInput = {
@@ -9803,41 +11203,47 @@ export namespace Prisma {
     create: XOR<ItemCreateWithoutBillItemsInput, ItemUncheckedCreateWithoutBillItemsInput>
   }
 
-  export type BillUpsertWithoutBillItemsInput = {
-    update: XOR<BillUpdateWithoutBillItemsInput, BillUncheckedUpdateWithoutBillItemsInput>
-    create: XOR<BillCreateWithoutBillItemsInput, BillUncheckedCreateWithoutBillItemsInput>
+  export type BillUpsertWithoutItemsInput = {
+    update: XOR<BillUpdateWithoutItemsInput, BillUncheckedUpdateWithoutItemsInput>
+    create: XOR<BillCreateWithoutItemsInput, BillUncheckedCreateWithoutItemsInput>
     where?: BillWhereInput
   }
 
-  export type BillUpdateToOneWithWhereWithoutBillItemsInput = {
+  export type BillUpdateToOneWithWhereWithoutItemsInput = {
     where?: BillWhereInput
-    data: XOR<BillUpdateWithoutBillItemsInput, BillUncheckedUpdateWithoutBillItemsInput>
+    data: XOR<BillUpdateWithoutItemsInput, BillUncheckedUpdateWithoutItemsInput>
   }
 
-  export type BillUpdateWithoutBillItemsInput = {
+  export type BillUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
     customer?: CustomerUpdateOneRequiredWithoutBillsNestedInput
     user?: UserUpdateOneRequiredWithoutBillsNestedInput
   }
 
-  export type BillUncheckedUpdateWithoutBillItemsInput = {
+  export type BillUncheckedUpdateWithoutItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
   }
 
   export type ItemUpsertWithoutBillItemsInput = {
@@ -9855,7 +11261,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutItemsNestedInput
@@ -9865,29 +11271,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type BillCreateManyUserInput = {
-    id?: string
-    invoiceNo: string
-    date: Date | string
-    customerId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
   }
 
   export type CustomerCreateManyUserInput = {
     id?: string
     name: string
     address: string
-    gstNo?: string | null
+    deliveryAddress: string
+    gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9896,54 +11291,32 @@ export namespace Prisma {
     id?: string
     name: string
     hsnCode: string
-    gstPercentage: number
+    taxRate: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type BillUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
-    customer?: CustomerUpdateOneRequiredWithoutBillsNestedInput
-    billItems?: BillItemUpdateManyWithoutBillNestedInput
-  }
-
-  export type BillUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    customerId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
-    billItems?: BillItemUncheckedUpdateManyWithoutBillNestedInput
-  }
-
-  export type BillUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    customerId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
+  export type BillCreateManyUserInput = {
+    id?: string
+    billNumber: string
+    billDate?: Date | string
+    customerId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type CustomerUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bills?: BillUpdateManyWithoutCustomerNestedInput
@@ -9953,7 +11326,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bills?: BillUncheckedUpdateManyWithoutCustomerNestedInput
@@ -9963,7 +11337,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    gstNo?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9972,7 +11347,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     billItems?: BillItemUpdateManyWithoutItemNestedInput
@@ -9982,7 +11357,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     billItems?: BillItemUncheckedUpdateManyWithoutItemNestedInput
@@ -9992,118 +11367,171 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     hsnCode?: StringFieldUpdateOperationsInput | string
-    gstPercentage?: FloatFieldUpdateOperationsInput | number
+    taxRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutBillsNestedInput
+    items?: BillItemUpdateManyWithoutBillNestedInput
+  }
+
+  export type BillUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
+  }
+
+  export type BillUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BillCreateManyCustomerInput = {
     id?: string
-    invoiceNo: string
-    date: Date | string
+    billNumber: string
+    billDate?: Date | string
     userId: string
+    isIGST?: boolean
+    subtotal: number
+    cgst?: number
+    sgst?: number
+    igst?: number
+    total: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    totalAmount: number
-    totalTax: number
-    grandTotal: number
   }
 
   export type BillUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
     user?: UserUpdateOneRequiredWithoutBillsNestedInput
-    billItems?: BillItemUpdateManyWithoutBillNestedInput
+    items?: BillItemUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
-    billItems?: BillItemUncheckedUpdateManyWithoutBillNestedInput
+    items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    invoiceNo?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    billNumber?: StringFieldUpdateOperationsInput | string
+    billDate?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    isIGST?: BoolFieldUpdateOperationsInput | boolean
+    subtotal?: FloatFieldUpdateOperationsInput | number
+    cgst?: FloatFieldUpdateOperationsInput | number
+    sgst?: FloatFieldUpdateOperationsInput | number
+    igst?: FloatFieldUpdateOperationsInput | number
+    total?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    totalTax?: FloatFieldUpdateOperationsInput | number
-    grandTotal?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemCreateManyItemInput = {
     id?: string
     billId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
   }
 
   export type BillItemUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
-    bill?: BillUpdateOneRequiredWithoutBillItemsNestedInput
+    amount?: FloatFieldUpdateOperationsInput | number
+    bill?: BillUpdateOneRequiredWithoutItemsNestedInput
   }
 
   export type BillItemUncheckedUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemUncheckedUpdateManyWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemCreateManyBillInput = {
     id?: string
     itemId: string
     quantity: number
-    rate: number
-    amount: number
+    price: number
     taxAmount: number
-    totalAmount: number
+    amount: number
   }
 
   export type BillItemUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
     item?: ItemUpdateOneRequiredWithoutBillItemsNestedInput
   }
 
@@ -10111,20 +11539,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
   export type BillItemUncheckedUpdateManyWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
-    rate?: FloatFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
-    totalAmount?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
   }
 
 
