@@ -1,0 +1,4 @@
+[submodule "gst-bill-py"]
+  path = gst-bill-py
+  url = https://github.com/AyushAggarwal1/gst-bill-py
+  ignore = all
