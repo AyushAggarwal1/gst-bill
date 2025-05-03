@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { prisma } from './prisma';
-import { renderConfig } from './renderConfig';
 
 // Environment check
 const isProd = process.env.NODE_ENV === 'production';
@@ -45,22 +44,15 @@ export const logAuthEvent = async (email: string, event: LogEvent, details?: str
       fs.appendFileSync(LOG_FILE, logEntry, { encoding: 'utf8' });
     }
     
-    // 3. In both environments, log to database if available and enabled
-    if (renderConfig.logging.enableDbLogging && prisma.authLog) {
-      try {
-        await prisma.authLog.create({
-          data: {
-            timestamp: new Date(timestamp),
-            event,
-            email,
-            details: details || null
-          }
-        });
-      } catch (dbError) {
-        // Silently handle database errors - logging should not break authentication
-        console.error('Database logging error:', dbError);
+    // 3. In both environments, log to database
+    await prisma.authLog.create({
+      data: {
+        timestamp: new Date(timestamp),
+        event,
+        email,
+        details: details || null
       }
-    }
+    });
   } catch (error) {
     console.error('Failed to log auth event:', error);
   }
