@@ -152,6 +152,7 @@ export default function ProfilePage() {
                       value={profile.firmName}
                       onChange={handleChange}
                       required
+                      placeholder="Enter your company or business name"
                       className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
@@ -170,6 +171,7 @@ export default function ProfilePage() {
                       value={profile.address}
                       onChange={handleChange}
                       required
+                      placeholder="Enter your complete business address"
                       className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
@@ -188,6 +190,7 @@ export default function ProfilePage() {
                       value={profile.gstNo}
                       onChange={handleChange}
                       required
+                      placeholder="22AAAAA0000A1Z5"
                       pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
                       title="Please enter a valid GST Number (e.g., 22AAAAA0000A1Z5)"
                       className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"

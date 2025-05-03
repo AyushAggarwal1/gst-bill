@@ -211,12 +211,11 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlite",
-  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "file:./prisma/dev.db"
       }
     }
   },
