@@ -100,6 +100,7 @@ export default function NewCustomerPage() {
                         required
                         value={customer.name}
                         onChange={handleChange}
+                        placeholder="Enter customer name or business name"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
@@ -120,6 +121,7 @@ export default function NewCustomerPage() {
                         required
                         value={customer.address}
                         onChange={handleChange}
+                        placeholder="Enter customer's business address"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
@@ -157,6 +159,7 @@ export default function NewCustomerPage() {
                         required
                         value={customer.deliveryAddress}
                         onChange={handleChange}
+                        placeholder="Enter shipping/delivery address if different"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
@@ -179,6 +182,7 @@ export default function NewCustomerPage() {
                         title="Please enter a valid GST Number (e.g., 22AAAAA0000A1Z5)"
                         value={customer.gstNo}
                         onChange={handleChange}
+                        placeholder="22AAAAA0000A1Z5"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                       <p className="mt-1 text-xs text-gray-500">

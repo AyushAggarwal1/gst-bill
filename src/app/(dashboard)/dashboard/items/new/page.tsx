@@ -98,6 +98,7 @@ export default function NewItemPage() {
                         required
                         value={item.name}
                         onChange={handleChange}
+                        placeholder="Enter item name or description"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
@@ -118,6 +119,7 @@ export default function NewItemPage() {
                         required
                         value={item.hsnCode}
                         onChange={handleChange}
+                        placeholder="Enter HSN/SAC code (e.g., 8471)"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
@@ -141,6 +143,7 @@ export default function NewItemPage() {
                         required
                         value={item.taxRate}
                         onChange={handleChange}
+                        placeholder="e.g., 5, 12, 18, 28"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                       <p className="mt-1 text-xs text-gray-500">
