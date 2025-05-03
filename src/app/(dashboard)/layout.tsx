@@ -27,7 +27,6 @@ export default function DashboardLayout({
     { name: "Items", href: "/dashboard/items" },
     { name: "Bills", href: "/dashboard/bills" },
     { name: "Profile", href: "/dashboard/profile" },
-    { name: "Logs", href: "/dashboard/logs" },
   ];
 
   const isActive = (path: string) => {
