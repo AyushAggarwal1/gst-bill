@@ -133,7 +133,7 @@ export default function NewCustomerPage() {
                         htmlFor="deliveryAddress"
                         className="block text-sm font-medium text-gray-700 mr-3"
                       >
-                        Delivery Address
+                        Delivery Address (Optional)
                       </label>
                       <div className="flex items-center h-5">
                         <input
@@ -156,7 +156,6 @@ export default function NewCustomerPage() {
                         id="deliveryAddress"
                         name="deliveryAddress"
                         rows={3}
-                        required
                         value={customer.deliveryAddress}
                         onChange={handleChange}
                         placeholder="Enter shipping/delivery address if different"

@@ -30,6 +30,7 @@ export async function GET() {
         firmName: "",
         address: "",
         gstNo: "",
+        bankDetails: "",
       });
     }
 
@@ -37,6 +38,7 @@ export async function GET() {
       firmName: user.profile.firmName,
       address: user.profile.address,
       gstNo: user.profile.gstNo,
+      bankDetails: user.profile.bankDetails || "",
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -56,12 +58,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { firmName, address, gstNo } = await req.json();
+    const { firmName, address, gstNo, bankDetails } = await req.json();
 
     // Validate input
     if (!firmName || !address || !gstNo) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "Firm name, address, and GST number are required" },
         { status: 400 }
       );
     }
@@ -95,11 +97,13 @@ export async function POST(req: Request) {
         firmName,
         address,
         gstNo,
+        bankDetails: bankDetails || null,
       },
       create: {
         firmName,
         address,
         gstNo,
+        bankDetails: bankDetails || null,
         userId: user.id,
       },
     });

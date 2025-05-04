@@ -134,6 +134,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   firmName: 'firmName',
   address: 'address',
   gstNo: 'gstNo',
+  bankDetails: 'bankDetails',
   userId: 'userId'
 };
 

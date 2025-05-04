@@ -67,9 +67,9 @@ export async function PUT(req: Request, { params }: RouteParams) {
     const { name, address, deliveryAddress, gstNo } = await req.json();
 
     // Validate input
-    if (!name || !address || !deliveryAddress || !gstNo) {
+    if (!name || !address || !gstNo) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "Name, address, and GST number are required" },
         { status: 400 }
       );
     }
@@ -118,7 +118,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       data: {
         name,
         address,
-        deliveryAddress,
+        deliveryAddress: deliveryAddress || null,
         gstNo,
       },
     });
