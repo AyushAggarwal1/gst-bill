@@ -86,6 +86,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -158,6 +161,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -210,17 +218,18 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "file:./dev.db"
+        "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String     @id @default(uuid())\n  email     String     @unique\n  password  String\n  name      String?\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n  profile   Profile?\n  customers Customer[]\n  items     Item[]\n  bills     Bill[]\n}\n\nmodel Profile {\n  id       String @id @default(uuid())\n  firmName String\n  address  String\n  gstNo    String\n  userId   String @unique\n  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Customer {\n  id              String   @id @default(uuid())\n  name            String\n  address         String\n  deliveryAddress String\n  gstNo           String\n  userId          String\n  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bills           Bill[]\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n}\n\nmodel Item {\n  id        String     @id @default(uuid())\n  name      String\n  hsnCode   String\n  taxRate   Float\n  userId    String\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  billItems BillItem[]\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n\nmodel Bill {\n  id         String     @id @default(uuid())\n  billNumber String     @unique\n  billDate   DateTime   @default(now())\n  customerId String\n  customer   Customer   @relation(fields: [customerId], references: [id])\n  userId     String\n  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  items      BillItem[]\n  isIGST     Boolean    @default(false)\n  subtotal   Float\n  cgst       Float      @default(0)\n  sgst       Float      @default(0)\n  igst       Float      @default(0)\n  total      Float\n  createdAt  DateTime   @default(now())\n  updatedAt  DateTime   @updatedAt\n}\n\nmodel BillItem {\n  id        String @id @default(uuid())\n  billId    String\n  bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)\n  itemId    String\n  item      Item   @relation(fields: [itemId], references: [id])\n  quantity  Int\n  price     Float\n  taxAmount Float\n  amount    Float\n}\n",
-  "inlineSchemaHash": "474815230b8bca100597220edd8a2890f1e00f91a3802102e6982c057839d7c5",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String     @id @default(uuid())\n  email     String     @unique\n  password  String\n  name      String?\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n  profile   Profile?\n  customers Customer[]\n  items     Item[]\n  bills     Bill[]\n}\n\nmodel Profile {\n  id       String @id @default(uuid())\n  firmName String\n  address  String\n  gstNo    String\n  userId   String @unique\n  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Customer {\n  id              String   @id @default(uuid())\n  name            String\n  address         String\n  deliveryAddress String\n  gstNo           String\n  userId          String\n  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bills           Bill[]\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n}\n\nmodel Item {\n  id        String     @id @default(uuid())\n  name      String\n  hsnCode   String\n  taxRate   Float\n  userId    String\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  billItems BillItem[]\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n\nmodel Bill {\n  id         String     @id @default(uuid())\n  billNumber String     @unique\n  billDate   DateTime   @default(now())\n  customerId String\n  customer   Customer   @relation(fields: [customerId], references: [id])\n  userId     String\n  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  items      BillItem[]\n  isIGST     Boolean    @default(false)\n  subtotal   Float\n  cgst       Float      @default(0)\n  sgst       Float      @default(0)\n  igst       Float      @default(0)\n  total      Float\n  createdAt  DateTime   @default(now())\n  updatedAt  DateTime   @updatedAt\n}\n\nmodel BillItem {\n  id        String @id @default(uuid())\n  billId    String\n  bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)\n  itemId    String\n  item      Item   @relation(fields: [itemId], references: [id])\n  quantity  Int\n  price     Float\n  taxAmount Float\n  amount    Float\n}\n",
+  "inlineSchemaHash": "335a43c80e3f125d5b8325f219dd2043fc1a53870d84b87fd6f07ef468d410a0",
   "copyEngine": true
 }
 config.dirname = '/'
