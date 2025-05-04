@@ -99,7 +99,9 @@ export async function POST(req: Request) {
         firmName,
         address,
         gstNo,
+
         phoneNo: phoneNo || null,
+
         bankDetails: bankDetails || null,
       },
       create: {
