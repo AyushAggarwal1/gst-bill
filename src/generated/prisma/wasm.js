@@ -134,6 +134,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   firmName: 'firmName',
   address: 'address',
   gstNo: 'gstNo',
+  phoneNo: 'phoneNo',
   bankDetails: 'bankDetails',
   userId: 'userId'
 };
@@ -171,6 +172,7 @@ exports.Prisma.BillScalarFieldEnum = {
   sgst: 'sgst',
   igst: 'igst',
   total: 'total',
+  deliveryAddress: 'deliveryAddress',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

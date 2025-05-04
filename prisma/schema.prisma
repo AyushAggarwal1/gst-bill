@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -32,6 +32,7 @@ model Profile {
   firmName    String
   address     String
   gstNo       String
+  phoneNo     String?
   bankDetails String?
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -63,22 +64,23 @@ model Item {
 }
 
 model Bill {
-  id         String    @id @default(uuid())
-  billNumber String    @unique
-  billDate   DateTime  @default(now())
-  customerId String
-  customer   Customer  @relation(fields: [customerId], references: [id])
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items      BillItem[]
-  isIGST     Boolean   @default(false)
-  subtotal   Float
-  cgst       Float     @default(0)
-  sgst       Float     @default(0)
-  igst       Float     @default(0)
-  total      Float
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  billNumber     String    @unique
+  billDate       DateTime  @default(now())
+  customerId     String
+  customer       Customer  @relation(fields: [customerId], references: [id])
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items          BillItem[]
+  isIGST         Boolean   @default(false)
+  subtotal       Float
+  cgst           Float     @default(0)
+  sgst           Float     @default(0)
+  igst           Float     @default(0)
+  total          Float
+  deliveryAddress String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model BillItem {

@@ -32,7 +32,7 @@ export default function SignOutPage() {
         </div>
         <div className="mt-6 text-center">
           <Link 
-            href="/" 
+            href="" 
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
             Click here if you are not redirected

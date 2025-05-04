@@ -30,6 +30,7 @@ export async function GET() {
         firmName: "",
         address: "",
         gstNo: "",
+        phoneNo: "",
         bankDetails: "",
       });
     }
@@ -38,6 +39,7 @@ export async function GET() {
       firmName: user.profile.firmName,
       address: user.profile.address,
       gstNo: user.profile.gstNo,
+      phoneNo: user.profile.phoneNo || "",
       bankDetails: user.profile.bankDetails || "",
     });
   } catch (error) {
@@ -58,7 +60,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { firmName, address, gstNo, bankDetails } = await req.json();
+    const { firmName, address, gstNo, phoneNo, bankDetails } = await req.json();
 
     // Validate input
     if (!firmName || !address || !gstNo) {
@@ -97,12 +99,16 @@ export async function POST(req: Request) {
         firmName,
         address,
         gstNo,
+
+        phoneNo: phoneNo || null,
+
         bankDetails: bankDetails || null,
       },
       create: {
         firmName,
         address,
         gstNo,
+        phoneNo: phoneNo || null,
         bankDetails: bankDetails || null,
         userId: user.id,
       },

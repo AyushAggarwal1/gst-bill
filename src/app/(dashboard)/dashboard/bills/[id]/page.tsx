@@ -98,12 +98,14 @@ interface Bill {
   igst: number;
   total: number;
   isIGST: boolean;
+  deliveryAddress: string | null;
 }
 
 interface Profile {
   firmName: string;
   address: string;
   gstNo: string;
+  phoneNo: string | null;
   bankDetails: string | null;
 }
 
@@ -407,12 +409,19 @@ export default function BillDetailPage({ params }: BillParams) {
               <p class="party-name">${profile?.firmName || ''}</p>
               <p>${(profile?.address || '').replace(/\\n/g, '<br>')}</p>
               <p>GSTIN: ${profile?.gstNo || ''}</p>
+              ${profile?.phoneNo ? `<p>Phone: ${profile.phoneNo}</p>` : ''}
             </div>
             <div class="party-info">
               <h3>Customer Details</h3>
               <p class="party-name">${bill?.customer.name || ''}</p>
               <p>${(bill?.customer.address || '').replace(/\\n/g, '<br>')}</p>
               <p>GSTIN: ${bill?.customer.gstNo || ''}</p>
+              ${bill?.deliveryAddress ? `
+              <div style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px;">
+                <p style="font-weight: 600;">Delivery Address:</p>
+                <p>${(bill.deliveryAddress).replace(/\\n/g, '<br>')}</p>
+              </div>
+              ` : ''}
             </div>
           </div>
           
@@ -598,6 +607,7 @@ export default function BillDetailPage({ params }: BillParams) {
                     <p className="text-sm font-medium">{profile.firmName}</p>
                     <p className="text-sm text-gray-500 whitespace-pre-line">{profile.address}</p>
                     <p className="text-sm text-gray-500">GSTIN: {profile.gstNo}</p>
+                    {profile.phoneNo && <p className="text-sm text-gray-500">Phone: {profile.phoneNo}</p>}
                   </div>
                 )}
                 <div>
@@ -605,6 +615,13 @@ export default function BillDetailPage({ params }: BillParams) {
                   <p className="text-sm font-medium">{bill.customer.name}</p>
                   <p className="text-sm text-gray-500 whitespace-pre-line">{bill.customer.address}</p>
                   <p className="text-sm text-gray-500">GSTIN: {bill.customer.gstNo}</p>
+                  
+                  {bill.deliveryAddress && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-sm font-medium text-gray-700">Delivery Address:</p>
+                      <p className="text-sm text-gray-500 whitespace-pre-line">{bill.deliveryAddress}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
