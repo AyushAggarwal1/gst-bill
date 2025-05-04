@@ -19,3 +19,59 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
 }
+
+/* Print Styles */
+@media print {
+  @page {
+    size: auto;
+    margin: 15mm 10mm 15mm 10mm;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Hide all navigation elements */
+  nav, header, footer, 
+  [role="navigation"], 
+  a[href="/dashboard"], 
+  a[href="/dashboard/customers"], 
+  a[href="/dashboard/items"],
+  a[href="/dashboard/bills"],
+  a[href="/dashboard/profile"], 
+  a[href="/api/auth/signout"],
+  button,
+  .print-hidden {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+  }
+  
+  /* Remove unnecessary backgrounds, borders and shadows */
+  .bg-gray-100, .bg-indigo-600, .bg-indigo-700 {
+    background-color: white !important;
+  }
+  
+  .shadow, .shadow-sm, .shadow-md, .shadow-lg {
+    box-shadow: none !important;
+  }
+  
+  /* Ensure the bill takes full width */
+  main, div {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Make sure content is visible */
+  .sm\:rounded-lg {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}

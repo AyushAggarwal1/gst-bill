@@ -2640,6 +2640,7 @@ export namespace Prisma {
     firmName: string | null
     address: string | null
     gstNo: string | null
+    bankDetails: string | null
     userId: string | null
   }
 
@@ -2648,6 +2649,7 @@ export namespace Prisma {
     firmName: string | null
     address: string | null
     gstNo: string | null
+    bankDetails: string | null
     userId: string | null
   }
 
@@ -2656,6 +2658,7 @@ export namespace Prisma {
     firmName: number
     address: number
     gstNo: number
+    bankDetails: number
     userId: number
     _all: number
   }
@@ -2666,6 +2669,7 @@ export namespace Prisma {
     firmName?: true
     address?: true
     gstNo?: true
+    bankDetails?: true
     userId?: true
   }
 
@@ -2674,6 +2678,7 @@ export namespace Prisma {
     firmName?: true
     address?: true
     gstNo?: true
+    bankDetails?: true
     userId?: true
   }
 
@@ -2682,6 +2687,7 @@ export namespace Prisma {
     firmName?: true
     address?: true
     gstNo?: true
+    bankDetails?: true
     userId?: true
     _all?: true
   }
@@ -2763,6 +2769,7 @@ export namespace Prisma {
     firmName: string
     address: string
     gstNo: string
+    bankDetails: string | null
     userId: string
     _count: ProfileCountAggregateOutputType | null
     _min: ProfileMinAggregateOutputType | null
@@ -2788,6 +2795,7 @@ export namespace Prisma {
     firmName?: boolean
     address?: boolean
     gstNo?: boolean
+    bankDetails?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
@@ -2797,6 +2805,7 @@ export namespace Prisma {
     firmName?: boolean
     address?: boolean
     gstNo?: boolean
+    bankDetails?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
@@ -2806,6 +2815,7 @@ export namespace Prisma {
     firmName?: boolean
     address?: boolean
     gstNo?: boolean
+    bankDetails?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
@@ -2815,10 +2825,11 @@ export namespace Prisma {
     firmName?: boolean
     address?: boolean
     gstNo?: boolean
+    bankDetails?: boolean
     userId?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "userId", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "bankDetails" | "userId", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -2839,6 +2850,7 @@ export namespace Prisma {
       firmName: string
       address: string
       gstNo: string
+      bankDetails: string | null
       userId: string
     }, ExtArgs["result"]["profile"]>
     composites: {}
@@ -3268,6 +3280,7 @@ export namespace Prisma {
     readonly firmName: FieldRef<"Profile", 'String'>
     readonly address: FieldRef<"Profile", 'String'>
     readonly gstNo: FieldRef<"Profile", 'String'>
+    readonly bankDetails: FieldRef<"Profile", 'String'>
     readonly userId: FieldRef<"Profile", 'String'>
   }
     
@@ -3836,7 +3849,7 @@ export namespace Prisma {
     id: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress: string | null
     gstNo: string
     userId: string
     createdAt: Date
@@ -3932,7 +3945,7 @@ export namespace Prisma {
       id: string
       name: string
       address: string
-      deliveryAddress: string
+      deliveryAddress: string | null
       gstNo: string
       userId: string
       createdAt: Date
@@ -8364,6 +8377,7 @@ export namespace Prisma {
     firmName: 'firmName',
     address: 'address',
     gstNo: 'gstNo',
+    bankDetails: 'bankDetails',
     userId: 'userId'
   };
 
@@ -8565,6 +8579,7 @@ export namespace Prisma {
     firmName?: StringFilter<"Profile"> | string
     address?: StringFilter<"Profile"> | string
     gstNo?: StringFilter<"Profile"> | string
+    bankDetails?: StringNullableFilter<"Profile"> | string | null
     userId?: StringFilter<"Profile"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -8574,6 +8589,7 @@ export namespace Prisma {
     firmName?: SortOrder
     address?: SortOrder
     gstNo?: SortOrder
+    bankDetails?: SortOrderInput | SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
   }
@@ -8587,6 +8603,7 @@ export namespace Prisma {
     firmName?: StringFilter<"Profile"> | string
     address?: StringFilter<"Profile"> | string
     gstNo?: StringFilter<"Profile"> | string
+    bankDetails?: StringNullableFilter<"Profile"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
 
@@ -8595,6 +8612,7 @@ export namespace Prisma {
     firmName?: SortOrder
     address?: SortOrder
     gstNo?: SortOrder
+    bankDetails?: SortOrderInput | SortOrder
     userId?: SortOrder
     _count?: ProfileCountOrderByAggregateInput
     _max?: ProfileMaxOrderByAggregateInput
@@ -8609,6 +8627,7 @@ export namespace Prisma {
     firmName?: StringWithAggregatesFilter<"Profile"> | string
     address?: StringWithAggregatesFilter<"Profile"> | string
     gstNo?: StringWithAggregatesFilter<"Profile"> | string
+    bankDetails?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     userId?: StringWithAggregatesFilter<"Profile"> | string
   }
 
@@ -8619,7 +8638,7 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     address?: StringFilter<"Customer"> | string
-    deliveryAddress?: StringFilter<"Customer"> | string
+    deliveryAddress?: StringNullableFilter<"Customer"> | string | null
     gstNo?: StringFilter<"Customer"> | string
     userId?: StringFilter<"Customer"> | string
     createdAt?: DateTimeFilter<"Customer"> | Date | string
@@ -8632,7 +8651,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
-    deliveryAddress?: SortOrder
+    deliveryAddress?: SortOrderInput | SortOrder
     gstNo?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -8648,7 +8667,7 @@ export namespace Prisma {
     NOT?: CustomerWhereInput | CustomerWhereInput[]
     name?: StringFilter<"Customer"> | string
     address?: StringFilter<"Customer"> | string
-    deliveryAddress?: StringFilter<"Customer"> | string
+    deliveryAddress?: StringNullableFilter<"Customer"> | string | null
     gstNo?: StringFilter<"Customer"> | string
     userId?: StringFilter<"Customer"> | string
     createdAt?: DateTimeFilter<"Customer"> | Date | string
@@ -8661,7 +8680,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     address?: SortOrder
-    deliveryAddress?: SortOrder
+    deliveryAddress?: SortOrderInput | SortOrder
     gstNo?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -8678,7 +8697,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Customer"> | string
     name?: StringWithAggregatesFilter<"Customer"> | string
     address?: StringWithAggregatesFilter<"Customer"> | string
-    deliveryAddress?: StringWithAggregatesFilter<"Customer"> | string
+    deliveryAddress?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     gstNo?: StringWithAggregatesFilter<"Customer"> | string
     userId?: StringWithAggregatesFilter<"Customer"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
@@ -9012,6 +9031,7 @@ export namespace Prisma {
     firmName: string
     address: string
     gstNo: string
+    bankDetails?: string | null
     user: UserCreateNestedOneWithoutProfileInput
   }
 
@@ -9020,6 +9040,7 @@ export namespace Prisma {
     firmName: string
     address: string
     gstNo: string
+    bankDetails?: string | null
     userId: string
   }
 
@@ -9028,6 +9049,7 @@ export namespace Prisma {
     firmName?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     gstNo?: StringFieldUpdateOperationsInput | string
+    bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutProfileNestedInput
   }
 
@@ -9036,6 +9058,7 @@ export namespace Prisma {
     firmName?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     gstNo?: StringFieldUpdateOperationsInput | string
+    bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -9044,6 +9067,7 @@ export namespace Prisma {
     firmName: string
     address: string
     gstNo: string
+    bankDetails?: string | null
     userId: string
   }
 
@@ -9052,6 +9076,7 @@ export namespace Prisma {
     firmName?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     gstNo?: StringFieldUpdateOperationsInput | string
+    bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileUncheckedUpdateManyInput = {
@@ -9059,6 +9084,7 @@ export namespace Prisma {
     firmName?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     gstNo?: StringFieldUpdateOperationsInput | string
+    bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -9066,7 +9092,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9078,7 +9104,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     userId: string
     createdAt?: Date | string
@@ -9090,7 +9116,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9102,7 +9128,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9114,7 +9140,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     userId: string
     createdAt?: Date | string
@@ -9125,7 +9151,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9135,7 +9161,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9561,6 +9587,7 @@ export namespace Prisma {
     firmName?: SortOrder
     address?: SortOrder
     gstNo?: SortOrder
+    bankDetails?: SortOrder
     userId?: SortOrder
   }
 
@@ -9569,6 +9596,7 @@ export namespace Prisma {
     firmName?: SortOrder
     address?: SortOrder
     gstNo?: SortOrder
+    bankDetails?: SortOrder
     userId?: SortOrder
   }
 
@@ -9577,6 +9605,7 @@ export namespace Prisma {
     firmName?: SortOrder
     address?: SortOrder
     gstNo?: SortOrder
+    bankDetails?: SortOrder
     userId?: SortOrder
   }
 
@@ -10435,6 +10464,7 @@ export namespace Prisma {
     firmName: string
     address: string
     gstNo: string
+    bankDetails?: string | null
   }
 
   export type ProfileUncheckedCreateWithoutUserInput = {
@@ -10442,6 +10472,7 @@ export namespace Prisma {
     firmName: string
     address: string
     gstNo: string
+    bankDetails?: string | null
   }
 
   export type ProfileCreateOrConnectWithoutUserInput = {
@@ -10453,7 +10484,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10464,7 +10495,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10566,6 +10597,7 @@ export namespace Prisma {
     firmName?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     gstNo?: StringFieldUpdateOperationsInput | string
+    bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileUncheckedUpdateWithoutUserInput = {
@@ -10573,6 +10605,7 @@ export namespace Prisma {
     firmName?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     gstNo?: StringFieldUpdateOperationsInput | string
+    bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CustomerUpsertWithWhereUniqueWithoutUserInput = {
@@ -10598,7 +10631,7 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     address?: StringFilter<"Customer"> | string
-    deliveryAddress?: StringFilter<"Customer"> | string
+    deliveryAddress?: StringNullableFilter<"Customer"> | string | null
     gstNo?: StringFilter<"Customer"> | string
     userId?: StringFilter<"Customer"> | string
     createdAt?: DateTimeFilter<"Customer"> | Date | string
@@ -10978,7 +11011,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10989,7 +11022,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     userId: string
     createdAt?: Date | string
@@ -11072,7 +11105,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11083,7 +11116,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11281,7 +11314,7 @@ export namespace Prisma {
     id?: string
     name: string
     address: string
-    deliveryAddress: string
+    deliveryAddress?: string | null
     gstNo: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11315,7 +11348,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11326,7 +11359,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11337,7 +11370,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    deliveryAddress?: StringFieldUpdateOperationsInput | string
+    deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
     gstNo?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

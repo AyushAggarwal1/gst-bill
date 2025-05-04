@@ -14,6 +14,7 @@ export default function ProfilePage() {
     firmName: "",
     address: "",
     gstNo: "",
+    bankDetails: "",
   });
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function ProfilePage() {
             firmName: data.firmName || "",
             address: data.address || "",
             gstNo: data.gstNo || "",
+            bankDetails: data.bankDetails || "",
           });
         }
       } catch (error) {
@@ -143,7 +145,7 @@ export default function ProfilePage() {
                       htmlFor="firmName"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Firm Name
+                      Company Name
                     </label>
                     <input
                       type="text"
@@ -197,6 +199,27 @@ export default function ProfilePage() {
                     />
                     <p className="mt-1 text-xs text-gray-500">
                       Format: 22AAAAA0000A1Z5
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="bankDetails"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Company Bank Details
+                    </label>
+                    <textarea
+                      id="bankDetails"
+                      name="bankDetails"
+                      rows={3}
+                      value={profile.bankDetails}
+                      onChange={handleChange}
+                      placeholder="Account Number, IFSC Code, Bank Name, Branch"
+                      className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      This will appear on your invoices
                     </p>
                   </div>
                 </div>
