@@ -184,7 +184,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/ayush/Desktop/gst-bill/src/generated/prisma",
+      "value": "/Users/ayush/Documents/gst-bill/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -198,7 +198,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/ayush/Desktop/gst-bill/prisma/schema.prisma",
+    "sourceFilePath": "/Users/ayush/Documents/gst-bill/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -216,7 +216,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "file:./prisma/dev.db"
+        "value": "file:./dev.db"
       }
     }
   },

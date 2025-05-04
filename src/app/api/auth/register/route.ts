@@ -5,8 +5,12 @@ import { logAuthEvent } from "@/lib/logger";
 import { headers } from "next/headers";
 
 export async function POST(req: Request) {
+  let requestData;
+  
   try {
-    const { name, email, password } = await req.json();
+    // Parse the request body once and store it
+    requestData = await req.json();
+    const { name, email, password } = requestData;
     const headersList = headers();
     const userAgent = headersList.get('user-agent') || 'unknown';
     const ipAddress = headersList.get('x-forwarded-for') || 'unknown';
@@ -86,11 +90,12 @@ export async function POST(req: Request) {
     
     // Log registration error
     try {
-      const { email } = await req.clone().json();
       const headersList = headers();
+      // Use the already parsed request data instead of trying to clone the request
+      const email = requestData?.email || 'unknown';
       
       await logAuthEvent({
-        email: email || 'unknown',
+        email,
         action: 'REGISTRATION',
         level: 'ERROR',
         message: `Registration error: ${error instanceof Error ? error.message : 'Unknown error'}`,
