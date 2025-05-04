@@ -14,6 +14,7 @@ export default function ProfilePage() {
     firmName: "",
     address: "",
     gstNo: "",
+    phoneNo: "",
     bankDetails: "",
   });
 
@@ -27,6 +28,7 @@ export default function ProfilePage() {
             firmName: data.firmName || "",
             address: data.address || "",
             gstNo: data.gstNo || "",
+            phoneNo: data.phoneNo || "",
             bankDetails: data.bankDetails || "",
           });
         }
@@ -199,6 +201,27 @@ export default function ProfilePage() {
                     />
                     <p className="mt-1 text-xs text-gray-500">
                       Format: 22AAAAA0000A1Z5
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="phoneNo"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="phoneNo"
+                      id="phoneNo"
+                      value={profile.phoneNo}
+                      onChange={handleChange}
+                      placeholder="Enter your business phone number"
+                      className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Will be displayed on invoices
                     </p>
                   </div>
 

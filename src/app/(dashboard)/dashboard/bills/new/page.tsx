@@ -42,12 +42,13 @@ export default function NewBillPage() {
     billDate: new Date().toISOString().split("T")[0],
     customerId: "",
     isIGST: false,
+    deliveryAddress: "",
   });
 
   // Form data for adding a new item to bill
   const [newItem, setNewItem] = useState({
     itemId: "",
-    quantity: 1,
+    quantity: 0,
     price: 0,
   });
 
@@ -87,7 +88,7 @@ export default function NewBillPage() {
     fetchData();
   }, []);
 
-  const handleBillDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleBillDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
     setBillData(prev => ({
       ...prev,
@@ -304,6 +305,23 @@ export default function NewBillPage() {
                       <label htmlFor="isIGST" className="ml-2 block text-sm text-gray-700">
                         Apply IGST (Interstate)
                       </label>
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-6">
+                    <label htmlFor="deliveryAddress" className="block text-sm font-medium text-gray-700">
+                      Delivery Address (Optional)
+                    </label>
+                    <div className="mt-1">
+                      <textarea
+                        id="deliveryAddress"
+                        name="deliveryAddress"
+                        rows={3}
+                        value={billData.deliveryAddress}
+                        onChange={handleBillDataChange}
+                        placeholder="Enter delivery address if different from billing address"
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      />
                     </div>
                   </div>
 

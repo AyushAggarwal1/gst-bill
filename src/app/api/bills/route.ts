@@ -64,7 +64,8 @@ export async function POST(req: Request) {
       billDate,
       customerId,
       items,
-      isIGST
+      isIGST,
+      deliveryAddress
     } = await req.json();
 
     // Validate required fields
@@ -169,6 +170,7 @@ export async function POST(req: Request) {
           sgst,
           igst,
           total,
+          deliveryAddress: deliveryAddress || null,
           items: {
             create: itemsWithCalculations,
           },
