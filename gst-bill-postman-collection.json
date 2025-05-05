@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "e5e3e0a0-0b0a-4e0a-9e0a-0b0a4e0a9e0a",
+		"name": "GST Bill API V2",
+		"description": "API collection for GST Bill application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Bills",
+			"item": [
+				{
+					"name": "Get All Bills",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/bills",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills"]
+						},
+						"description": "Retrieves all bills for the authenticated user"
+					}
+				},
+				{
+					"name": "Create Bill",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"billNumber\": \"B0001\",\n  \"billDate\": \"2024-03-20T00:00:00.000Z\",\n  \"customerId\": \"customer-id\",\n  \"items\": [\n    {\n      \"itemId\": \"item-id\",\n      \"quantity\": 1,\n      \"price\": 100\n    }\n  ],\n  \"isIGST\": false,\n  \"deliveryAddress\": \"Delivery Address\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/bills",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills"]
+						},
+						"description": "Creates a new bill"
+					}
+				},
+				{
+					"name": "Get Bill by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/bills/{{billId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills", "{{billId}}"]
+						},
+						"description": "Retrieves a specific bill by ID"
+					}
+				},
+				{
+					"name": "Delete Bill",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/bills/{{billId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills", "{{billId}}"]
+						},
+						"description": "Deletes a specific bill"
+					}
+				},
+				{
+					"name": "Get Bill Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/bills/count",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills", "count"]
+						},
+						"description": "Returns the total number of bills for the authenticated user"
+					}
+				},
+				{
+					"name": "Get Next Bill Number",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/bills/nextBillNumber",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills", "nextBillNumber"]
+						},
+						"description": "Generates the next sequential bill number"
+					}
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customers"]
+						},
+						"description": "Retrieves all customers for the authenticated user"
+					}
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Customer Name\",\n  \"address\": \"Customer Address\",\n  \"deliveryAddress\": \"Delivery Address\",\n  \"gstNo\": \"27AAPFU0939F1ZV\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customers"]
+						},
+						"description": "Creates a new customer"
+					}
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customers", "{{customerId}}"]
+						},
+						"description": "Retrieves a specific customer by ID"
+					}
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Customer Name\",\n  \"address\": \"Updated Address\",\n  \"deliveryAddress\": \"Updated Delivery Address\",\n  \"gstNo\": \"27AAPFU0939F1ZV\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customers", "{{customerId}}"]
+						},
+						"description": "Updates a specific customer"
+					}
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/{{customerId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customers", "{{customerId}}"]
+						},
+						"description": "Deletes a specific customer"
+					}
+				},
+				{
+					"name": "Get Customer Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/customers/count",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "customers", "count"]
+						},
+						"description": "Returns the total number of customers for the authenticated user"
+					}
+				}
+			]
+		},
+		{
+			"name": "Items",
+			"item": [
+				{
+					"name": "Get All Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/items",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "items"]
+						},
+						"description": "Retrieves all items for the authenticated user"
+					}
+				},
+				{
+					"name": "Create Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Item Name\",\n  \"hsnCode\": \"1234\",\n  \"taxRate\": 18\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/items",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "items"]
+						},
+						"description": "Creates a new item"
+					}
+				},
+				{
+					"name": "Get Item by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/items/{{itemId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "items", "{{itemId}}"]
+						},
+						"description": "Retrieves a specific item by ID"
+					}
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Item Name\",\n  \"hsnCode\": \"1234\",\n  \"taxRate\": 18\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/items/{{itemId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "items", "{{itemId}}"]
+						},
+						"description": "Updates a specific item"
+					}
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/items/{{itemId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "items", "{{itemId}}"]
+						},
+						"description": "Deletes a specific item"
+					}
+				},
+				{
+					"name": "Get Item Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/items/count",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "items", "count"]
+						},
+						"description": "Returns the total number of items for the authenticated user"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "billId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customerId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "itemId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "cookie",
+			"value": "next-auth.session-token=your_session_token_here",
+			"type": "string"
+		}
+	]
+} 
