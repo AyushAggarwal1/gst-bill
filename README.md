@@ -86,7 +86,7 @@ The application uses the following main models:
 - **Bill**: GST bills
 - **BillItem**: Items in each bill
 
-## API Routes [Complete API Guide][API_Docs.md]
+## API Routes [Complete API Guide](API_Docs.md)
 
 - **Authentication**
   - POST `/api/auth/register`: User registration
