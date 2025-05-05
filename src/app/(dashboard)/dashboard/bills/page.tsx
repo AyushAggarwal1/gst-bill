@@ -24,26 +24,39 @@ export default function BillsPage() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
-    const fetchBills = async () => {
-      try {
-        const res = await fetch("/api/bills");
-        if (!res.ok) {
-          throw new Error("Failed to fetch bills");
-        }
-        const data = await res.json();
-        setBills(data);
-      } catch (error) {
-        console.error("Error fetching bills:", error);
-        setError("Failed to load bills. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBills();
-  }, []);
+  }, [startDate, endDate]);
+
+  const fetchBills = async () => {
+    try {
+      setLoading(true);
+      let url = "/api/bills";
+      
+      // Add date range parameters if they exist
+      if (startDate || endDate) {
+        const params = new URLSearchParams();
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+        url += `?${params.toString()}`;
+      }
+
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error("Failed to fetch bills");
+      }
+      const data = await res.json();
+      setBills(data);
+    } catch (error) {
+      console.error("Error fetching bills:", error);
+      setError("Failed to load bills. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this bill?")) {
@@ -67,14 +80,57 @@ export default function BillsPage() {
   return (
     <div>
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Bills</h1>
-          <Link
-            href="/dashboard/bills/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Create Bill
-          </Link>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            <h1 className="text-3xl font-bold text-gray-900">Bills</h1>
+            <Link
+              href="/dashboard/bills/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Create Bill
+            </Link>
+          </div>
+          
+          {/* Date Range Filter */}
+          <div className="mt-4 flex flex-col sm:flex-row items-end sm:space-x-4 space-y-4 sm:space-y-0">
+            <div>
+              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                From Date
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                name="startDate"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="dd/mm/yyyy"
+              />
+            </div>
+            <div>
+              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+                To Date
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                name="endDate"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="dd/mm/yyyy"
+              />
+            </div>
+            <button
+              onClick={() => {
+                setStartDate("");
+                setEndDate("");
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </header>
 
@@ -105,10 +161,12 @@ export default function BillsPage() {
                 />
               </svg>
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No bills
+                No bills found
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Get started by creating a new bill.
+                {startDate || endDate 
+                  ? "No bills found for the selected date range."
+                  : "Get started by creating a new bill."}
               </p>
               <div className="mt-6">
                 <Link
