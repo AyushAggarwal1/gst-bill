@@ -3,13 +3,18 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 
 // GET all bills for the current user
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession();
 
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Get query parameters
+    const url = new URL(req.url);
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
 
     // Find the user by email
     const user = await prisma.user.findUnique({
@@ -22,11 +27,27 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Build the where clause for date filtering
+    const whereClause: any = {
+      userId: user.id,
+    };
+
+    if (startDate || endDate) {
+      whereClause.billDate = {};
+      if (startDate) {
+        whereClause.billDate.gte = new Date(startDate);
+      }
+      if (endDate) {
+        // Set the end date to the end of the day
+        const endDateTime = new Date(endDate);
+        endDateTime.setHours(23, 59, 59, 999);
+        whereClause.billDate.lte = endDateTime;
+      }
+    }
+
     // Get all bills for this user with customer details
     const bills = await prisma.bill.findMany({
-      where: {
-        userId: user.id,
-      },
+      where: whereClause,
       include: {
         customer: {
           select: {
