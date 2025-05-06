@@ -26,21 +26,26 @@ export default function BillsPage() {
   const [error, setError] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [selectedBills, setSelectedBills] = useState<string[]>([]);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetchBills();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, customerName]);
 
   const fetchBills = async () => {
     try {
       setLoading(true);
       let url = "/api/bills";
       
-      // Add date range parameters if they exist
-      if (startDate || endDate) {
-        const params = new URLSearchParams();
-        if (startDate) params.append("startDate", startDate);
-        if (endDate) params.append("endDate", endDate);
+      // Add filter parameters if they exist
+      const params = new URLSearchParams();
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
+      if (customerName) params.append("customerName", customerName);
+      
+      if (params.toString()) {
         url += `?${params.toString()}`;
       }
 
@@ -50,6 +55,8 @@ export default function BillsPage() {
       }
       const data = await res.json();
       setBills(data);
+      // Clear selected bills when filter changes
+      setSelectedBills([]);
     } catch (error) {
       console.error("Error fetching bills:", error);
       setError("Failed to load bills. Please try again.");
@@ -70,10 +77,68 @@ export default function BillsPage() {
         }
 
         setBills((prev) => prev.filter((bill) => bill.id !== id));
+        setSelectedBills((prev) => prev.filter((billId) => billId !== id));
       } catch (error) {
         console.error("Error deleting bill:", error);
         setError("Failed to delete bill. Please try again.");
       }
+    }
+  };
+
+  const handleSelectBill = (id: string) => {
+    setSelectedBills((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((billId) => billId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedBills.length === bills.length) {
+      setSelectedBills([]);
+    } else {
+      setSelectedBills(bills.map((bill) => bill.id));
+    }
+  };
+
+  const handleExportExcel = async () => {
+    if (selectedBills.length === 0) {
+      alert("Please select at least one bill to export");
+      return;
+    }
+
+    try {
+      setExporting(true);
+      const res = await fetch("/api/bills/export", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ billIds: selectedBills }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to export bills");
+      }
+
+      // Convert the response to a blob and download it
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bills-export.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error exporting bills:", error);
+      alert("Failed to export bills. Please try again.");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -83,16 +148,44 @@ export default function BillsPage() {
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             <h1 className="text-3xl font-bold text-gray-900">Bills</h1>
-            <Link
-              href="/dashboard/bills/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Create Bill
-            </Link>
+            <div className="flex space-x-3">
+              {selectedBills.length > 0 && (
+                <button
+                  onClick={handleExportExcel}
+                  disabled={exporting}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                >
+                  {exporting ? "Exporting..." : `Export ${selectedBills.length} Bill${selectedBills.length > 1 ? 's' : ''}`}
+                </button>
+              )}
+              <Link
+                href="/dashboard/bills/new"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Create Bill
+              </Link>
+            </div>
           </div>
           
-          {/* Date Range Filter */}
+          {/* Filters */}
           <div className="mt-4 flex flex-col sm:flex-row items-end sm:space-x-4 space-y-4 sm:space-y-0">
+            {/* Customer Name Filter */}
+            <div>
+              <label htmlFor="customerName" className="block text-sm font-medium text-gray-700">
+                Customer Name
+              </label>
+              <input
+                type="text"
+                id="customerName"
+                name="customerName"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Search by customer"
+              />
+            </div>
+            
+            {/* Existing Date filters */}
             <div>
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
                 From Date
@@ -125,6 +218,7 @@ export default function BillsPage() {
               onClick={() => {
                 setStartDate("");
                 setEndDate("");
+                setCustomerName("");
               }}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
@@ -164,8 +258,8 @@ export default function BillsPage() {
                 No bills found
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                {startDate || endDate 
-                  ? "No bills found for the selected date range."
+                {startDate || endDate || customerName 
+                  ? "No bills found for the selected filters."
                   : "Get started by creating a new bill."}
               </p>
               <div className="mt-6">
@@ -192,10 +286,35 @@ export default function BillsPage() {
             </div>
           ) : (
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
+              {bills.length > 0 && (
+                <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      checked={selectedBills.length === bills.length}
+                      onChange={handleSelectAll}
+                    />
+                    <span className="ml-2 text-sm text-gray-500">
+                      {selectedBills.length === 0 
+                        ? 'Select all' 
+                        : `${selectedBills.length} of ${bills.length} selected`}
+                    </span>
+                  </div>
+                </div>
+              )}
               <ul className="divide-y divide-gray-200">
                 {bills.map((bill) => (
-                  <li key={bill.id}>
+                  <li key={bill.id} className="hover:bg-gray-50">
                     <div className="px-4 py-4 flex items-center sm:px-6">
+                      <div className="mr-4">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          checked={selectedBills.includes(bill.id)}
+                          onChange={() => handleSelectBill(bill.id)}
+                        />
+                      </div>
                       <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
                           <div className="flex text-sm">

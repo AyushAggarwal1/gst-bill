@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 
+// Tell Next.js to always render this route dynamically
+export const dynamic = 'force-dynamic';
+
 // Generate the next bill number
 export async function GET() {
   try {

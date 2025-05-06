@@ -15,6 +15,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
+    const customerName = url.searchParams.get("customerName");
 
     // Find the user by email
     const user = await prisma.user.findUnique({
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Build the where clause for date filtering
+    // Build the where clause for filtering
     const whereClause: any = {
       userId: user.id,
     };
@@ -43,6 +44,16 @@ export async function GET(req: Request) {
         endDateTime.setHours(23, 59, 59, 999);
         whereClause.billDate.lte = endDateTime;
       }
+    }
+
+    // Add customer name filter
+    if (customerName && customerName.trim() !== "") {
+      whereClause.customer = {
+        name: {
+          contains: customerName.trim(),
+          mode: 'insensitive'
+        }
+      };
     }
 
     // Get all bills for this user with customer details
