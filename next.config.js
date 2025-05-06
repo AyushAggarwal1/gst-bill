@@ -14,6 +14,21 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  reactStrictMode: true,
+  output: 'standalone',
+  experimental: {
+    serverComponentsExternalPackages: ['xlsx']
+  },
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store' }
+        ],
+      },
+    ]
+  },
 };
 
 module.exports = nextConfig; 
