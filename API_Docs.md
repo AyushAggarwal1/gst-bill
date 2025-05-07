@@ -139,6 +139,42 @@ Generates the next sequential bill number.
 }
 ```
 
+### Export Bills to Excel
+**POST** `/api/bills/export`
+
+Exports selected bills to an Excel file (XLSX) with multiple sheets (Bills Summary, Bill Items, Item Analysis, Price Analysis).
+
+**Request Body**
+```json
+{
+  "billIds": ["billId1", "billId2", ...]
+}
+```
+
+- `billIds` (array of strings): List of bill IDs to export. Must not be empty.
+
+**Headers**
+- Cookie: Session cookie for authentication
+
+**Response**
+- On success: Returns an Excel file (`bills-export.xlsx`) as a file download (Content-Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`).
+- On error: Returns a JSON error message.
+
+**Error Responses**
+```json
+// 400 Bad Request
+{ "error": "No bills selected for export" }
+
+// 401 Unauthorized
+{ "error": "Unauthorized" }
+
+// 404 Not Found
+{ "error": "No valid bills found for export" }
+
+// 500 Internal Server Error
+{ "error": "Internal server error" }
+```
+
 ## Customers API
 
 ### Get All Customers

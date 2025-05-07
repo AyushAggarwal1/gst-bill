@@ -130,6 +130,33 @@
 						},
 						"description": "Generates the next sequential bill number"
 					}
+				},
+				{
+					"name": "Export Bills to Excel",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{cookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"billIds\": [\"billId1\", \"billId2\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/bills/export",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "bills", "export"]
+						},
+						"description": "Exports selected bills to an Excel file (XLSX) with multiple sheets.\n\nRequest body: { \"billIds\": [\"billId1\", ...] }\n\nReturns: Excel file download (Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet).\n\nError responses: 400 (No bills selected), 401 (Unauthorized), 404 (No valid bills), 500 (Internal server error)."
+					}
 				}
 			]
 		},
