@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Bill {
   id: string;
@@ -29,6 +30,8 @@ export default function BillsPage() {
   const [customerName, setCustomerName] = useState("");
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [exporting, setExporting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [billToDelete, setBillToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBills();
@@ -66,22 +69,20 @@ export default function BillsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this bill?")) {
-      try {
-        const res = await fetch(`/api/bills/${id}`, {
-          method: "DELETE",
-        });
+    try {
+      const res = await fetch(`/api/bills/${id}`, {
+        method: "DELETE",
+      });
 
-        if (!res.ok) {
-          throw new Error("Failed to delete bill");
-        }
-
-        setBills((prev) => prev.filter((bill) => bill.id !== id));
-        setSelectedBills((prev) => prev.filter((billId) => billId !== id));
-      } catch (error) {
-        console.error("Error deleting bill:", error);
-        setError("Failed to delete bill. Please try again.");
+      if (!res.ok) {
+        throw new Error("Failed to delete bill");
       }
+
+      setBills((prev) => prev.filter((bill) => bill.id !== id));
+      setSelectedBills((prev) => prev.filter((billId) => billId !== id));
+    } catch (error) {
+      console.error("Error deleting bill:", error);
+      setError("Failed to delete bill. Please try again.");
     }
   };
 
@@ -142,8 +143,27 @@ export default function BillsPage() {
     }
   };
 
+  const openDeleteDialog = (id: string) => {
+    setBillToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
   return (
     <div>
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setBillToDelete(null);
+        }}
+        onConfirm={() => {
+          if (billToDelete) {
+            handleDelete(billToDelete);
+          }
+        }}
+        title="Delete Bill"
+        message="Are you sure you want to delete this bill? This action cannot be undone."
+      />
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
@@ -352,7 +372,7 @@ export default function BillsPage() {
                               View
                             </Link>
                             <button
-                              onClick={() => handleDelete(bill.id)}
+                              onClick={() => openDeleteDialog(bill.id)}
                               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                             >
                               Delete

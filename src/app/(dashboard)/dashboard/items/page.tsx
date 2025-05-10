@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Item {
   id: string;
   name: string;
-  hsnCode: string;
-  taxRate: number;
+  description: string;
+  unit: string;
+  price: number;
   createdAt: string;
 }
 
@@ -15,57 +17,79 @@ export default function ItemsPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const res = await fetch("/api/items");
-        if (!res.ok) {
-          throw new Error("Failed to fetch items");
-        }
-        const data = await res.json();
-        setItems(data);
-      } catch (error) {
-        console.error("Error fetching items:", error);
-        setError("Failed to load items. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchItems();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this item?")) {
-      try {
-        const res = await fetch(`/api/items/${id}`, {
-          method: "DELETE",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to delete item");
-        }
-
-        setItems((prev) => prev.filter((item) => item.id !== id));
-      } catch (error) {
-        console.error("Error deleting item:", error);
-        setError("Failed to delete item. Please try again.");
+  const fetchItems = async () => {
+    try {
+      const res = await fetch("/api/items");
+      if (!res.ok) {
+        throw new Error("Failed to fetch items");
       }
+      const data = await res.json();
+      setItems(data);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      setError("Failed to load items. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/items/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete item");
+      }
+
+      setItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      setError("Failed to delete item. Please try again.");
+    }
+  };
+
+  const openDeleteDialog = (id: string) => {
+    setItemToDelete(id);
+    setDeleteDialogOpen(true);
   };
 
   return (
     <div>
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={() => {
+          if (itemToDelete) {
+            handleDelete(itemToDelete);
+          }
+        }}
+        title="Delete Item"
+        message="Are you sure you want to delete this item? This action cannot be undone and may affect existing bills."
+      />
+
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Items</h1>
-          <Link
-            href="/dashboard/items/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Add Item
-          </Link>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-900">Items</h1>
+            <Link
+              href="/dashboard/items/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Add Item
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -99,7 +123,7 @@ export default function ItemsPage() {
                 No items
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Get started by creating a new item.
+                Get started by adding a new item.
               </p>
               <div className="mt-6">
                 <Link
@@ -136,12 +160,17 @@ export default function ItemsPage() {
                               {item.name}
                             </p>
                             <p className="ml-1 flex-shrink-0 font-normal text-gray-500">
-                              HSN: {item.hsnCode}
+                              {item.unit}
                             </p>
                           </div>
                           <div className="mt-2 flex">
                             <div className="flex items-center text-sm text-gray-500">
-                              <p>Tax Rate: {item.taxRate}%</p>
+                              <p>{item.description}</p>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <p>Price: ₹{(item.price || 0).toFixed(2)}</p>
                             </div>
                           </div>
                         </div>
@@ -149,12 +178,12 @@ export default function ItemsPage() {
                           <div className="flex space-x-4">
                             <Link
                               href={`/dashboard/items/edit/${item.id}`}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               Edit
                             </Link>
                             <button
-                              onClick={() => handleDelete(item.id)}
+                              onClick={() => openDeleteDialog(item.id)}
                               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                             >
                               Delete

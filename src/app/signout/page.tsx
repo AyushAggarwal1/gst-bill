@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function SignOutPage() {
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
   const [error, setError] = useState("");
 
   useEffect(() => {
