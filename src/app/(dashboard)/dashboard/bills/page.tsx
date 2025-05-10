@@ -180,7 +180,7 @@ export default function BillsPage() {
                 name="customerName"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder-gray-500"
                 placeholder="Search by customer"
               />
             </div>
@@ -196,7 +196,7 @@ export default function BillsPage() {
                 name="startDate"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-900 placeholder-gray-500"
                 placeholder="dd/mm/yyyy"
               />
             </div>
@@ -210,7 +210,7 @@ export default function BillsPage() {
                 name="endDate"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray-900 placeholder-gray-500"
                 placeholder="dd/mm/yyyy"
               />
             </div>
