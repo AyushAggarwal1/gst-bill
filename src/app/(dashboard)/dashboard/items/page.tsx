@@ -7,9 +7,8 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 interface Item {
   id: string;
   name: string;
-  description: string;
-  unit: string;
-  price: number;
+  hsnCode: string;
+  taxRate: number;
   createdAt: string;
 }
 
@@ -160,17 +159,12 @@ export default function ItemsPage() {
                               {item.name}
                             </p>
                             <p className="ml-1 flex-shrink-0 font-normal text-gray-500">
-                              {item.unit}
+                            HSN: {item.hsnCode}
                             </p>
                           </div>
                           <div className="mt-2 flex">
                             <div className="flex items-center text-sm text-gray-500">
-                              <p>{item.description}</p>
-                            </div>
-                          </div>
-                          <div className="mt-2 flex">
-                            <div className="flex items-center text-sm text-gray-500">
-                              <p>Price: ₹{(item.price || 0).toFixed(2)}</p>
+                              <p>Tax Rate: {item.taxRate}%</p>
                             </div>
                           </div>
                         </div>
