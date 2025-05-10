@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Customer {
   id: string;
@@ -16,57 +17,79 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await fetch("/api/customers");
-        if (!res.ok) {
-          throw new Error("Failed to fetch customers");
-        }
-        const data = await res.json();
-        setCustomers(data);
-      } catch (error) {
-        console.error("Error fetching customers:", error);
-        setError("Failed to load customers. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCustomers();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this customer?")) {
-      try {
-        const res = await fetch(`/api/customers/${id}`, {
-          method: "DELETE",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to delete customer");
-        }
-
-        setCustomers((prev) => prev.filter((customer) => customer.id !== id));
-      } catch (error) {
-        console.error("Error deleting customer:", error);
-        setError("Failed to delete customer. Please try again.");
+  const fetchCustomers = async () => {
+    try {
+      const res = await fetch("/api/customers");
+      if (!res.ok) {
+        throw new Error("Failed to fetch customers");
       }
+      const data = await res.json();
+      setCustomers(data);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      setError("Failed to load customers. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/customers/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete customer");
+      }
+
+      setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+      setError("Failed to delete customer. Please try again.");
+    }
+  };
+
+  const openDeleteDialog = (id: string) => {
+    setCustomerToDelete(id);
+    setDeleteDialogOpen(true);
   };
 
   return (
     <div>
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setCustomerToDelete(null);
+        }}
+        onConfirm={() => {
+          if (customerToDelete) {
+            handleDelete(customerToDelete);
+          }
+        }}
+        title="Delete Customer"
+        message="Are you sure you want to delete this customer? This action cannot be undone and will also delete all associated bills."
+      />
+
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
-          <Link
-            href="/dashboard/customers/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Add Customer
-          </Link>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
+            <Link
+              href="/dashboard/customers/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Add Customer
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -100,7 +123,7 @@ export default function CustomersPage() {
                 No customers
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Get started by creating a new customer.
+                Get started by adding a new customer.
               </p>
               <div className="mt-6">
                 <Link
@@ -150,12 +173,12 @@ export default function CustomersPage() {
                           <div className="flex space-x-4">
                             <Link
                               href={`/dashboard/customers/edit/${customer.id}`}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               Edit
                             </Link>
                             <button
-                              onClick={() => handleDelete(customer.id)}
+                              onClick={() => openDeleteDialog(customer.id)}
                               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                             >
                               Delete
