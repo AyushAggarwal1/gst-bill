@@ -30,62 +30,6 @@ A modern, user-friendly application for creating and managing GST bills. Built w
 - **Styling**: Tailwind CSS with Forms plugin
 - **Type Safety**: TypeScript
 
-## Prerequisites
-
-Before you begin, ensure you have installed:
-- Node.js 20.x or later
-- PostgreSQL 15 or later
-- npm or yarn package manager
-
-## Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-# Database
-DATABASE_URL="postgresql://postgres:password@localhost:5432/gstbill"
-
-# NextAuth
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-```
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/AyushAggarwal1/gst-bill.git
-cd gst-bill
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up the database:
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
-
-4. Start the development server:
-```bash
-npm run dev
-```
-
-The application will be available at `http://localhost:3000`.
-
-## Database Schema
-
-The application uses the following main models:
-- **User**: Authentication and user management
-- **Profile**: Business/company details
-- **Customer**: Customer information
-- **Item**: Product/service catalog
-- **Bill**: GST bills
-- **BillItem**: Items in each bill
-
 ## API Routes [Complete API Guide](API_Docs.md)
 
 - **Authentication**
@@ -114,35 +58,6 @@ The application uses the following main models:
   - GET `/api/bills/[id]`: Get bill details
   - DELETE `/api/bills/[id]`: Delete bill
 
-## Development
-
-To run the development server:
-```bash
-npm run dev
-```
-
-For linting:
-```bash
-npm run lint
-```
-
-For building:
-```bash
-npm run build
-```
-
-## Production Deployment
-
-1. Build the application:
-```bash
-npm run build
-```
-
-2. Start the production server:
-```bash
-npm start
-```
-
 ## Contributing
 
 1. Fork the repository
@@ -150,10 +65,6 @@ npm start
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
