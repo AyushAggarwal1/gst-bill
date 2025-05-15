@@ -24,7 +24,7 @@ jobs:
         uses: accuknox/checkmarx-accuknox-action@v1.0.0
         with:
           api_key: ${{ secrets.CX_API_KEY }}
-          project_name: "ayushaggarwal1/gbm"
+          project_name: "AyushAggarwal1/gst-bill"
           accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
           tenant_id: ${{ secrets.TENANT_ID }}
           ak_token: ${{ secrets.ACCUKNOX_TOKEN }}
