@@ -6,7 +6,7 @@ on:
   workflow_dispatch: 
 
 jobs:
-  cx_ak:
+  checkmarx-accuknox:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
