@@ -11,8 +11,16 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
-      - name: Checkmarx AccuKnox Integration
+        
+      - name: Run Checkmarx Scan
+        uses: checkmarx/ast-github-action@main
+        with:
+          base_uri: https://deu.ast.checkmarx.net/
+          cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+          cx_client_secret: ${{ secrets.CX_API_KEY }}
+          cx_tenant: your-tenant
+          
+      - name: Checkmarx Send Result to AccuKnox SaaS
         uses: accuknox/checkmarx-accuknox-action@v1.0.0
         with:
           api_key: ${{ secrets.CX_API_KEY }}
