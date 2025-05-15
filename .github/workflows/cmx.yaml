@@ -23,7 +23,7 @@ jobs:
           cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
           cx_tenant: accuknox-nfr
           
-      - name: Send Checkmarx Result to AccuKnox SaaS Dev Enc
+      - name: Send Checkmarx Result to AccuKnox SaaS Dev Env
         uses: accuknox/checkmarx-accuknox-action@v1.0.0
         with:
           api_key: ${{ secrets.CX_API_KEY }}
