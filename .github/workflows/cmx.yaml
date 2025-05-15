@@ -1,6 +1,9 @@
 name: Checkmarx to AccuKnox SaaS
 
 on:
+  push:
+    branches:
+      - v2.0
   schedule:
     - cron: '0 10 * * *'  # Every day at 10:00 UTC
   workflow_dispatch: 
