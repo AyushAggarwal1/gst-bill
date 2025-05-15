@@ -32,3 +32,4 @@ jobs:
           tenant_id: ${{ secrets.TENANT_ID }}
           ak_token: ${{ secrets.ACCUKNOX_TOKEN }}
           label_id: "ayushcicd"
+          upload_artifact: true
