@@ -31,7 +31,11 @@ export default function CustomersPage() {
         throw new Error("Failed to fetch customers");
       }
       const data = await res.json();
-      setCustomers(data);
+      // Sort customers alphabetically by name
+      const sortedCustomers = data.sort((a: Customer, b: Customer) => 
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      );
+      setCustomers(sortedCustomers);
     } catch (error) {
       console.error("Error fetching customers:", error);
       setError("Failed to load customers. Please try again.");

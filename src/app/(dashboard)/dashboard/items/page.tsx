@@ -30,7 +30,11 @@ export default function ItemsPage() {
         throw new Error("Failed to fetch items");
       }
       const data = await res.json();
-      setItems(data);
+      // Sort items alphabetically by name
+      const sortedItems = data.sort((a: Item, b: Item) => 
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      );
+      setItems(sortedItems);
     } catch (error) {
       console.error("Error fetching items:", error);
       setError("Failed to load items. Please try again.");

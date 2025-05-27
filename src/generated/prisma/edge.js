@@ -194,7 +194,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/ayush/Desktop/gst-bill/src/generated/prisma",
+      "value": "/Users/ayush/Desktop/ayush-projects/gst-bill/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -208,7 +208,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/ayush/Desktop/gst-bill/prisma/schema.prisma",
+    "sourceFilePath": "/Users/ayush/Desktop/ayush-projects/gst-bill/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -226,7 +226,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNjJjNzExYmEtMGYyOC00ZWNkLTk0NjUtYzAzYWUyYzRlMTAzIiwidGVuYW50X2lkIjoiNmVjNWU4MzViYmQ5MmFkODUyNTFhMDFmOWZiY2YyMmVmNzNmZjJhZTI1Y2Q1MDlhYTlmNTI1Nzk2MzgxODBjMyIsImludGVybmFsX3NlY3JldCI6IjU4ODM3NGU1LTgxNWUtNDJlZS04NWNkLWM0NTYxYjYxN2QzYiJ9.TEKxotPA6Eq51U3zbGLuum4qQu0EOOGFGyU-S9hQaOs"
+        "value": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMTczZGVkYzktYzJmNy00ZDE2LWE4MDYtNjNlZjMwYzc0YzVmIiwidGVuYW50X2lkIjoiOTI0YjBlN2RlZDgxYjA2NTMwNjJlM2I5MjNlMWQ2NWNlYmU3MGRjNDg3YjlmZWViYWQ4YWEwNmZiNzU2ZTA2YiIsImludGVybmFsX3NlY3JldCI6ImI5NWFhZjA2LTM4MTItNDA5OS04YzRhLTQ1Yjc0NGY0M2ZhOCJ9.oCFZT3HrND8BAvX_Xn7VMd_lstaP2SfBC0SNOQTeBwc"
       }
     }
   },
