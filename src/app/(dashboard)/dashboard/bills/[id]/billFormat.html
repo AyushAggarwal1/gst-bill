@@ -1,0 +1,344 @@
+
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Invoice #${bill?.billNumber}</title>
+        <meta charset="UTF-8">
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+          
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          }
+          
+          body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #333;
+            line-height: 1.4;
+            padding: 0;
+            font-size: 11px;
+            background-color: white;
+          }
+          
+          .invoice-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #eee;
+          }
+          
+          .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          
+          .invoice-header h1 {
+            font-size: 20px;
+            color: #000;
+            margin: 0;
+            font-weight: 700;
+            padding-bottom: 15px;
+          }
+          
+          .invoice-subheader {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 11px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+          }
+          
+          .info-item {
+            margin-bottom: 3px;
+          }
+          
+          .info-item .label {
+            font-weight: 500;
+            color: #555;
+          }
+          
+          .info-item .value {
+            font-weight: 500;
+          }
+          
+          .parties-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 40px;
+          }
+          
+          .party-info {
+            flex: 1;
+            font-size: 11px;
+          }
+          
+          .party-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #000;
+          }
+          
+          .party-info p {
+            margin-bottom: 3px;
+            line-height: 1.5;
+          }
+          
+          .party-name {
+            font-weight: 600;
+          }
+          
+          .details-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: #000;
+          }
+          
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 11px;
+          }
+          
+          table thead th {
+            background-color: #fff;
+            color: #000;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+          }
+          
+          table tbody tr {
+            border-bottom: 1px solid #eee;
+          }
+          
+          table tbody td {
+            padding: 12px 10px;
+            color: #333;
+            vertical-align: middle;
+          }
+          
+          .text-center {
+            text-align: center;
+          }
+          
+          .text-right {
+            text-align: right;
+          }
+          
+          .summary-section {
+            margin-bottom: 25px;
+            margin-top: 10px;
+          }
+          
+          .summary-table {
+            width: 250px;
+            margin-left: auto;
+            border-collapse: collapse;
+          }
+          
+          .summary-table tr td {
+            padding: 5px 0;
+            text-align: right;
+          }
+          
+          .summary-table tr td:first-child {
+            text-align: left;
+            padding-right: 15px;
+          }
+          
+          .summary-table tr.total-row td {
+            padding-top: 6px;
+            font-weight: 600;
+            color: #000;
+            border-top: 1px solid #ddd;
+          }
+          
+          .amount-in-words {
+            margin: 0 0 25px 0;
+            padding: 0 0 10px 0;
+            font-size: 11px;
+            line-height: 1.5;
+            border-bottom: 1px solid #eee;
+          }
+          
+          .bank-details {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 11px;
+          }
+          
+          .bank-details h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #000;
+          }
+          
+          .bank-details p {
+            margin-bottom: 3px;
+            line-height: 1.5;
+          }
+          
+          .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+          }
+
+          @media print {
+            @page {
+              size: A4;
+              margin: 15mm;
+            }
+            
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            
+            .invoice-container {
+              width: 100%;
+              max-width: 100%;
+              padding: 0;
+              margin: 0;
+              border: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="invoice-container">
+          <div class="invoice-header">
+            <h1>TAX INVOICE</h1>
+          </div>
+          
+          <div class="invoice-subheader">
+            <div>
+              <div class="info-item">
+                <span class="label">Invoice #:</span>
+                <span class="value">${bill?.billNumber}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Date:</span>
+                <span class="value">${format(new Date(bill?.billDate || new Date()), "dd/MM/yyyy")}</span>
+              </div>
+            </div>
+            <div>
+              <div class="info-item">
+                <span class="label">Tax Type:</span>
+                <span class="value">${bill?.isIGST ? "IGST" : "CGST/SGST"}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="parties-container">
+            <div class="party-info">
+              <h3>Company Details</h3>
+              <p class="party-name">${profile?.firmName || ''}</p>
+              <p>${(profile?.address || '').replace(/\\n/g, '<br>')}</p>
+              <p>GSTIN: ${profile?.gstNo || ''}</p>
+              ${profile?.phoneNo ? `<p>Phone: ${profile.phoneNo}</p>` : ''}
+            </div>
+            <div class="party-info">
+              <h3>Customer Details</h3>
+              <p class="party-name">${bill?.customer.name || ''}</p>
+              <p>${(bill?.customer.address || '').replace(/\\n/g, '<br>')}</p>
+              <p>GSTIN: ${bill?.customer.gstNo || ''}</p>
+              ${bill?.deliveryAddress ? `
+              <div style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px;">
+                <p style="font-weight: 600;">Delivery Address:</p>
+                <p>${(bill.deliveryAddress).replace(/\\n/g, '<br>')}</p>
+              </div>
+              ` : ''}
+            </div>
+          </div>
+          
+          <h3 class="details-title">Items</h3>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 5%; text-align: center;">S.No.</th>
+                <th style="width: 25%">Item</th>
+                <th style="width: 10%">HSN</th>
+                <th style="width: 8%; text-align: center;">Qty</th>
+                <th style="width: 12%; text-align: right;">Price</th>
+                <th style="width: 13%; text-align: right;">Amount</th>
+                <th style="width: 10%; text-align: center;">Tax Rate</th>
+                <th style="width: 15%; text-align: right;">Tax Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${bill?.items.map((item, index) => `
+                <tr>
+                  <td class="text-center">${index + 1}</td>
+                  <td>${item.item.name}</td>
+                  <td>${item.item.hsnCode}</td>
+                  <td class="text-center">${item.quantity}</td>
+                  <td class="text-right">₹${item.price.toFixed(2)}</td>
+                  <td class="text-right">₹${item.amount.toFixed(2)}</td>
+                  <td class="text-center">${item.item.taxRate}%</td>
+                  <td class="text-right">₹${item.taxAmount.toFixed(2)}</td>
+                </tr>
+              `).join('') || ''}
+            </tbody>
+          </table>
+          
+          <div class="summary-section">
+            <table class="summary-table">
+              <tr>
+                <td>Subtotal:</td>
+                <td>₹${bill?.subtotal.toFixed(2) || '0.00'}</td>
+              </tr>
+              
+              ${bill?.isIGST ? `
+                <tr>
+                  <td>IGST (${taxRate}%):</td>
+                  <td>₹${bill?.igst.toFixed(2) || '0.00'}</td>
+                </tr>
+              ` : `
+                <tr>
+                  <td>CGST (${taxRate / 2}%):</td>
+                  <td>₹${bill?.cgst.toFixed(2) || '0.00'}</td>
+                </tr>
+                <tr>
+                  <td>SGST (${taxRate / 2}%):</td>
+                  <td>₹${bill?.sgst.toFixed(2) || '0.00'}</td>
+                </tr>
+              `}
+              
+              <tr class="total-row">
+                <td>Total:</td>
+                <td>₹${bill?.total.toFixed(2) || '0.00'}</td>
+              </tr>
+            </table>
+            
+            <div class="amount-in-words">
+              <strong>Amount in words:</strong> ${numberToWords(bill?.total || 0)}
+            </div>
+          </div>
+          
+          ${profile?.bankDetails ? `
+            <div class="bank-details">
+              <h3>Bank Details</h3>
+              <p>${(profile.bankDetails || '').replace(/\\n/g, '<br>').replace(/(Account No\.|Bank Name|ISFC Code) -/g, '<br>$1 -').replace(/^<br>/, '')}</p>
+            </div>
+          ` : ''}
+          
+          <div class="footer">
+            <p>This is a system generated invoice</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    
