@@ -153,7 +153,9 @@ export default function BillsPage() {
 
     try {
       setCreatingPDF(true);
-      const res = await fetch("/api/bills/pdf-merge", {
+
+      // 1. Fetch array of fully populated HTML strings for each selected bill
+      const htmlResponse = await fetch("/api/bills/bulk-htmls", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,35 +163,118 @@ export default function BillsPage() {
         body: JSON.stringify({ billIds: selectedBills }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to create PDF");
+      if (!htmlResponse.ok) {
+        const errorData = await htmlResponse.json();
+        throw new Error(errorData.error || "Failed to fetch bill HTMLs");
+      }
+      const billHtmlsArray: string[] = await htmlResponse.json();
+
+      if (!billHtmlsArray || billHtmlsArray.length === 0) {
+        throw new Error("No HTML content received for selected bills.");
       }
 
-      // Convert the response to a blob and download it
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      
-      // Get filename from response headers or create a default one
-      const contentDisposition = res.headers.get('content-disposition');
-      let filename = 'bills.pdf';
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-        if (filenameMatch) {
-          filename = filenameMatch[1];
+      // 2. Fetch the base template to extract <head> content (styles, meta, title)
+      let templateHeadContent = '';
+      try {
+        const templateResponse = await fetch('/templates/billFormat.html'); // Adjusted path
+        if (!templateResponse.ok) {
+          console.error('Failed to fetch bill template for head. Status:', templateResponse.status);
+          alert('Error: Could not load the bill template styles.');
+          // Fallback or decide how to proceed if template head is crucial
+        } else {
+          const templateFullHtml = await templateResponse.text();
+          const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);
+          if (headMatch && headMatch[1]) {
+            templateHeadContent = headMatch[1];
+          }
         }
+      } catch (error) {
+        console.error('Error fetching bill template for head:', error);
+        alert('Error: Could not fetch the bill template for styles.');
       }
       
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // 3. Construct the full HTML for the new window
+      // Extract only the .invoice-container (or body content) from each billHTML
+      let combinedBillsBodyContent = '';
+      const parser = new DOMParser();
+      billHtmlsArray.forEach(fullBillHtml => {
+        const doc = parser.parseFromString(fullBillHtml, 'text/html');
+        const invoiceContainer = doc.querySelector('.invoice-container');
+        if (invoiceContainer) {
+            combinedBillsBodyContent += `<div class="bill-page">${invoiceContainer.outerHTML}</div>`;
+        } else {
+            // Fallback if .invoice-container is not found, maybe add the whole body
+            const bodyContent = doc.body.innerHTML;
+            if (bodyContent) {
+                 combinedBillsBodyContent += `<div class="bill-page">${bodyContent}</div>`;
+            }
+        }
+      });
+
+      const finalHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          ${templateHeadContent}
+          <title>Invoices</title>
+          <style>
+            /* Add styles for page breaks if not already in templateHeadContent or to ensure they are applied */
+            body {
+              /* Ensure Inter font is loaded if not already handled by template styles */
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+            .bill-page {
+              page-break-after: always;
+            }
+            .bill-page:last-child {
+              page-break-after: auto;
+            }
+            /* Ensure @media print styles from original template are effective */
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .invoice-container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+                border: none;
+              }
+               @page {
+                size: A4;
+                margin: 15mm;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${combinedBillsBodyContent}
+        </body>
+        </html>
+      `;
+
+      // 4. Open in new window and print
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(finalHtml);
+        printWindow.document.close();
+        
+        printWindow.onload = function() {
+          printWindow.focus();
+          printWindow.print();
+          // printWindow.close(); // Optional: close after print
+        };
+      } else {
+        alert('Failed to open print window. Please check your browser\'s pop-up blocker settings.');
+      }
+
     } catch (error) {
       console.error("Error creating PDF:", error);
-      alert("Failed to create PDF. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+      alert(`Failed to create PDF: ${errorMessage}`);
     } finally {
       setCreatingPDF(false);
     }
