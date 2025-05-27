@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { PDFDocument } from "pdf-lib";
-import puppeteer from "puppeteer";
 import { format } from "date-fns";
+import fs from "fs";
+import path from "path";
+import jsPDF from "jspdf";
 
 // Helper function to convert number to words
 function numberToWords(num: number): string {
   const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
   const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
   const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-  const thousandsArray = ['', 'Thousand', 'Lakh', 'Crore'];
 
   if (num === 0) return 'Zero';
 
@@ -63,12 +63,17 @@ function numberToWords(num: number): string {
   return result.trim() + ' Only';
 }
 
-// Generate HTML content for a bill
-async function generateBillHTML(bill: any, profile: any): Promise<string> {
+// Generate HTML content for a single bill using billFormat.html template
+function generateBillHTML(bill: any, profile: any): string {
   try {
+    // Read the billFormat.html template
+    const templatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
+    // console.log(templatePath);
+    let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+
     // Get tax rate safely
     const taxRate = bill?.items && bill.items.length > 0 ? bill.items[0].item.taxRate : 0;
-    
+
     // Generate items table HTML
     const itemsTableHTML = bill?.items.map((item: any, index: number) => `
       <tr>
@@ -99,7 +104,7 @@ async function generateBillHTML(bill: any, profile: any): Promise<string> {
         <td>₹${bill?.sgst.toFixed(2) || '0.00'}</td>
       </tr>
     `;
-    
+
     // Generate bank details HTML
     const bankDetailsHTML = profile?.bankDetails ? `
       <div class="bank-details">
@@ -107,7 +112,7 @@ async function generateBillHTML(bill: any, profile: any): Promise<string> {
         <p>${(profile.bankDetails || '').replace(/\n/g, '<br>')}</p>
       </div>
     ` : '';
-    
+
     // Generate delivery address HTML
     const deliveryAddressHTML = bill?.deliveryAddress ? `
       <div style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px;">
@@ -115,295 +120,29 @@ async function generateBillHTML(bill: any, profile: any): Promise<string> {
         <p>${(bill.deliveryAddress).replace(/\n/g, '<br>')}</p>
       </div>
     ` : '';
-    
-    // HTML template
-    const htmlTemplate = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Invoice #${bill?.billNumber}</title>
-        <meta charset="UTF-8">
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-          
-          * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-          }
-          
-          body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: #333;
-            line-height: 1.4;
-            padding: 0;
-            font-size: 11px;
-            background-color: white;
-          }
-          
-          .invoice-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border: 1px solid #eee;
-          }
-          
-          .invoice-header {
-            text-align: center;
-            margin-bottom: 20px;
-          }
-          
-          .invoice-header h1 {
-            font-size: 20px;
-            color: #000;
-            margin: 0;
-            font-weight: 700;
-            padding-bottom: 15px;
-          }
-          
-          .invoice-subheader {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 11px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-          }
-          
-          .info-item {
-            margin-bottom: 3px;
-          }
-          
-          .info-item .label {
-            font-weight: 500;
-            color: #555;
-          }
-          
-          .info-item .value {
-            font-weight: 500;
-          }
-          
-          .parties-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            gap: 40px;
-          }
-          
-          .party-info {
-            flex: 1;
-            font-size: 11px;
-          }
-          
-          .party-info h3 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #000;
-          }
-          
-          .party-info p {
-            margin-bottom: 3px;
-            line-height: 1.5;
-          }
-          
-          .party-name {
-            font-weight: 600;
-          }
-          
-          .details-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin: 0 0 10px 0;
-            color: #000;
-          }
-          
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            font-size: 11px;
-          }
-          
-          table thead th {
-            background-color: #fff;
-            color: #000;
-            font-weight: 600;
-            text-align: left;
-            padding: 10px;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-          }
-          
-          table tbody tr {
-            border-bottom: 1px solid #eee;
-          }
-          
-          table tbody td {
-            padding: 12px 10px;
-            color: #333;
-            vertical-align: middle;
-          }
-          
-          .text-center {
-            text-align: center;
-          }
-          
-          .text-right {
-            text-align: right;
-          }
-          
-          .summary-section {
-            margin-bottom: 25px;
-            margin-top: 10px;
-          }
-          
-          .summary-table {
-            width: 250px;
-            margin-left: auto;
-            border-collapse: collapse;
-          }
-          
-          .summary-table tr td {
-            padding: 5px 0;
-            text-align: right;
-          }
-          
-          .summary-table tr td:first-child {
-            text-align: left;
-            padding-right: 15px;
-          }
-          
-          .summary-table tr.total-row td {
-            padding-top: 6px;
-            font-weight: 600;
-            color: #000;
-            border-top: 1px solid #ddd;
-          }
-          
-          .amount-in-words {
-            margin: 0 0 25px 0;
-            padding: 0 0 10px 0;
-            font-size: 11px;
-            line-height: 1.5;
-            border-bottom: 1px solid #eee;
-          }
-          
-          .bank-details {
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-size: 11px;
-          }
-          
-          .bank-details h3 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #000;
-          }
-          
-          .bank-details p {
-            margin-bottom: 3px;
-            line-height: 1.5;
-          }
-          
-          .footer {
-            margin-top: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 10px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="invoice-container">
-          <div class="invoice-header">
-            <h1>TAX INVOICE</h1>
-          </div>
-          
-          <div class="invoice-subheader">
-            <div>
-              <div class="info-item">
-                <span class="label">Invoice #:</span>
-                <span class="value">${bill?.billNumber || ''}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">Date:</span>
-                <span class="value">${format(new Date(bill?.billDate || new Date()), "dd/MM/yyyy")}</span>
-              </div>
-            </div>
-            <div>
-              <div class="info-item">
-                <span class="label">Tax Type:</span>
-                <span class="value">${bill?.isIGST ? "IGST" : "CGST/SGST"}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="parties-container">
-            <div class="party-info">
-              <h3>Company Details</h3>
-              <p class="party-name">${profile?.firmName || ''}</p>
-              <p>${(profile?.address || '').replace(/\n/g, '<br>')}</p>
-              <p>GSTIN: ${profile?.gstNo || ''}</p>
-              ${profile?.phoneNo ? `<p>Phone: ${profile.phoneNo}</p>` : ''}
-            </div>
-            <div class="party-info">
-              <h3>Customer Details</h3>
-              <p class="party-name">${bill?.customer.name || ''}</p>
-              <p>${(bill?.customer.address || '').replace(/\n/g, '<br>')}</p>
-              <p>GSTIN: ${bill?.customer.gstNo || ''}</p>
-              ${deliveryAddressHTML}
-            </div>
-          </div>
-          
-          <h3 class="details-title">Items</h3>
-          <table>
-            <thead>
-              <tr>
-                <th style="width: 5%; text-align: center;">S.No.</th>
-                <th style="width: 25%">Item</th>
-                <th style="width: 10%">HSN</th>
-                <th style="width: 8%; text-align: center;">Qty</th>
-                <th style="width: 12%; text-align: right;">Price</th>
-                <th style="width: 13%; text-align: right;">Amount</th>
-                <th style="width: 10%; text-align: center;">Tax Rate</th>
-                <th style="width: 15%; text-align: right;">Tax Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsTableHTML}
-            </tbody>
-          </table>
-          
-          <div class="summary-section">
-            <table class="summary-table">
-              <tr>
-                <td>Subtotal:</td>
-                <td>₹${bill?.subtotal.toFixed(2) || '0.00'}</td>
-              </tr>
-              ${taxRowsHTML}
-              <tr class="total-row">
-                <td>Total:</td>
-                <td>₹${bill?.total.toFixed(2) || '0.00'}</td>
-              </tr>
-            </table>
-            
-            <div class="amount-in-words">
-              <strong>Amount in words:</strong> ${numberToWords(bill?.total || 0)}
-            </div>
-          </div>
-          
-          ${bankDetailsHTML}
-          
-          <div class="footer">
-            <p>This is a system generated invoice</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+
+    // Generate company phone HTML
+    const companyPhoneHTML = profile?.phoneNo ? `<p>Phone: ${profile.phoneNo}</p>` : '';
+
+    // Replace placeholders in the template
+    htmlTemplate = htmlTemplate
+      .replace(/{{BILL_NUMBER}}/g, bill?.billNumber || '')
+      .replace(/{{BILL_DATE}}/g, format(new Date(bill?.billDate || new Date()), "dd/MM/yyyy"))
+      .replace(/{{TAX_TYPE}}/g, bill?.isIGST ? "IGST" : "CGST/SGST")
+      .replace(/{{COMPANY_NAME}}/g, profile?.firmName || '')
+      .replace(/{{COMPANY_ADDRESS}}/g, (profile?.address || '').replace(/\n/g, '<br>'))
+      .replace(/{{COMPANY_GST}}/g, profile?.gstNo || '')
+      .replace(/{{COMPANY_PHONE}}/g, companyPhoneHTML)
+      .replace(/{{CUSTOMER_NAME}}/g, bill?.customer.name || '')
+      .replace(/{{CUSTOMER_ADDRESS}}/g, (bill?.customer.address || '').replace(/\n/g, '<br>'))
+      .replace(/{{CUSTOMER_GST}}/g, bill?.customer.gstNo || '')
+      .replace(/{{DELIVERY_ADDRESS}}/g, deliveryAddressHTML)
+      .replace(/{{ITEMS_TABLE}}/g, itemsTableHTML)
+      .replace(/{{SUBTOTAL}}/g, bill?.subtotal.toFixed(2) || '0.00')
+      .replace(/{{TAX_ROWS}}/g, taxRowsHTML)
+      .replace(/{{TOTAL}}/g, bill?.total.toFixed(2) || '0.00')
+      .replace(/{{AMOUNT_IN_WORDS}}/g, numberToWords(bill?.total || 0))
+      .replace(/{{BANK_DETAILS}}/g, bankDetailsHTML);
     
     return htmlTemplate;
   } catch (error) {
@@ -412,7 +151,295 @@ async function generateBillHTML(bill: any, profile: any): Promise<string> {
   }
 }
 
-// POST to generate and merge PDFs for selected bills
+// Generate consolidated HTML for all bills using the billFormat.html template
+function generateConsolidatedHTML(bills: any[], profile: any): string {
+  try {
+    // Read the billFormat.html template
+    const templatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
+    // console.log(templatePath);
+    let baseTemplate = fs.readFileSync(templatePath, 'utf8');
+    
+    // Modify the template to support multiple bills with page breaks
+    // First, extract the CSS and HTML structure
+    const cssMatch = baseTemplate.match(/<style>([\s\S]*?)<\/style>/);
+    const css = cssMatch ? cssMatch[1] : '';
+    
+    // Add page break CSS for multiple bills
+    const enhancedCSS = css + `
+    .invoice-container {
+      page-break-after: always;
+    }
+    
+    .invoice-container:last-child {
+      page-break-after: auto;
+    }`;
+    
+    // Start building consolidated HTML
+    let consolidatedHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consolidated Bills</title>
+  <meta charset="UTF-8">
+  <style>
+    ${enhancedCSS}
+  </style>
+</head>
+<body>`;
+
+    // Loop through each bill and generate HTML using the template
+    bills.forEach((bill, index) => {
+      // Generate individual bill HTML using the existing function
+      const billHTML = generateBillHTML(bill, profile);
+      
+      // Extract just the body content (everything inside <body> tags)
+      const bodyMatch = billHTML.match(/<body>([\s\S]*?)<\/body>/);
+      if (bodyMatch) {
+        consolidatedHTML += bodyMatch[1];
+      }
+    });
+
+    consolidatedHTML += `
+</body>
+</html>`;
+
+    return consolidatedHTML;
+  } catch (error) {
+    console.error('Error generating consolidated HTML:', error);
+    throw error;
+  }
+}
+
+// Convert HTML to PDF using Puppeteer
+async function convertHTMLToPDF(htmlContent: string, bills: any[], profile: any): Promise<Buffer> {
+  try {
+    const puppeteer = await import('puppeteer');
+    console.log(htmlContent);
+    const browser = await puppeteer.default.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '15mm', right: '15mm', bottom: '15mm', left: '15mm' }
+    });
+    
+    await browser.close();
+    return Buffer.from(pdfBuffer);
+  } catch (error) {
+    console.error('Error converting HTML to PDF:', error);
+    
+    // Fallback to simplified PDF generation if main method fails
+    console.log('Falling back to simplified PDF generation...');
+    return generateSimplifiedPDF(bills, profile);
+  }
+}
+
+// Fallback function for simplified PDF generation
+function generateSimplifiedPDF(bills: any[], profile: any): Buffer {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+  
+  // Set default font
+  doc.setFont('helvetica');
+  
+  let yPosition = 25;
+  const pageWidth = 210; // A4 width in mm
+  const margin = 20;
+  
+  // Loop through each bill and add to PDF
+  bills.forEach((bill, billIndex) => {
+    if (billIndex > 0) {
+      doc.addPage();
+    }
+    
+    yPosition = 25; // Reset position for each page
+    
+    // Header - TAX INVOICE (centered, bold, large)
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TAX INVOICE', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 20;
+    
+    // Invoice details
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Invoice #: ${bill?.billNumber || ''}`, margin, yPosition);
+    doc.text(`Date: ${format(new Date(bill?.billDate || new Date()), "dd/MM/yyyy")}`, pageWidth - margin - 40, yPosition);
+    yPosition += 10;
+    
+    doc.text(`Tax Type: ${bill?.isIGST ? "IGST" : "CGST/SGST"}`, margin, yPosition);
+    yPosition += 15;
+    
+    // Company Details
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Company Details', margin, yPosition);
+    yPosition += 8;
+    
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(profile?.firmName || '', margin, yPosition);
+    yPosition += 5;
+    
+    // Split and display company address
+    const companyAddress = (profile?.address || '').split('\n');
+    companyAddress.forEach((line: string) => {
+      doc.text(line, margin, yPosition);
+      yPosition += 4;
+    });
+    
+    doc.text(`GSTIN: ${profile?.gstNo || ''}`, margin, yPosition);
+    yPosition += 4;
+    if (profile?.phoneNo) {
+      doc.text(`Phone: ${profile.phoneNo}`, margin, yPosition);
+      yPosition += 4;
+    }
+    yPosition += 10;
+    
+    // Customer Details
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Customer Details', margin, yPosition);
+    yPosition += 8;
+    
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(bill?.customer.name || '', margin, yPosition);
+    yPosition += 5;
+    
+    // Split and display customer address
+    const customerAddress = (bill?.customer.address || '').split('\n');
+    customerAddress.forEach((line: string) => {
+      doc.text(line, margin, yPosition);
+      yPosition += 4;
+    });
+    
+    doc.text(`GSTIN: ${bill?.customer.gstNo || ''}`, margin, yPosition);
+    yPosition += 4;
+    
+    // Delivery address if exists
+    if (bill?.deliveryAddress) {
+      yPosition += 3;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Delivery Address:', margin, yPosition);
+      yPosition += 4;
+      
+      doc.setFont('helvetica', 'normal');
+      const deliveryAddress = bill.deliveryAddress.split('\n');
+      deliveryAddress.forEach((line: string) => {
+        doc.text(line, margin, yPosition);
+        yPosition += 4;
+      });
+    }
+    yPosition += 10;
+    
+    // Items section
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Items', margin, yPosition);
+    yPosition += 8;
+    
+    // Items table (simplified)
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('S.No.', margin, yPosition);
+    doc.text('Item', margin + 15, yPosition);
+    doc.text('HSN', margin + 60, yPosition);
+    doc.text('Qty', margin + 80, yPosition);
+    doc.text('Price', margin + 100, yPosition);
+    doc.text('Amount', margin + 125, yPosition);
+    doc.text('Tax%', margin + 150, yPosition);
+    doc.text('Tax Amt', margin + 170, yPosition);
+    yPosition += 6;
+    
+    // Draw line
+    doc.setDrawColor(0, 0, 0);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 4;
+    
+    // Items data
+    doc.setFont('helvetica', 'normal');
+    bill?.items?.forEach((item: any, index: number) => {
+      doc.text((index + 1).toString(), margin, yPosition);
+      doc.text(item.item.name.substring(0, 25), margin + 15, yPosition); // Truncate long names
+      doc.text(item.item.hsnCode, margin + 60, yPosition);
+      doc.text(item.quantity.toString(), margin + 80, yPosition);
+      doc.text(`₹${item.price.toFixed(2)}`, margin + 100, yPosition);
+      doc.text(`₹${item.amount.toFixed(2)}`, margin + 125, yPosition);
+      doc.text(`${item.item.taxRate}%`, margin + 150, yPosition);
+      doc.text(`₹${item.taxAmount.toFixed(2)}`, margin + 170, yPosition);
+      yPosition += 5;
+    });
+    
+    yPosition += 10;
+    
+    // Summary section
+    doc.setFont('helvetica', 'normal');
+    const summaryX = pageWidth - margin - 60;
+    
+    doc.text('Subtotal:', summaryX, yPosition);
+    doc.text(`₹${bill?.subtotal.toFixed(2) || '0.00'}`, summaryX + 30, yPosition);
+    yPosition += 5;
+    
+    // Tax rows
+    const taxRate = bill?.items && bill.items.length > 0 ? bill.items[0].item.taxRate : 0;
+    if (bill?.isIGST) {
+      doc.text(`IGST (${taxRate}%):`, summaryX, yPosition);
+      doc.text(`₹${bill?.igst.toFixed(2) || '0.00'}`, summaryX + 30, yPosition);
+      yPosition += 5;
+    } else {
+      doc.text(`CGST (${taxRate / 2}%):`, summaryX, yPosition);
+      doc.text(`₹${bill?.cgst.toFixed(2) || '0.00'}`, summaryX + 30, yPosition);
+      yPosition += 5;
+      doc.text(`SGST (${taxRate / 2}%):`, summaryX, yPosition);
+      doc.text(`₹${bill?.sgst.toFixed(2) || '0.00'}`, summaryX + 30, yPosition);
+      yPosition += 5;
+    }
+    
+    // Total
+    doc.setFont('helvetica', 'bold');
+    doc.text('Total:', summaryX, yPosition);
+    doc.text(`₹${bill?.total.toFixed(2) || '0.00'}`, summaryX + 30, yPosition);
+    yPosition += 10;
+    
+    // Amount in words
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Amount in words: ${numberToWords(bill?.total || 0)}`, margin, yPosition);
+    yPosition += 10;
+    
+    // Bank details
+    if (profile?.bankDetails) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Bank Details:', margin, yPosition);
+      yPosition += 5;
+      
+      doc.setFont('helvetica', 'normal');
+      const bankDetails = profile.bankDetails.split('\n');
+      bankDetails.forEach((line: string) => {
+        doc.text(line, margin, yPosition);
+        yPosition += 4;
+      });
+    }
+    
+    // Footer
+    doc.setFontSize(9);
+    doc.setTextColor(102, 102, 102);
+    doc.text('This is a system generated invoice', pageWidth / 2, 280, { align: 'center' });
+  });
+  
+  return Buffer.from(doc.output('arraybuffer'));
+}
+
+// POST to generate consolidated PDF for selected bills
 export async function POST(req: Request) {
   try {
     const session = await getServerSession();
@@ -477,71 +504,36 @@ export async function POST(req: Request) {
       },
     });
 
-    // Launch Puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    // Generate consolidated HTML for all bills
+    const consolidatedHTML = generateConsolidatedHTML(bills, profile);
+    
+    // Convert HTML to PDF (pass bills and profile for programmatic generation)
+    const pdfBuffer = await convertHTMLToPDF(consolidatedHTML, bills, profile);
+
+    // Generate filename with date range
+    const firstBillDate = format(new Date(bills[0].billDate), "dd-MM-yyyy");
+    const lastBillDate = format(new Date(bills[bills.length - 1].billDate), "dd-MM-yyyy");
+    const filename = bills.length === 1 
+      ? `Invoice_${bills[0].billNumber}.pdf`
+      : `Consolidated_Bills_${firstBillDate}_to_${lastBillDate}_${bills.length}bills.pdf`;
+
+    // Return the consolidated PDF
+    return new NextResponse(pdfBuffer, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+      },
     });
 
-    try {
-      // Create a merged PDF document
-      const mergedPdf = await PDFDocument.create();
-
-      // Generate PDF for each bill
-      for (const bill of bills) {
-        const htmlContent = await generateBillHTML(bill, profile);
-        
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-        const pdfBuffer = await page.pdf({
-          format: 'A4',
-          margin: {
-            top: '15mm',
-            right: '10mm',
-            bottom: '15mm',
-            left: '10mm',
-          },
-          printBackground: true,
-        });
-
-        await page.close();
-
-        // Add this PDF to the merged document
-        const pdfDoc = await PDFDocument.load(pdfBuffer);
-        const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
-        copiedPages.forEach((page) => mergedPdf.addPage(page));
-      }
-
-      await browser.close();
-
-      // Generate the final merged PDF
-      const mergedPdfBytes = await mergedPdf.save();
-
-      // Generate filename with date range
-      const firstBillDate = format(new Date(bills[0].billDate), "dd-MM-yyyy");
-      const lastBillDate = format(new Date(bills[bills.length - 1].billDate), "dd-MM-yyyy");
-      const filename = bills.length === 1 
-        ? `Invoice_${bills[0].billNumber}.pdf`
-        : `Bills_${firstBillDate}_to_${lastBillDate}_${bills.length}bills.pdf`;
-
-      // Return the merged PDF
-      return new NextResponse(mergedPdfBytes, {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${filename}"`,
-        },
-      });
-
-    } catch (error) {
-      await browser.close();
-      throw error;
-    }
-
   } catch (error) {
-    console.error("Error generating merged PDF:", error);
+    console.error("Error generating consolidated PDF:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: "Failed to create PDF. Please try again.",
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+      },
       { status: 500 }
     );
   }

@@ -223,17 +223,18 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMTczZGVkYzktYzJmNy00ZDE2LWE4MDYtNjNlZjMwYzc0YzVmIiwidGVuYW50X2lkIjoiOTI0YjBlN2RlZDgxYjA2NTMwNjJlM2I5MjNlMWQ2NWNlYmU3MGRjNDg3YjlmZWViYWQ4YWEwNmZiNzU2ZTA2YiIsImludGVybmFsX3NlY3JldCI6ImI5NWFhZjA2LTM4MTItNDA5OS04YzRhLTQ1Yjc0NGY0M2ZhOCJ9.oCFZT3HrND8BAvX_Xn7VMd_lstaP2SfBC0SNOQTeBwc"
+        "value": null
       }
     }
   },
   "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String     @id @default(uuid())\n  email     String     @unique\n  password  String\n  name      String?\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n  profile   Profile?\n  customers Customer[]\n  items     Item[]\n  bills     Bill[]\n}\n\nmodel Profile {\n  id          String  @id @default(uuid())\n  firmName    String\n  address     String\n  gstNo       String\n  phoneNo     String?\n  bankDetails String?\n  userId      String  @unique\n  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Customer {\n  id              String   @id @default(uuid())\n  name            String\n  address         String\n  deliveryAddress String?\n  gstNo           String\n  userId          String\n  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bills           Bill[]\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n}\n\nmodel Item {\n  id        String     @id @default(uuid())\n  name      String\n  hsnCode   String\n  taxRate   Float\n  userId    String\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  billItems BillItem[]\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n\nmodel Bill {\n  id              String     @id @default(uuid())\n  billNumber      String     @unique\n  billDate        DateTime   @default(now())\n  customerId      String\n  customer        Customer   @relation(fields: [customerId], references: [id])\n  userId          String\n  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  items           BillItem[]\n  isIGST          Boolean    @default(false)\n  subtotal        Float\n  cgst            Float      @default(0)\n  sgst            Float      @default(0)\n  igst            Float      @default(0)\n  total           Float\n  deliveryAddress String?\n  createdAt       DateTime   @default(now())\n  updatedAt       DateTime   @updatedAt\n}\n\nmodel BillItem {\n  id        String @id @default(uuid())\n  billId    String\n  bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)\n  itemId    String\n  item      Item   @relation(fields: [itemId], references: [id])\n  quantity  Int\n  price     Float\n  taxAmount Float\n  amount    Float\n}\n",
   "inlineSchemaHash": "144890895dbdbbc293923e020ac4f71a50cddce06814a082030b92c08e6fecba",
-  "copyEngine": false
+  "copyEngine": true
 }
 
 const fs = require('fs')
@@ -270,3 +271,9 @@ const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-darwin-arm64.dylib.node")
+// file annotations for bundling tools to include these files
+path.join(__dirname, "schema.prisma");
+path.join(process.cwd(), "src/generated/prisma/schema.prisma")
