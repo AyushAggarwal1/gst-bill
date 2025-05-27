@@ -61,7 +61,11 @@ export default function NewBillPage() {
           throw new Error("Failed to fetch customers");
         }
         const customersData = await customersRes.json();
-        setCustomers(customersData);
+        // Sort customers alphabetically by name
+        const sortedCustomers = customersData.sort((a: Customer, b: Customer) => 
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        );
+        setCustomers(sortedCustomers);
 
         // Fetch items
         const itemsRes = await fetch("/api/items");
@@ -69,7 +73,11 @@ export default function NewBillPage() {
           throw new Error("Failed to fetch items");
         }
         const itemsData = await itemsRes.json();
-        setItems(itemsData);
+        // Sort items alphabetically by name
+        const sortedItems = itemsData.sort((a: Item, b: Item) => 
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        );
+        setItems(sortedItems);
 
         // Generate a new bill number
         const billNumberRes = await fetch("/api/bills/nextBillNumber");

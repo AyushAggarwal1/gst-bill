@@ -30,6 +30,7 @@ export default function BillsPage() {
   const [customerName, setCustomerName] = useState("");
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [exporting, setExporting] = useState(false);
+  const [creatingPDF, setCreatingPDF] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [billToDelete, setBillToDelete] = useState<string | null>(null);
 
@@ -143,6 +144,57 @@ export default function BillsPage() {
     }
   };
 
+  // @ayushaggarwal1 -- function used to create pdf of the multi selected bills
+  const handleCreatePDF = async () => {
+    if (selectedBills.length === 0) {
+      alert("Please select at least one bill to create PDF");
+      return;
+    }
+
+    try {
+      setCreatingPDF(true);
+      const res = await fetch("/api/bills/pdf-merge", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ billIds: selectedBills }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to create PDF");
+      }
+
+      // Convert the response to a blob and download it
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      
+      // Get filename from response headers or create a default one
+      const contentDisposition = res.headers.get('content-disposition');
+      let filename = 'bills.pdf';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error creating PDF:", error);
+      alert("Failed to create PDF. Please try again.");
+    } finally {
+      setCreatingPDF(false);
+    }
+  };
+
   const openDeleteDialog = (id: string) => {
     setBillToDelete(id);
     setDeleteDialogOpen(true);
@@ -170,13 +222,28 @@ export default function BillsPage() {
             <h1 className="text-3xl font-bold text-gray-900">Bills</h1>
             <div className="flex space-x-3">
               {selectedBills.length > 0 && (
-                <button
-                  onClick={handleExportExcel}
-                  disabled={exporting}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                >
-                  {exporting ? "Exporting..." : `Export ${selectedBills.length} Bill${selectedBills.length > 1 ? 's' : ''}`}
-                </button>
+                <>
+                  <button
+                    onClick={handleCreatePDF}
+                    disabled={creatingPDF || exporting}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                  >
+                    <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {creatingPDF ? "Creating PDF..." : `Create PDF (${selectedBills.length})`}
+                  </button>
+                  <button
+                    onClick={handleExportExcel}
+                    disabled={exporting || creatingPDF}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                  >
+                    <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {exporting ? "Exporting..." : `Export Excel (${selectedBills.length})`}
+                  </button>
+                </>
               )}
               <Link
                 href="/dashboard/bills/new"
