@@ -184,7 +184,7 @@ export async function POST(req: Request) {
 
     const billHtmls = billsDetails.map(bill => generateBillHTML(bill, profile));
 
-    return NextResponse.json(billHtmls, { status: 200 });
+    return NextResponse.json({ htmls: billHtmls, companyName: profile?.firmName || 'Invoices' }, { status: 200 });
 
   } catch (error) {
     console.error("Error fetching bulk bill HTMLs:", error);

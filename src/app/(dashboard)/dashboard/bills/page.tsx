@@ -167,7 +167,7 @@ export default function BillsPage() {
         const errorData = await htmlResponse.json();
         throw new Error(errorData.error || "Failed to fetch bill HTMLs");
       }
-      const billHtmlsArray: string[] = await htmlResponse.json();
+      const { htmls: billHtmlsArray, companyName: companyNameForTitle } = await htmlResponse.json();
 
       if (!billHtmlsArray || billHtmlsArray.length === 0) {
         throw new Error("No HTML content received for selected bills.");
@@ -185,7 +185,9 @@ export default function BillsPage() {
           const templateFullHtml = await templateResponse.text();
           const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);
           if (headMatch && headMatch[1]) {
-            templateHeadContent = headMatch[1];
+            let rawHeadContent = headMatch[1];
+            // Remove any existing <title>...</title> tag from the raw head content
+            templateHeadContent = rawHeadContent.replace(/<title>[\s\S]*?<\/title>/i, '');
           }
         }
       } catch (error) {
@@ -197,7 +199,7 @@ export default function BillsPage() {
       // Extract only the .invoice-container (or body content) from each billHTML
       let combinedBillsBodyContent = '';
       const parser = new DOMParser();
-      billHtmlsArray.forEach(fullBillHtml => {
+      billHtmlsArray.forEach((fullBillHtml: string) => {
         const doc = parser.parseFromString(fullBillHtml, 'text/html');
         const invoiceContainer = doc.querySelector('.invoice-container');
         if (invoiceContainer) {
@@ -216,7 +218,7 @@ export default function BillsPage() {
         <html>
         <head>
           ${templateHeadContent}
-          <title>Invoices</title>
+          <title>${companyNameForTitle || 'Invoices'}</title>
           <style>
             /* Add styles for page breaks if not already in templateHeadContent or to ensure they are applied */
             body {
