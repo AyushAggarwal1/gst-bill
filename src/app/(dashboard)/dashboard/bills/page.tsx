@@ -58,7 +58,13 @@ export default function BillsPage() {
         throw new Error("Failed to fetch bills");
       }
       const data = await res.json();
-      setBills(data);
+      // Sort bills by billNumber (descending)
+      const sortedBills = data.sort((a: Bill, b: Bill) => {
+        // Assuming billNumber is a string that represents a number.
+        // If billNumber can have non-numeric prefixes/suffixes, this might need adjustment for natural sort.
+        return parseInt(b.billNumber, 10) - parseInt(a.billNumber, 10);
+      });
+      setBills(sortedBills);
       // Clear selected bills when filter changes
       setSelectedBills([]);
     } catch (error) {
