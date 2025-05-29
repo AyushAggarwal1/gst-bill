@@ -14,17 +14,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Permission {
+  CREATE_BILLS
+  READ_BILLS
+  UPDATE_BILLS
+  DELETE_BILLS
+  CREATE_CUSTOMERS
+  READ_CUSTOMERS
+  UPDATE_CUSTOMERS
+  DELETE_CUSTOMERS
+  CREATE_ITEMS
+  READ_ITEMS
+  UPDATE_ITEMS
+  DELETE_ITEMS
+  INVITE_USERS
+}
+
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
-  password  String
+  password  String?
   name      String?
+  isAdmin   Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   profile   Profile?
   customers Customer[]
   items     Item[]
   bills     Bill[]
+  roles     UserRole[]
+  sentInvitations Invitation[] @relation("SentInvitations")
+  receivedInvitation Invitation? @relation("ReceivedInvitation")
+}
+
+model UserRole {
+  id          String @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        Role
+  permissions Permission[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, role])
+}
+
+model Invitation {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  role         Role
+  permissions  Permission[]
+  invitedById  String
+  invitedBy    User      @relation("SentInvitations", fields: [invitedById], references: [id])
+  invitedUserId String?   @unique
+  invitedUser  User?     @relation("ReceivedInvitation", fields: [invitedUserId], references: [id])
+  token        String    @unique
+  expiresAt    DateTime
+  status       String    @default("PENDING")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Profile {

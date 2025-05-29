@@ -17,6 +17,20 @@ export default function DashboardLayout({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Extend the session user type to include isAdmin (if not already there)
+  // This is an example; adjust based on your actual session user type
+  interface SessionUser extends Record<string, any> {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    isAdmin?: boolean; // Add this if not present
+    role?: string; // Or you might have a role string
+  }
+  
+  const typedSession = session as { user: SessionUser } | null;
+  const isAdmin = typedSession?.user?.isAdmin || typedSession?.user?.role === 'ADMIN'; // Adjust as needed
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -73,6 +87,26 @@ export default function DashboardLayout({
         </svg>
       )
     },
+    // {
+    //   name: "Invitations",
+    //   href: "/dashboard/invitations",
+    //   adminOnly: true,
+    //   icon: (
+    //     <svg className="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 016-6h6a6 6 0 016 6v1h-3M15 21H9M15 21H9m12-3a9 9 0 11-18 0 9 9 0 0118 0zM20 14v6m-3-3h6" />
+    //     </svg>
+    //   )
+    // },
+    {
+      name: "User Management",
+      href: "/dashboard/user-management",
+      adminOnly: true,
+      icon: (
+        <svg className="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm-1 1a2 2 0 10-4 0 2 2 0 004 0zm7 0a2 2 0 10-4 0 2 2 0 004 0zm-7-4a2 2 0 10-4 0 2 2 0 004 0z" />
+        </svg>
+      )
+    },
     // { name: "Profile", href: "/dashboard/profile" },
     // { name: "Auth Logs", href: "/dashboard/auth-logs" },
   ];
@@ -95,18 +129,20 @@ export default function DashboardLayout({
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
                   {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`${
-                        isActive(item.href)
-                          ? "bg-indigo-700 text-white"
-                          : "text-white hover:bg-indigo-500"
-                      } px-3 py-2 rounded-md text-sm font-medium flex items-center`}
-                    >
-                      {item.icon}
-                      {item.name}
-                    </Link>
+                    (!item.adminOnly || (item.adminOnly && isAdmin)) && (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`${
+                          isActive(item.href)
+                            ? "bg-indigo-700 text-white"
+                            : "text-white hover:bg-indigo-500"
+                        } px-3 py-2 rounded-md text-sm font-medium flex items-center`}
+                      >
+                        {item.icon}
+                        {item.name}
+                      </Link>
+                    )
                   ))}
                 </div>
               </div>
@@ -159,18 +195,20 @@ export default function DashboardLayout({
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`${
-                  isActive(item.href)
-                    ? "bg-indigo-700 text-white"
-                    : "text-white hover:bg-indigo-500"
-                } block px-3 py-2 rounded-md text-base font-medium flex items-center`}
-              >
-                {item.icon}
-                {item.name}
-              </Link>
+              (!item.adminOnly || (item.adminOnly && isAdmin)) && (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`${
+                    isActive(item.href)
+                      ? "bg-indigo-700 text-white"
+                      : "text-white hover:bg-indigo-500"
+                  } block px-3 py-2 rounded-md text-base font-medium flex items-center`}
+                >
+                  {item.icon}
+                  {item.name}
+                </Link>
+              )
             ))}
             <Link
               href="/dashboard/profile"

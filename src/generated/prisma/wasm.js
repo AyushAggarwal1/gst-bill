@@ -125,6 +125,30 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   password: 'password',
   name: 'name',
+  isAdmin: 'isAdmin',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserRoleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  role: 'role',
+  permissions: 'permissions',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvitationScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  role: 'role',
+  permissions: 'permissions',
+  invitedById: 'invitedById',
+  invitedUserId: 'invitedUserId',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -201,10 +225,31 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Role = exports.$Enums.Role = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+};
 
+exports.Permission = exports.$Enums.Permission = {
+  CREATE_BILLS: 'CREATE_BILLS',
+  READ_BILLS: 'READ_BILLS',
+  UPDATE_BILLS: 'UPDATE_BILLS',
+  DELETE_BILLS: 'DELETE_BILLS',
+  CREATE_CUSTOMERS: 'CREATE_CUSTOMERS',
+  READ_CUSTOMERS: 'READ_CUSTOMERS',
+  UPDATE_CUSTOMERS: 'UPDATE_CUSTOMERS',
+  DELETE_CUSTOMERS: 'DELETE_CUSTOMERS',
+  CREATE_ITEMS: 'CREATE_ITEMS',
+  READ_ITEMS: 'READ_ITEMS',
+  UPDATE_ITEMS: 'UPDATE_ITEMS',
+  DELETE_ITEMS: 'DELETE_ITEMS',
+  INVITE_USERS: 'INVITE_USERS'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
+  UserRole: 'UserRole',
+  Invitation: 'Invitation',
   Profile: 'Profile',
   Customer: 'Customer',
   Item: 'Item',
