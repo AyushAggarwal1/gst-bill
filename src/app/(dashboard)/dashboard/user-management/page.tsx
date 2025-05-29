@@ -51,6 +51,8 @@ export default function UserManagementPage() {
   const [invitations, setInvitations] = useState<InvitationData[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingInvitations, setLoadingInvitations] = useState(false);
+  const [initialUsersFetchAttempted, setInitialUsersFetchAttempted] = useState(false);
+  const [initialInvitationsFetchAttempted, setInitialInvitationsFetchAttempted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'users' | 'invitations' | 'inviteNew'>('users');
   
@@ -74,7 +76,7 @@ export default function UserManagementPage() {
   const allPermissionsList = Object.values(Permission);
 
   const fetchUsers = useCallback(async () => {
-    if (loadingUsers) return;
+    if (loadingUsers) return; 
     try {
       setLoadingUsers(true);
       const response = await fetch('/api/users', {
@@ -89,14 +91,15 @@ export default function UserManagementPage() {
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load users');
-      setUsers([]);
+      setUsers([]); 
     } finally {
       setLoadingUsers(false);
+      setInitialUsersFetchAttempted(true);
     }
-  }, [typedSession?.user?.id, loadingUsers]);
+  }, [typedSession?.user?.id]);
 
   const fetchInvitations = useCallback(async () => {
-    if (loadingInvitations) return;
+    if (loadingInvitations) return; 
     try {
       setLoadingInvitations(true);
       const response = await fetch('/api/invitations', {
@@ -114,8 +117,9 @@ export default function UserManagementPage() {
       setInvitations([]);
     } finally {
       setLoadingInvitations(false);
+      setInitialInvitationsFetchAttempted(true);
     }
-  }, [typedSession?.user?.id, loadingInvitations]);
+  }, [typedSession?.user?.id]);
 
   useEffect(() => {
     if (sessionStatus === 'loading') return; 
@@ -126,14 +130,14 @@ export default function UserManagementPage() {
     }
 
     if (isAdmin) {
-      if (users.length === 0 && !loadingUsers) {
+      if (!initialUsersFetchAttempted && !loadingUsers) {
         fetchUsers();
       }
-      if (invitations.length === 0 && !loadingInvitations) {
+      if (!initialInvitationsFetchAttempted && !loadingInvitations) {
         fetchInvitations();
       }
     }
-  }, [sessionStatus, isAdmin, router, users.length, invitations.length, loadingUsers, loadingInvitations, fetchUsers, fetchInvitations]);
+  }, [sessionStatus, isAdmin, router, initialUsersFetchAttempted, initialInvitationsFetchAttempted, loadingUsers, loadingInvitations, fetchUsers, fetchInvitations]);
 
   const refetchUsers = useCallback(async () => {
     await fetchUsers();
@@ -499,6 +503,7 @@ export default function UserManagementPage() {
       setInviteEmail('');
       setInviteSelectedRole(Role.USER);
       setInviteSelectedPermissions([]);
+      setInitialInvitationsFetchAttempted(false);
       refetchInvitations();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -565,9 +570,9 @@ export default function UserManagementPage() {
       {activeTab === 'users' && (
         <section id="registered-users">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 sr-only">Active Users</h2>
-          {loadingUsers ? <Spinner /> : users.length === 0 ? (
+          {loadingUsers ? <Spinner /> : users.length === 0 && initialUsersFetchAttempted ? (
              <p className="text-center py-10 text-gray-500">No registered users found.</p>
-          ) : (
+          ) : loadingUsers ? <Spinner /> : (
             <div className="overflow-x-auto bg-white shadow-md rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -628,9 +633,9 @@ export default function UserManagementPage() {
       {activeTab === 'invitations' && (
         <section id="invitations">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 sr-only">Invitations</h2>
-          {loadingInvitations ? <Spinner /> : invitations.length === 0 ? (
+          {loadingInvitations ? <Spinner /> : invitations.length === 0 && initialInvitationsFetchAttempted ? (
             <p className="text-center py-10 text-gray-500">No invitations found.</p>
-          ) : (
+          ) : loadingInvitations ? <Spinner /> : (
             <div className="overflow-x-auto bg-white shadow-md rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
