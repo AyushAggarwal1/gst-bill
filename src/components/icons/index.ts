@@ -15,6 +15,8 @@ export { default as ClearFilterIcon } from './ClearFilterIcon';
 export { default as FilterIcon } from './FilterIcon';
 export { default as ChevronDownIcon } from './ChevronDownIcon';
 export { default as ChevronUpIcon } from './ChevronUpIcon';
+export { default as TableIcon } from './TableIcon';
+export { default as KebabMenuIcon } from './KebabMenuIcon';
 
 // If other icons like UserManagementIcon, SearchIcon, etc., are indeed 
 // located in this directory (src/components/icons/),

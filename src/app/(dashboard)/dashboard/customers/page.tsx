@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import { format } from 'date-fns';
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Spinner from "@/components/Spinner";
-import { AddIcon, EditIcon, DeleteIcon } from "@/components/icons";
+import { AddIcon, EditIcon, DeleteIcon, KebabMenuIcon } from "@/components/icons";
 
 interface Customer {
   id: string;
@@ -23,6 +23,7 @@ export default function CustomersPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCustomers();
@@ -122,7 +123,7 @@ export default function CustomersPage() {
               placeholder="Search customers by name, GST No, or address..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full md:w-2/3 lg:w-1/2 pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block w-full pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
         </div>
@@ -167,52 +168,134 @@ export default function CustomersPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white shadow-md sm:rounded-lg overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GST No</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                    <th scope="col" className="relative px-6 py-3">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredCustomers.map((customer) => (
-                    <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {customer.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {customer.gstNo || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {customer.address || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {format(new Date(customer.createdAt), 'dd MMM yyyy')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <Link
-                          href={`/dashboard/customers/edit/${customer.id}`}
-                          className="inline-flex items-center text-indigo-600 hover:text-indigo-900 font-medium mr-3"
-                        >
-                          <EditIcon /> Edit
-                        </Link>
-                        <button
-                          onClick={() => openDeleteDialog(customer.id)}
-                          className="inline-flex items-center text-red-600 hover:text-red-900 font-medium"
-                        >
-                          <DeleteIcon /> Delete
-                        </button>
-                      </td>
+            <div>
+              {/* Desktop Table View - Hidden on mobile */}
+              <div className="hidden md:block bg-white shadow-md sm:rounded-lg overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GST No</th>
+                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                      <th scope="col" className="relative px-1 py-3">
+                        <span className="sr-only">Actions</span>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredCustomers.map((customer) => (
+                      <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {customer.name}
+                        </td>
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {customer.gstNo || 'N/A'}
+                        </td>
+                        <td className="px-3 sm:px-6 py-4 whitespace-normal text-sm text-gray-500 break-words">
+                          {customer.address || 'N/A'}
+                        </td>
+                        <td className="px-1 py-4 whitespace-nowrap text-center text-sm font-medium relative">
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
+                            className="p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
+                          >
+                            <KebabMenuIcon className="h-5 w-5 text-gray-500" />
+                          </button>
+                          {openMenuId === customer.id && (
+                            <div
+                              className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                              role="menu"
+                              aria-orientation="vertical"
+                              aria-labelledby="menu-button"
+                              onMouseLeave={() => setOpenMenuId(null)}
+                            >
+                              <div className="py-1" role="none">
+                                <Link
+                                  href={`/dashboard/customers/edit/${customer.id}`}
+                                  className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
+                                  role="menuitem"
+                                  onClick={() => setOpenMenuId(null)}
+                                >
+                                  <EditIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
+                                  Edit
+                                </Link>
+                                <button
+                                  onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
+                                  className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
+                                  role="menuitem"
+                                >
+                                  <DeleteIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View - Hidden on md and up */}
+              <div className="block md:hidden space-y-4">
+                {filteredCustomers.map((customer) => (
+                  <div key={customer.id} className="bg-white shadow rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-semibold text-gray-800">{customer.name}</h3>
+                        {customer.gstNo && (
+                           <p className="text-sm text-gray-600 mt-1">
+                            <span className="font-medium">GST:</span> {customer.gstNo}
+                          </p>
+                        )}
+                        {customer.address && (
+                          <p className="text-sm text-gray-600 mt-1">
+                             <span className="font-medium">Address:</span> {customer.address}
+                          </p>
+                        )}
+                      </div>
+                      <div className="ml-4 flex-shrink-0 relative">
+                        <button
+                          onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
+                          className="p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
+                        >
+                          <KebabMenuIcon className="h-5 w-5 text-gray-500" />
+                        </button>
+                        {openMenuId === customer.id && (
+                          <div
+                            className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20" // Increased z-index
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby={`menu-button-${customer.id}`}
+                            onMouseLeave={() => setOpenMenuId(null)}
+                          >
+                            <div className="py-1" role="none">
+                              <Link
+                                href={`/dashboard/customers/edit/${customer.id}`}
+                                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
+                                role="menuitem"
+                                onClick={() => setOpenMenuId(null)}
+                              >
+                                <EditIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
+                                Edit
+                              </Link>
+                              <button
+                                onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
+                                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
+                                role="menuitem"
+                              >
+                                <DeleteIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
