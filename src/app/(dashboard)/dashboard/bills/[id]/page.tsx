@@ -291,7 +291,9 @@ export default function BillDetailPage({ params }: BillParams) {
               <PrintIcon /> <span className="ml-1.5">Print</span>
             </button>
             <button
-              onClick={handleDownloadPDF}
+              // onClick={handleDownloadPDF}
+              // disabled={true}
+              onClick={handlePrint}
               className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 disabled:opacity-50"
             >
               <DownloadIcon /> <span className="ml-1.5">Download PDF</span>
