@@ -52,6 +52,14 @@ export default function EditInvitationModal({
     );
   };
 
+  const handleSelectAllPermissions = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedPermissions([...allPermissions]);
+    } else {
+      setSelectedPermissions([]);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!invitation) return;
     setIsLoading(true);
@@ -144,6 +152,20 @@ export default function EditInvitationModal({
                                 </label>
                               </div>
                             ))}
+                            {allPermissions.length > 0 && (
+                              <div className="mt-2 flex items-center">
+                                <input
+                                  id="permission-edit-select-all"
+                                  type="checkbox"
+                                  checked={selectedPermissions.length === allPermissions.length}
+                                  onChange={(e) => handleSelectAllPermissions(e.target.checked)}
+                                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <label htmlFor="permission-edit-select-all" className="ml-2 block text-sm font-medium text-gray-700">
+                                  Select All Permissions
+                                </label>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

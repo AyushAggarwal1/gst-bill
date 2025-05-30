@@ -31,77 +31,113 @@ export default function EditUserModal({
   onClose,
   user,
   onSave,
-  allRoles,
+  allRoles, // Should ideally not include ADMIN if isAdmin toggle handles it
   allPermissions
 }: EditUserModalProps) {
   const [name, setName] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [selectedRoles, setSelectedRoles] = useState<UserRoleData[]>([]);
+  const [isAdminFlag, setIsAdminFlag] = useState(false); // Renamed to avoid conflict
+  const [selectedRoleData, setSelectedRoleData] = useState<UserRoleData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentEditingRole, setCurrentEditingRole] = useState<Role | null>(null);
+  // const [currentEditingRole, setCurrentEditingRole] = useState<Role | null>(null); // No longer needed for single role
 
   useEffect(() => {
     if (user) {
       setName(user.name || '');
-      setIsAdmin(user.isAdmin);
-      // Deep copy roles to avoid direct state mutation issues
-      setSelectedRoles(user.roles ? JSON.parse(JSON.stringify(user.roles)) : []); 
+      setIsAdminFlag(user.isAdmin);
+      if (user.isAdmin) {
+        // If admin, set role to ADMIN and grant all permissions
+        setSelectedRoleData({ role: Role.ADMIN, permissions: [...allPermissions] });
+      } else if (user.roles && user.roles.length > 0) {
+        // If not admin, use the first role assigned (assuming one primary role)
+        // Deep copy to avoid direct state mutation
+        const primaryRole = user.roles[0];
+        setSelectedRoleData({ role: primaryRole.role, permissions: [...primaryRole.permissions] });
+      } else {
+        // Default to USER role with no permissions if not admin and no roles defined
+        setSelectedRoleData({ role: Role.USER, permissions: [] });
+      }
     } else {
+      // Reset state if no user
       setName('');
-      setIsAdmin(false);
-      setSelectedRoles([]);
+      setIsAdminFlag(false);
+      setSelectedRoleData({ role: Role.USER, permissions: [] }); // Default for new/cleared user
     }
-  }, [user]);
+  }, [user, allPermissions]); // Add allPermissions to dependency array
 
-  const handleRoleChange = (index: number, newRoleEnum: Role) => {
-    const updatedRoles = [...selectedRoles];
-    // Prevent duplicate roles being assigned
-    if (!updatedRoles.find((r, i) => i !== index && r.role === newRoleEnum)) {
-        updatedRoles[index].role = newRoleEnum;
-        // Optional: Reset permissions when role changes, or try to map existing ones if applicable
-        // updatedRoles[index].permissions = []; 
-        setSelectedRoles(updatedRoles);
-    }
-  };
-
-  const handlePermissionChange = (roleIndex: number, permission: Permission) => {
-    const updatedRoles = [...selectedRoles];
-    const currentPermissions = updatedRoles[roleIndex].permissions || [];
-    if (currentPermissions.includes(permission)) {
-      updatedRoles[roleIndex].permissions = currentPermissions.filter(p => p !== permission);
+  const handleIsAdminChange = (checked: boolean) => {
+    setIsAdminFlag(checked);
+    if (checked) {
+      // When isAdmin is true, set role to ADMIN and all permissions
+      setSelectedRoleData({ role: Role.ADMIN, permissions: [...allPermissions] });
     } else {
-      updatedRoles[roleIndex].permissions = [...currentPermissions, permission];
-    }
-    setSelectedRoles(updatedRoles);
-  };
-
-  const addRole = () => {
-    // Add a default role, ensure it's not a duplicate of an existing role type if possible
-    const existingRoleTypes = selectedRoles.map(r => r.role);
-    const availableRoleToAdd = allRoles.find(r => !existingRoleTypes.includes(r));
-    
-    if (selectedRoles.length < allRoles.length) { // Only add if there are roles available to be added
-        setSelectedRoles([...selectedRoles, { role: availableRoleToAdd || allRoles[0], permissions: [] }]);
+      // When isAdmin is false, revert to USER role (or a default non-admin role)
+      // and clear permissions or set to a default set for USER.
+      // Here, defaulting to USER with no permissions.
+      // Consider keeping previous non-admin role if that's desired UX.
+      setSelectedRoleData({ role: Role.USER, permissions: [] });
     }
   };
 
-  const removeRole = (index: number) => {
-    const updatedRoles = selectedRoles.filter((_, i) => i !== index);
-    setSelectedRoles(updatedRoles);
+  const handleRoleChange = (newRoleEnum: Role) => {
+    // This function is now for non-admin roles only.
+    // ADMIN role is handled by isAdminFlag.
+    if (!isAdminFlag && newRoleEnum !== Role.ADMIN) {
+      setSelectedRoleData(prev => ({
+        ...(prev || { role: newRoleEnum, permissions: [] }), // Ensure prev is not null
+        role: newRoleEnum,
+        // Reset permissions when role changes if desired, or keep them if applicable
+        permissions: [] 
+      }));
+    }
+  };
+
+  const handlePermissionChange = (permission: Permission) => {
+    // Only allow permission changes if not isAdmin and a role is selected
+    if (!isAdminFlag && selectedRoleData) {
+      const currentPermissions = selectedRoleData.permissions || [];
+      let updatedPermissions;
+      if (currentPermissions.includes(permission)) {
+        updatedPermissions = currentPermissions.filter(p => p !== permission);
+      } else {
+        updatedPermissions = [...currentPermissions, permission];
+      }
+      setSelectedRoleData(prev => prev ? { ...prev, permissions: updatedPermissions } : null);
+    }
+  };
+
+  const handleSelectAllPermissionsForRole = (isChecked: boolean) => {
+    if (!isAdminFlag && selectedRoleData) {
+      if (isChecked) {
+        setSelectedRoleData(prev => prev ? { ...prev, permissions: [...allPermissions] } : null);
+      } else {
+        setSelectedRoleData(prev => prev ? { ...prev, permissions: [] } : null);
+      }
+    }
   };
 
   const handleSubmit = async () => {
-    if (!user) return;
+    if (!user || !selectedRoleData) return; // Ensure selectedRoleData is not null
     setIsLoading(true);
     try {
+      const rolesToSave: UserRoleData[] = [];
+      if (isAdminFlag) {
+        // If isAdmin is true, ensure role is ADMIN with all permissions
+        rolesToSave.push({ role: Role.ADMIN, permissions: [...allPermissions] });
+      } else if (selectedRoleData.role !== Role.ADMIN) {
+         // If not admin, save the selected role and its permissions
+        rolesToSave.push({ role: selectedRoleData.role, permissions: selectedRoleData.permissions || [] });
+      } else {
+        // Edge case: if somehow isAdmin is false but role is ADMIN, default to USER.
+        // This shouldn't happen with the current logic but good for safety.
+        rolesToSave.push({ role: Role.USER, permissions: selectedRoleData.permissions || []});
+      }
+
       await onSave(user.id, { 
-        name: name === user.name ? undefined : name, // Send only if changed
-        isAdmin: isAdmin === user.isAdmin ? undefined : isAdmin, // Send only if changed
-        // Always send roles for full replacement strategy on backend
-        // Or implement more granular role update if backend supports it
-        roles: selectedRoles 
+        name: name === user.name ? undefined : name,
+        isAdmin: isAdminFlag, // Directly use the state for isAdmin
+        roles: rolesToSave // Send the structured roles array
       });
-      // onClose(); // Parent handles closing and messages
+      // onClose(); // Parent handles this
     } catch (error) {
       console.error("Error saving user from modal:", error);
       // Optionally, display error in modal
@@ -111,6 +147,9 @@ export default function EditUserModal({
   };
 
   if (!user) return null;
+
+  // Filter out ADMIN from selectable roles if isAdmin toggle handles it
+  const selectableRoles = allRoles.filter(r => r !== Role.ADMIN);
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -162,66 +201,82 @@ export default function EditUserModal({
                       <input 
                         id="isAdmin" 
                         type="checkbox" 
-                        checked={isAdmin}
-                        onChange={(e) => setIsAdmin(e.target.checked)}
+                        checked={isAdminFlag}
+                        onChange={(e) => handleIsAdminChange(e.target.checked)}
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
                       <label htmlFor="isAdmin" className="ml-2 block text-sm font-medium text-gray-700">System Administrator</label>
                     </div>
 
-                    {/* Roles and Permissions Section */}
-                    <div>
-                        <h4 className="text-md font-medium text-gray-800 mb-2">Roles & Permissions</h4>
-                        {selectedRoles.map((userRole, roleIndex) => (
-                            <div key={roleIndex} className="mb-4 p-3 border rounded-md bg-gray-50">
-                                <div className="flex justify-between items-center mb-2">
-                                    <select 
-                                        value={userRole.role}
-                                        onChange={(e) => handleRoleChange(roleIndex, e.target.value as Role)}
-                                        className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                                    >
-                                        {allRoles.map(r => (
-                                            <option key={r} value={r} disabled={selectedRoles.some((sr, sri) => sr.role === r && sri !== roleIndex)}>
-                                                {r.charAt(0).toUpperCase() + r.slice(1).toLowerCase()}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <button 
-                                        onClick={() => removeRole(roleIndex)} 
-                                        className="ml-2 text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-100 text-sm"
-                                     >
-                                      Remove Role
-                                   </button>
+                    {/* Roles and Permissions Section - Conditional rendering based on isAdmin */}
+                    {!isAdminFlag && selectedRoleData && (
+                      <div>
+                          <h4 className="text-md font-medium text-gray-800 mb-2">Role & Permissions</h4>
+                          <div className="mb-4 p-3 border rounded-md bg-gray-50">
+                              <div className="flex justify-between items-center mb-2">
+                                  <select 
+                                      value={selectedRoleData.role}
+                                      onChange={(e) => handleRoleChange(e.target.value as Role)}
+                                      disabled={isAdminFlag} // Disable if admin
+                                      className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm disabled:bg-gray-100"
+                                  >
+                                      {/* Show only non-ADMIN roles here */}
+                                      {selectableRoles.map(r => (
+                                          <option key={r} value={r}>
+                                              {r.charAt(0).toUpperCase() + r.slice(1).toLowerCase()}
+                                          </option>
+                                      ))}
+                                  </select>
+                                  {/* Remove role button is not needed if we manage a single role */}
+                              </div>
+                              <label className="block text-sm font-medium text-gray-600 mb-1">Permissions for {selectedRoleData.role}:</label>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1">
+                                  {allPermissions.map(permission => (
+                                      <div key={permission} className="flex items-center">
+                                          <input 
+                                              id={`perm-${permission}`}// Simpler ID
+                                              type="checkbox" 
+                                              checked={selectedRoleData.permissions.includes(permission)}
+                                              onChange={() => handlePermissionChange(permission)}
+                                              disabled={isAdminFlag} // Disable if admin
+                                              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:bg-gray-200"
+                                          />
+                                          <label htmlFor={`perm-${permission}`} className={`ml-2 text-sm ${isAdminFlag ? 'text-gray-400' : 'text-gray-700'}`}>
+                                              {permission.split('_').map(s=>s.charAt(0).toUpperCase() + s.substring(1).toLowerCase()).join(' ')}
+                                          </label>
+                                      </div>
+                                  ))}
+                              </div>
+                              {/* Select All for non-admin role permissions */}
+                              {!isAdminFlag && selectedRoleData && allPermissions.length > 0 && (
+                                <div className="mt-3 flex items-center">
+                                  <input 
+                                    id="user-role-select-all-permissions"
+                                    type="checkbox"
+                                    checked={selectedRoleData.permissions.length === allPermissions.length}
+                                    onChange={(e) => handleSelectAllPermissionsForRole(e.target.checked)}
+                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                  />
+                                  <label 
+                                    htmlFor="user-role-select-all-permissions" 
+                                    className="ml-2 text-sm font-medium text-gray-700"
+                                  >
+                                    Select All Permissions for {selectedRoleData.role}
+                                  </label>
                                 </div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Permissions for {userRole.role}:</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1">
-                                    {allPermissions.map(permission => (
-                                        <div key={permission} className="flex items-center">
-                                            <input 
-                                                id={`perm-${roleIndex}-${permission}`}
-                                                type="checkbox" 
-                                                checked={userRole.permissions.includes(permission)}
-                                                onChange={() => handlePermissionChange(roleIndex, permission)}
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            />
-                                            <label htmlFor={`perm-${roleIndex}-${permission}`} className="ml-2 text-sm text-gray-700">
-                                                {permission.split('_').map(s=>s.charAt(0).toUpperCase() + s.substring(1).toLowerCase()).join(' ')}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                        {selectedRoles.length < allRoles.length && (
-                            <button 
-                                onClick={addRole} 
-                                className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 border border-indigo-500 hover:bg-indigo-50 px-3 py-1 rounded-md"
-                            >
-                                + Add Role
-                            </button>
-                        )}
-                    </div>
-
+                              )}
+                          </div>
+                      </div>
+                    )}
+                    {isAdminFlag && (
+                        <div className="p-3 border rounded-md bg-indigo-50 text-indigo-700">
+                            <p className="text-sm font-medium">
+                                As a System Administrator, this user has the <span className="font-bold">ADMIN</span> role and all permissions.
+                            </p>
+                            <p className="text-xs mt-1">To assign a different role or specific permissions, uncheck "System Administrator".</p>
+                        </div>
+                    )}
+                    {/* Remove "Add Role" button as we manage a single role or admin status */}
                   </div>
                 </div>
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

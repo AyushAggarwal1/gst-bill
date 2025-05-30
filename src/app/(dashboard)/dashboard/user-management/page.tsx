@@ -8,6 +8,38 @@ import { Role, Permission } from '@/generated/prisma';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import EditInvitationModal from '@/components/EditInvitationModal';
 import EditUserModal, { UserDataForModal, UserRoleData } from '@/components/EditUserModal';
+import PermissionBadges from '@/components/PermissionBadges';
+
+// SVG Icons (Heroicons or similar simple style)
+const EditIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+  </svg>
+);
+
+const DeleteIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.56 0c1.153 0 2.243.032 3.223.094M7.5 5.25l.47-2.551a.75.75 0 01.684-.528h4.692a.75.75 0 01.684.528l.47 2.551M5.25 5.25h13.5" />
+  </svg>
+);
+
+const RevokeIcon = () => (
+ <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+  </svg>
+);
+
+const getRoleBadgeClasses = (role: Role | string): string => {
+  switch (role) {
+    case Role.ADMIN:
+      return 'bg-purple-100 text-purple-800';
+    case Role.USER:
+      return 'bg-sky-100 text-sky-800';
+    // Add more cases for other roles if they exist
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
 
 // Spinner component (defined at the module level, before the main component)
 const Spinner = () => (
@@ -469,6 +501,14 @@ export default function UserManagementPage() {
     );
   };
 
+  const handleInviteSelectAllPermissions = (isChecked: boolean) => {
+    if (isChecked) {
+      setInviteSelectedPermissions([...allPermissionsList]);
+    } else {
+      setInviteSelectedPermissions([]);
+    }
+  };
+
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setInviteIsLoading(true);
@@ -514,6 +554,24 @@ export default function UserManagementPage() {
     }
   };
 
+  useEffect(() => {
+    if (actionMessage) {
+      const timer = setTimeout(() => {
+        setActionMessage(null);
+      }, 5000); // Auto-dismiss after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [actionMessage]);
+
+  useEffect(() => {
+    if (inviteMessage) {
+      const timer = setTimeout(() => {
+        setInviteMessage(null);
+      }, 5000); // Auto-dismiss after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [inviteMessage]);
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <header className="mb-8">
@@ -521,11 +579,19 @@ export default function UserManagementPage() {
       </header>
 
       {error && <div className="p-4 mb-6 rounded-md bg-red-50 text-red-700">Error: {error}</div>}
+      
       {actionMessage && (
         <div 
-          className={`p-4 mb-6 rounded-md ${actionMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
+          className={`p-4 mb-6 rounded-md relative ${actionMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
         >
-          {actionMessage.text}
+          <span>{actionMessage.text}</span>
+          <button 
+            onClick={() => setActionMessage(null)} 
+            className="absolute top-1 right-2 text-xl font-semibold leading-none hover:opacity-75"
+            aria-label="Close message"
+          >
+            &times;
+          </button>
         </div>
       )}
       
@@ -568,12 +634,18 @@ export default function UserManagementPage() {
       </div>
 
       {activeTab === 'users' && (
-        <section id="registered-users">
+        <section id="registered-users" className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 sr-only">Active Users</h2>
           {loadingUsers ? <Spinner /> : users.length === 0 && initialUsersFetchAttempted ? (
-             <p className="text-center py-10 text-gray-500">No registered users found.</p>
+             <div className="text-center py-12">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No Registered Users</h3>
+                <p className="mt-1 text-sm text-gray-500">Get started by inviting new users or wait for sign-ups.</p>
+              </div>
           ) : loadingUsers ? <Spinner /> : (
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+            <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -588,35 +660,56 @@ export default function UserManagementPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {users.map(user => (
-                    <tr key={user.id}>
+                    <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150 ease-in-out">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name || 'N/A'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.isAdmin ? 'Yes' : 'No'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {user.roles.map(r => r.role).join(', ') || 'Default'}
+                        <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${user.isAdmin ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                          {user.isAdmin ? 'Yes' : 'No'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {user.roles.flatMap(r => r.permissions).length > 0 
-                          ? user.roles.flatMap(r => r.permissions).map(p => p.split('_').map(s=>s.charAt(0).toUpperCase() + s.substring(1).toLowerCase()).join(' ')).join(', ') 
-                          : 'N/A'}
+                        {user.roles && user.roles.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {user.roles.map((r, index) => (
+                              <span 
+                                key={index} 
+                                className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClasses(r.role)}`}
+                              >
+                                {r.role.charAt(0).toUpperCase() + r.role.slice(1).toLowerCase()}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClasses('USER')}`}>USER</span> // Default if no roles, or adjust as needed
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 align-top">
+                        <PermissionBadges 
+                            permissions={user.roles.flatMap(r => r.permissions)} 
+                            initialLimit={2}
+                            badgeColorClass="bg-blue-100 text-blue-800"
+                        />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(user.createdAt), 'dd MMM yyyy')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
                             <button 
                                 onClick={() => openEditUserModal(user)} 
-                                className="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out"
+                                className="flex items-center text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out px-2 py-1 hover:bg-indigo-50 rounded-md"
+                                title="Edit User"
                                 disabled={loadingUsers}
                             >
-                                Edit
+                                <EditIcon /> Edit
                             </button>
                             {user.id !== currentUserId && (
                                 <button 
                                     onClick={() => openDeleteUserDialog(user)} 
-                                    className="text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out"
+                                    className="flex items-center text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out px-2 py-1 hover:bg-red-50 rounded-md"
+                                    title="Delete User"
                                     disabled={loadingUsers}
                                 >
-                                    Delete
+                                    <DeleteIcon /> Delete
                                 </button>
                             )}
                         </div>
@@ -631,12 +724,18 @@ export default function UserManagementPage() {
       )}
 
       {activeTab === 'invitations' && (
-        <section id="invitations">
+        <section id="invitations" className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 sr-only">Invitations</h2>
           {loadingInvitations ? <Spinner /> : invitations.length === 0 && initialInvitationsFetchAttempted ? (
-            <p className="text-center py-10 text-gray-500">No invitations found.</p>
+            <div className="text-center py-12">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No Pending Invitations</h3>
+              <p className="mt-1 text-sm text-gray-500">Use the 'Invite New User' tab to send out new invitations.</p>
+            </div>
           ) : loadingInvitations ? <Spinner /> : (
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+            <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -658,7 +757,7 @@ export default function UserManagementPage() {
                     const invitationLink = `${baseUrl}/accept-invitation?token=${invite.token}`;
                     
                     return (
-                      <tr key={invite.id}>
+                      <tr key={invite.id} className="hover:bg-gray-50 transition-colors duration-150 ease-in-out">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{invite.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -668,11 +767,17 @@ export default function UserManagementPage() {
                                 {invite.status}
                             </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{invite.role}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {invite.permissions.length > 0 
-                              ? invite.permissions.map(p => p.split('_').map(s=>s.charAt(0).toUpperCase() + s.substring(1).toLowerCase()).join(' ')).join(', ') 
-                              : 'N/A'}
+                           <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClasses(invite.role)}`}>
+                                {invite.role.charAt(0).toUpperCase() + invite.role.slice(1).toLowerCase()}
+                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-500 align-top">
+                           <PermissionBadges 
+                            permissions={invite.permissions} 
+                            initialLimit={2}
+                            badgeColorClass="bg-purple-100 text-purple-800"
+                           />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(invite.createdAt), 'dd MMM yyyy HH:mm')}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(invite.expiresAt), 'dd MMM yyyy HH:mm')}</td>
@@ -687,20 +792,22 @@ export default function UserManagementPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           {invite.status === 'PENDING' && (
-                            <div className="flex space-x-2">
+                            <div className="flex space-x-1">
                               <button 
                                 onClick={() => openEditInvitationModal(invite)}
-                                className="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out"
+                                className="flex items-center text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out px-2 py-1 hover:bg-indigo-50 rounded-md"
+                                title="Edit Invitation"
                                 disabled={loadingInvitations}
                               >
-                                Edit
+                                <EditIcon /> Edit
                               </button>
                               <button 
                                 onClick={() => openRevokeDialog(invite)}
-                                className="text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out"
+                                className="flex items-center text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out px-2 py-1 hover:bg-red-50 rounded-md"
+                                title="Revoke Invitation"
                                 disabled={loadingInvitations}
                               >
-                                Revoke
+                                <RevokeIcon /> Revoke
                               </button>
                             </div>
                           )}
@@ -717,13 +824,20 @@ export default function UserManagementPage() {
       )}
 
       {activeTab === 'inviteNew' && (
-        <section id="invite-new-user">
+        <section id="invite-new-user" className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Invite New User</h2>
           {inviteMessage && (
             <div 
-              className={`p-4 mb-6 rounded-md ${inviteMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
+              className={`p-4 mb-6 rounded-md relative ${inviteMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
             >
-              {inviteMessage.text}
+              <span>{inviteMessage.text}</span>
+              <button 
+                onClick={() => setInviteMessage(null)} 
+                className="absolute top-1 right-2 text-xl font-semibold leading-none hover:opacity-75"
+                aria-label="Close message"
+              >
+                &times;
+              </button>
             </div>
           )}
           <form onSubmit={handleInviteSubmit} className="bg-white shadow-md rounded-lg p-8 space-y-6 max-w-2xl mx-auto">
@@ -782,6 +896,21 @@ export default function UserManagementPage() {
                  {allPermissionsList.length === 0 && <p className="col-span-full text-sm text-gray-500">No permissions available to assign.</p>}
               </div>
             </div>
+
+            {allPermissionsList.length > 0 && (
+              <div className="flex items-center mt-3 mb-2">
+                <input
+                  id="invite-select-all-permissions"
+                  type="checkbox"
+                  checked={inviteSelectedPermissions.length === allPermissionsList.length}
+                  onChange={(e) => handleInviteSelectAllPermissions(e.target.checked)}
+                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+                <label htmlFor="invite-select-all-permissions" className="ml-2 text-sm font-medium text-gray-700">
+                  Select All Permissions
+                </label>
+              </div>
+            )}
 
             <div className="pt-4">
               <button
