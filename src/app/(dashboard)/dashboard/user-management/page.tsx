@@ -11,6 +11,7 @@ import EditUserModal, { UserDataForModal, UserRoleData } from '@/components/Edit
 import PermissionBadges from '@/components/PermissionBadges';
 import Spinner from "@/components/Spinner";
 import { EditIcon, DeleteIcon, RevokeIcon } from "@/components/icons";
+import WorkInProgressBanner from "@/components/WorkInProgressBanner";
 
 const getRoleBadgeClasses = (role: Role | string): string => {
   switch (role) {
@@ -833,6 +834,8 @@ export default function UserManagementPage() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">User & Invitation Management</h1>
       </header>
+
+      <WorkInProgressBanner pageName="User Management" />
 
       {error && <div className="p-4 mb-6 rounded-md bg-red-50 text-red-700">Error: {error}</div>}
       
