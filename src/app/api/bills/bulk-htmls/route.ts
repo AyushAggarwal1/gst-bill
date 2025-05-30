@@ -4,59 +4,109 @@ import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import fs from "fs";
 import path from "path";
+import NumberToWords from "@/components/NumberToWords";
 
 // Helper function to convert number to words (copied from pdf-merge/route.ts)
-function numberToWords(num: number): string {
-  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-  const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+// function numberToWords(num: number): string {
+//   const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+//   const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+//   const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
-  if (num === 0) return 'Zero';
+//   if (num === 0) return 'Zero';
 
-  function convertHundreds(n: number): string {
-    let result = '';
-    if (n >= 100) {
-      result += ones[Math.floor(n / 100)] + ' Hundred ';
-      n %= 100;
-    }
-    if (n >= 20) {
-      result += tens[Math.floor(n / 10)] + ' ';
-      n %= 10;
-    } else if (n >= 10) {
-      result += teens[n - 10] + ' ';
-      return result.trim(); // trim here to avoid double space if ones[n] is empty
-    }
-    if (n > 0) {
-      result += ones[n] + ' ';
-    }
-    return result.trim();
-  }
+//   function convertHundreds(n: number): string {
+//     let result = '';
+//     if (n >= 100) {
+//       result += ones[Math.floor(n / 100)] + ' Hundred ';
+//       n %= 100;
+//     }
+//     if (n >= 20) {
+//       result += tens[Math.floor(n / 10)] + ' ';
+//       n %= 10;
+//     } else if (n >= 10) {
+//       result += teens[n - 10] + ' ';
+//       return result.trim(); // trim here to avoid double space if ones[n] is empty
+//     }
+//     if (n > 0) {
+//       result += ones[n] + ' ';
+//     }
+//     return result.trim();
+//   }
 
-  let result = '';
-  const crores = Math.floor(num / 10000000);
-  if (crores > 0) {
-    result += convertHundreds(crores) + ' Crore ';
-    num %= 10000000;
-  }
-  const lakhs = Math.floor(num / 100000);
-  if (lakhs > 0) {
-    result += convertHundreds(lakhs) + ' Lakh ';
-    num %= 100000;
-  }
-  const thousands = Math.floor(num / 1000);
-  if (thousands > 0) {
-    result += convertHundreds(thousands) + ' Thousand ';
-    num %= 1000;
-  }
-  if (num > 0) { // This is for the remaining hundreds part
-    result += convertHundreds(num);
-  }
+//   let result = '';
+//   const crores = Math.floor(num / 10000000);
+//   if (crores > 0) {
+//     result += convertHundreds(crores) + ' Crore ';
+//     num %= 10000000;
+//   }
+//   const lakhs = Math.floor(num / 100000);
+//   if (lakhs > 0) {
+//     result += convertHundreds(lakhs) + ' Lakh ';
+//     num %= 100000;
+//   }
+//   const thousands = Math.floor(num / 1000);
+//   if (thousands > 0) {
+//     result += convertHundreds(thousands) + ' Thousand ';
+//     num %= 1000;
+//   }
+//   if (num > 0) { // This is for the remaining hundreds part
+//     result += convertHundreds(num);
+//   }
 
-  // Ensure result is trimmed and "Only" is appended correctly
-  result = result.trim();
-  if (result === '') return 'Zero Only'; // Handle if num was 0 initially or became 0
-  return result + ' Only';
-}
+//   // Ensure result is trimmed and "Only" is appended correctly
+//   result = result.trim();
+//   if (result === '') return 'Zero Only'; // Handle if num was 0 initially or became 0
+//   return result + ' Only';
+// }
+
+// function numberToWords(num: number): string {
+//   const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+//   const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  
+//   function convertLessThanOneThousand(n: number): string {
+//     if (n === 0) return '';
+//     if (n < 20) return units[n];
+//     if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + units[n % 10] : '');
+//     return units[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' ' + convertLessThanOneThousand(n % 100) : '');
+//   }
+
+//   if (num === 0) {
+//     return 'Zero Rupees Only';
+//   }
+
+//   // Get integer and decimal parts
+//   let rupeesValue = Math.floor(num);
+//   const paise = Math.round((num - rupeesValue) * 100);
+
+//   let result = '';
+  
+//     if (rupeesValue >= 10000000) {
+//       result += convertLessThanOneThousand(Math.floor(rupeesValue / 10000000)) + ' Crore ';
+//       rupeesValue %= 10000000;
+//     }
+    
+//     if (rupeesValue >= 100000) {
+//       result += convertLessThanOneThousand(Math.floor(rupeesValue / 100000)) + ' Lakh ';
+//       rupeesValue %= 100000;
+//     }
+    
+//     if (rupeesValue >= 1000) {
+//       result += convertLessThanOneThousand(Math.floor(rupeesValue / 1000)) + ' Thousand ';
+//       rupeesValue %= 1000;
+//     }
+    
+//     if (rupeesValue > 0) {
+//       result += convertLessThanOneThousand(rupeesValue);
+//     }
+    
+//   result += (rupeesValue > 0 || paise > 0) ? (rupeesValue > 0 ? ' Rupees' : '') : 'Zero Rupees';
+  
+//   if (paise > 0) {
+//     result += (rupeesValue > 0 ? ' and ' : '') + convertLessThanOneThousand(paise) + ' Paise';
+//   }
+  
+//   return result.trim() + ' Only';
+// }
 
 // Generate HTML content for a single bill (copied and adapted from pdf-merge/route.ts)
 function generateBillHTML(bill: any, profile: any): string {
@@ -127,7 +177,7 @@ function generateBillHTML(bill: any, profile: any): string {
       .replace(/{{SUBTOTAL}}/g, bill?.subtotal?.toFixed(2) || '0.00')
       .replace(/{{TAX_ROWS}}/g, taxRowsHTML)
       .replace(/{{TOTAL}}/g, bill?.total?.toFixed(2) || '0.00')
-      .replace(/{{AMOUNT_IN_WORDS}}/g, numberToWords(bill?.total || 0))
+      .replace(/{{AMOUNT_IN_WORDS}}/g, NumberToWords(bill?.total || 0))
       .replace(/{{BANK_DETAILS}}/g, bankDetailsHTML);
     
     return htmlTemplate;

@@ -7,56 +7,58 @@ import { format } from "date-fns";
 import Spinner from "@/components/Spinner";
 import { PrintIcon, DownloadIcon, DeleteIcon, BackIcon } from "@/components/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import NumberToWords from "@/components/NumberToWords";
 
+// @ayushaggarwal1 this is original code for number to words
 // Helper function to convert number to words
-function numberToWords(num: number): string {
-  const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+// function numberToWords(num: number): string {
+//   const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+//   const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
   
-  function convertLessThanOneThousand(n: number): string {
-    if (n === 0) return '';
-    if (n < 20) return units[n];
-    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + units[n % 10] : '');
-    return units[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' ' + convertLessThanOneThousand(n % 100) : '');
-  }
+//   function convertLessThanOneThousand(n: number): string {
+//     if (n === 0) return '';
+//     if (n < 20) return units[n];
+//     if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + units[n % 10] : '');
+//     return units[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' ' + convertLessThanOneThousand(n % 100) : '');
+//   }
 
-  if (num === 0) {
-    return 'Zero Rupees Only';
-  }
+//   if (num === 0) {
+//     return 'Zero Rupees Only';
+//   }
 
-  // Get integer and decimal parts
-  let rupeesValue = Math.floor(num);
-  const paise = Math.round((num - rupeesValue) * 100);
+//   // Get integer and decimal parts
+//   let rupeesValue = Math.floor(num);
+//   const paise = Math.round((num - rupeesValue) * 100);
 
-  let result = '';
+//   let result = '';
   
-    if (rupeesValue >= 10000000) {
-      result += convertLessThanOneThousand(Math.floor(rupeesValue / 10000000)) + ' Crore ';
-      rupeesValue %= 10000000;
-    }
+//     if (rupeesValue >= 10000000) {
+//       result += convertLessThanOneThousand(Math.floor(rupeesValue / 10000000)) + ' Crore ';
+//       rupeesValue %= 10000000;
+//     }
     
-    if (rupeesValue >= 100000) {
-      result += convertLessThanOneThousand(Math.floor(rupeesValue / 100000)) + ' Lakh ';
-      rupeesValue %= 100000;
-    }
+//     if (rupeesValue >= 100000) {
+//       result += convertLessThanOneThousand(Math.floor(rupeesValue / 100000)) + ' Lakh ';
+//       rupeesValue %= 100000;
+//     }
     
-    if (rupeesValue >= 1000) {
-      result += convertLessThanOneThousand(Math.floor(rupeesValue / 1000)) + ' Thousand ';
-      rupeesValue %= 1000;
-    }
+//     if (rupeesValue >= 1000) {
+//       result += convertLessThanOneThousand(Math.floor(rupeesValue / 1000)) + ' Thousand ';
+//       rupeesValue %= 1000;
+//     }
     
-    if (rupeesValue > 0) {
-      result += convertLessThanOneThousand(rupeesValue);
-    }
+//     if (rupeesValue > 0) {
+//       result += convertLessThanOneThousand(rupeesValue);
+//     }
     
-  result += (rupeesValue > 0 || paise > 0) ? (rupeesValue > 0 ? ' Rupees' : '') : 'Zero Rupees';
+//   result += (rupeesValue > 0 || paise > 0) ? (rupeesValue > 0 ? ' Rupees' : '') : 'Zero Rupees';
   
-  if (paise > 0) {
-    result += (rupeesValue > 0 ? ' and ' : '') + convertLessThanOneThousand(paise) + ' Paise';
-  }
+//   if (paise > 0) {
+//     result += (rupeesValue > 0 ? ' and ' : '') + convertLessThanOneThousand(paise) + ' Paise';
+//   }
   
-  return result.trim() + ' Only';
-}
+//   return result.trim() + ' Only';
+// }
 
 interface BillParams {
   params: {
@@ -198,7 +200,7 @@ export default function BillDetailPage({ params }: BillParams) {
         .replace(/{{SUBTOTAL}}/g, bill?.subtotal.toFixed(2) || '0.00')
         .replace(/{{TAX_ROWS}}/g, taxRowsHTML)
         .replace(/{{TOTAL}}/g, bill?.total.toFixed(2) || '0.00')
-        .replace(/{{AMOUNT_IN_WORDS}}/g, numberToWords(bill?.total || 0))
+        .replace(/{{AMOUNT_IN_WORDS}}/g, NumberToWords(bill?.total || 0))
         .replace(/{{BANK_DETAILS}}/g, bankDetailsHTML);
     printWindow.document.write(printContent);
     printWindow.document.close();
@@ -388,7 +390,7 @@ export default function BillDetailPage({ params }: BillParams) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 print:grid-cols-3 print:gap-4 print:mb-4">
             <div className="md:col-span-2">
                 <h3 className="text-md font-semibold text-gray-700 mb-1">Amount in words:</h3>
-                <p className="text-sm text-gray-600 capitalize">{numberToWords(bill.total)}</p>
+                <p className="text-sm text-gray-600 capitalize">{NumberToWords(bill.total)}</p>
                 
                 {profile && profile.bankDetails && (
                 <div className="mt-6 print:mt-3">
