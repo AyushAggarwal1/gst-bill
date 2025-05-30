@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { Transition } from "@headlessui/react";
 
 interface Bill {
   id: string;
@@ -28,18 +29,21 @@ export default function BillsPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [customerName, setCustomerName] = useState("");
+  const [billNumberSearch, setBillNumberSearch] = useState("");
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [exporting, setExporting] = useState(false);
   const [creatingPDF, setCreatingPDF] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [billToDelete, setBillToDelete] = useState<string | null>(null);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   // Add a ref for the customer name input to focus after clearing
   const customerNameInputRef = useRef<HTMLInputElement>(null);
+  const billNumberInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchBills();
-  }, [startDate, endDate, customerName]);
+  }, [startDate, endDate, customerName, billNumberSearch]);
 
   const fetchBills = async () => {
     try {
@@ -51,6 +55,7 @@ export default function BillsPage() {
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
       if (customerName) params.append("customerName", customerName);
+      if (billNumberSearch) params.append("billNumber", billNumberSearch);
       
       if (params.toString()) {
         url += `?${params.toString()}`;
@@ -289,7 +294,10 @@ export default function BillsPage() {
     setStartDate("");
     setEndDate("");
     setCustomerName("");
-    if(customerNameInputRef.current) {
+    setBillNumberSearch("");
+    if(billNumberInputRef.current) {
+      billNumberInputRef.current.focus();
+    } else if (customerNameInputRef.current) {
       customerNameInputRef.current.focus();
     }
     // fetchBills() will be called by the useEffect due to state changes
@@ -338,10 +346,70 @@ export default function BillsPage() {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Filters Section */}
         <div className="bg-white shadow sm:rounded-lg p-4 md:p-6 mb-6 print:hidden">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Filters</h2>
-          <div className="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-end">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 md:block hidden">Filters</h2>
+          
+          {/* Mobile Filter Header - Bill No Search and Toggle Button */}
+          <div className="md:hidden mb-4">
+            <label htmlFor="billNumberSearchMobile" className="block text-sm font-medium text-gray-700 mb-1">
+              Search Bill Number
+            </label>
+            <div className="flex items-center space-x-2">
+              <div className="relative flex-grow">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  ref={billNumberInputRef}
+                  type="text"
+                  name="billNumberSearchMobile"
+                  id="billNumberSearchMobile"
+                  placeholder="Enter Bill No."
+                  value={billNumberSearch}
+                  onChange={(e) => setBillNumberSearch(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+              <button 
+                onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
+                className="p-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50"
+                aria-label="Toggle more filters"
+              >
+                <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 12h9.75m-9.75 6h9.75M3.75 6.75h1.5M3.75 12h1.5m-2.25 5.25h1.5M6 6l-1.5-1.5M6 12l-1.5-1.5M6 18l-1.5-1.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Filters Grid - Hidden on small screens by default then shown by md:grid */}
+          <div className="hidden md:grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2 md:grid-cols-4 items-end">
+            {/* Bill Number Filter - For Desktop */}
+            <div className="sm:col-span-1 md:col-span-1">
+              <label htmlFor="billNumberSearchDesktop" className="block text-sm font-medium text-gray-700 mb-1">
+                Bill Number
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  name="billNumberSearchDesktop"
+                  id="billNumberSearchDesktop"
+                  placeholder="Search by bill no."
+                  value={billNumberSearch}
+                  onChange={(e) => setBillNumberSearch(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
+            {/* Customer, Date, Clear Filters for Desktop... (rest of the desktop filters) */}
             {/* Customer Name Filter */}
-            <div className="sm:col-span-1 md:col-span-1 lg:col-span-1">
+            <div className="sm:col-span-1 md:col-span-1">
               <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">
                 Customer Name
               </label>
@@ -365,7 +433,7 @@ export default function BillsPage() {
             </div>
 
             {/* Start Date Filter */}
-            <div className="sm:col-span-1 md:col-span-1 lg:col-span-1">
+            <div className="sm:col-span-1 md:col-span-1">
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
                 From Date
               </label>
@@ -380,7 +448,7 @@ export default function BillsPage() {
             </div>
 
             {/* End Date Filter */}
-            <div className="sm:col-span-1 md:col-span-1 lg:col-span-1">
+            <div className="sm:col-span-1 md:col-span-1">
               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
                 To Date
               </label>
@@ -393,21 +461,102 @@ export default function BillsPage() {
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
-
-            {/* Clear Filters Button */}
-            <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 flex items-end justify-start lg:justify-end">
-              <button
-                onClick={handleClearFilters}
-                type="button"
-                className="mt-2 lg:mt-0 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto lg:w-full"
-              >
-                 <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-                Clear Filters
-              </button>
+            
+            {/* Clear Filters Button - Desktop */}
+             <div className="sm:col-span-4 md:col-span-4 flex items-end justify-end pt-2">
+                <button
+                    onClick={handleClearFilters}
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    Clear All Filters
+                </button>
             </div>
           </div>
+
+          {/* Collapsible Mobile Filters Panel */}
+          <Transition
+            show={isMobileFiltersOpen}
+            as={Fragment}
+            enter="transition ease-out duration-200 transform"
+            enterFrom="opacity-0 -translate-y-5"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-150 transform"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 -translate-y-5"
+          >
+            <div className="mt-4 md:hidden border-t border-gray-200 pt-4 space-y-4">
+              {/* Customer Name Filter - Mobile */}
+              <div>
+                <label htmlFor="customerNameMobile" className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer Name
+                </label>
+                <div className="relative">
+                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                     <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                       <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                     </svg>
+                   </div>
+                  <input
+                    type="text"
+                    name="customerNameMobile"
+                    id="customerNameMobile"
+                    placeholder="Search by customer"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Start Date Filter - Mobile */}
+              <div>
+                <label htmlFor="startDateMobile" className="block text-sm font-medium text-gray-700 mb-1">
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  name="startDateMobile"
+                  id="startDateMobile"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              {/* End Date Filter - Mobile */}
+              <div>
+                <label htmlFor="endDateMobile" className="block text-sm font-medium text-gray-700 mb-1">
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  name="endDateMobile"
+                  id="endDateMobile"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              {/* Clear Filters Button - Mobile */}
+              <div className="flex justify-end pt-2">
+                  <button
+                      onClick={() => { handleClearFilters(); setIsMobileFiltersOpen(false); }}
+                      type="button"
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                      <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                      </svg>
+                      Clear All Filters
+                  </button>
+              </div>
+            </div>
+          </Transition>
         </div>
 
         {/* Bills List / Empty State */}
@@ -431,10 +580,10 @@ export default function BillsPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h2m-2 2h2m-2 2h2M9 9h2m-2 2h2m-2 2h2" />
               </svg>
               <h3 className="mt-4 text-xl font-medium text-gray-800">
-                {customerName || startDate || endDate ? 'No Bills Found Matching Filters' : 'No Bills Yet'}
+                {customerName || startDate || endDate || billNumberSearch ? 'No Bills Found Matching Filters' : 'No Bills Yet'}
               </h3>
               <p className="mt-2 text-sm text-gray-500">
-                {customerName || startDate || endDate ? 'Try adjusting your search criteria or clear the filters.' : 'Get started by creating a new bill.'}
+                {customerName || startDate || endDate || billNumberSearch ? 'Try adjusting your search criteria or clear the filters.' : 'Get started by creating a new bill.'}
               </p>
               <div className="mt-8">
                 <Link
