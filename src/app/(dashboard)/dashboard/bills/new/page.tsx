@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Spinner from "@/components/Spinner";
+import { DeleteIcon } from "@/components/icons";
 
 interface Customer {
   id: string;
@@ -215,336 +217,342 @@ export default function NewBillPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
-    <div>
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900">Create New Bill</h1>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <form onSubmit={handleSubmit}>
-              <div className="px-4 py-5 sm:p-6">
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-md">
-                    {error}
-                  </div>
-                )}
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <form onSubmit={handleSubmit}>
+            <div className="px-4 py-5 sm:p-6">
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 text-sm text-red-700 rounded-lg">
+                  {error}
+                </div>
+              )}
 
-                <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                  {/* Bill Details Section */}
-                  <div className="sm:col-span-3">
-                    <label htmlFor="billNumber" className="block text-sm font-medium text-gray-700">
-                      Bill Number
+              <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                {/* Bill Details Section */}
+                <div className="sm:col-span-3">
+                  <label htmlFor="billNumber" className="block text-sm font-medium text-gray-700">
+                    Bill Number
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      name="billNumber"
+                      id="billNumber"
+                      required
+                      value={billData.billNumber}
+                      onChange={handleBillDataChange}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="billDate" className="block text-sm font-medium text-gray-700">
+                    Bill Date
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="date"
+                      name="billDate"
+                      id="billDate"
+                      required
+                      value={billData.billDate}
+                      onChange={handleBillDataChange}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-4">
+                  <label htmlFor="customerId" className="block text-sm font-medium text-gray-700">
+                    Customer
+                  </label>
+                  <div className="mt-1">
+                    <select
+                      id="customerId"
+                      name="customerId"
+                      required
+                      value={billData.customerId}
+                      onChange={handleBillDataChange}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    >
+                      <option value="">Select a customer</option>
+                      {customers.map(customer => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.name} - {customer.gstNo}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <div className="flex items-center h-full mt-6">
+                    <input
+                      id="isIGST"
+                      name="isIGST"
+                      type="checkbox"
+                      checked={billData.isIGST}
+                      onChange={handleBillDataChange}
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="isIGST" className="ml-2 block text-sm text-gray-700">
+                      Apply IGST (Interstate)
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="billNumber"
-                        id="billNumber"
-                        required
-                        value={billData.billNumber}
-                        onChange={handleBillDataChange}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
                   </div>
+                </div>
 
-                  <div className="sm:col-span-3">
-                    <label htmlFor="billDate" className="block text-sm font-medium text-gray-700">
-                      Bill Date
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="date"
-                        name="billDate"
-                        id="billDate"
-                        required
-                        value={billData.billDate}
-                        onChange={handleBillDataChange}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                <div className="sm:col-span-6">
+                  <label htmlFor="deliveryAddress" className="block text-sm font-medium text-gray-700">
+                    Delivery Address (Optional)
+                  </label>
+                  <div className="mt-1">
+                    <textarea
+                      id="deliveryAddress"
+                      name="deliveryAddress"
+                      rows={3}
+                      value={billData.deliveryAddress}
+                      onChange={handleBillDataChange}
+                      placeholder="Enter delivery address if different from billing address"
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    />
                   </div>
+                </div>
 
-                  <div className="sm:col-span-4">
-                    <label htmlFor="customerId" className="block text-sm font-medium text-gray-700">
-                      Customer
-                    </label>
-                    <div className="mt-1">
-                      <select
-                        id="customerId"
-                        name="customerId"
-                        required
-                        value={billData.customerId}
-                        onChange={handleBillDataChange}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      >
-                        <option value="">Select a customer</option>
-                        {customers.map(customer => (
-                          <option key={customer.id} value={customer.id}>
-                            {customer.name} - {customer.gstNo}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <div className="flex items-center h-full mt-6">
-                      <input
-                        id="isIGST"
-                        name="isIGST"
-                        type="checkbox"
-                        checked={billData.isIGST}
-                        onChange={handleBillDataChange}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="isIGST" className="ml-2 block text-sm text-gray-700">
-                        Apply IGST (Interstate)
+                {/* Item Selection Section */}
+                <div className="sm:col-span-6 mt-8 pt-6 border-t border-gray-200">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">Bill Items</h2>
+                  <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div className="sm:col-span-3">
+                      <label htmlFor="itemId" className="block text-sm font-medium text-gray-700">
+                        Item
                       </label>
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-6">
-                    <label htmlFor="deliveryAddress" className="block text-sm font-medium text-gray-700">
-                      Delivery Address (Optional)
-                    </label>
-                    <div className="mt-1">
-                      <textarea
-                        id="deliveryAddress"
-                        name="deliveryAddress"
-                        rows={3}
-                        value={billData.deliveryAddress}
-                        onChange={handleBillDataChange}
-                        placeholder="Enter delivery address if different from billing address"
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Item Selection Section */}
-                  <div className="sm:col-span-6">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">Add Items</h3>
-                    <div className="mt-2 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                      <div className="sm:col-span-3">
-                        <label htmlFor="itemId" className="block text-sm font-medium text-gray-700">
-                          Item
-                        </label>
-                        <div className="mt-1">
-                          <select
-                            id="itemId"
-                            name="itemId"
-                            value={newItem.itemId}
-                            onChange={handleNewItemChange}
-                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                          >
-                            <option value="">Select an item</option>
-                            {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                {item.name} - HSN: {item.hsnCode} (Tax: {item.taxRate}%)
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="sm:col-span-1">
-                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                          Quantity
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="number"
-                            min="1"
-                            name="quantity"
-                            id="quantity"
-                            value={newItem.quantity}
-                            onChange={handleNewItemChange}
-                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="sm:col-span-1">
-                        <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                          Price
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            name="price"
-                            id="price"
-                            value={newItem.price}
-                            onChange={handleNewItemChange}
-                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="sm:col-span-1 flex items-end">
-                        <button
-                          type="button"
-                          onClick={addItemToBill}
-                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      <div className="mt-1">
+                        <select
+                          id="itemId"
+                          name="itemId"
+                          value={newItem.itemId}
+                          onChange={handleNewItemChange}
+                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                         >
-                          Add
-                        </button>
+                          <option value="">Select an item</option>
+                          {items.map(item => (
+                            <option key={item.id} value={item.id}>
+                              {item.name} - HSN: {item.hsnCode} (Tax: {item.taxRate}%)
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Items Table */}
-                  <div className="sm:col-span-6">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">Bill Items</h3>
-                    {billItems.length === 0 ? (
-                      <p className="mt-2 text-sm text-gray-500">No items added to this bill yet.</p>
-                    ) : (
-                      <div className="mt-4 flex flex-col">
-                        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                              <table className="min-w-full divide-y divide-gray-300">
-                                <thead className="bg-gray-50">
-                                  <tr>
-                                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                      Item
-                                    </th>
-                                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                      HSN
-                                    </th>
-                                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                      Qty
-                                    </th>
-                                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                      Price
-                                    </th>
-                                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                      Amount
-                                    </th>
-                                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                      Tax Rate
-                                    </th>
-                                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                      Tax Amount
-                                    </th>
-                                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                      <span className="sr-only">Actions</span>
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white">
-                                  {billItems.map((item, index) => (
-                                    <tr key={index}>
-                                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                        {item.name}
-                                      </td>
-                                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        {item.hsnCode}
-                                      </td>
-                                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        {item.quantity}
-                                      </td>
-                                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        ₹{item.price.toFixed(2)}
-                                      </td>
-                                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        ₹{item.amount.toFixed(2)}
-                                      </td>
-                                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        {item.taxRate}%
-                                      </td>
-                                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        ₹{item.taxAmount.toFixed(2)}
-                                      </td>
-                                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                        <button
-                                          type="button"
-                                          onClick={() => removeItem(index)}
-                                          className="text-red-600 hover:text-red-900"
-                                        >
-                                          Remove
-                                        </button>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="sm:col-span-1">
+                      <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+                        Quantity
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          type="number"
+                          min="1"
+                          name="quantity"
+                          id="quantity"
+                          value={newItem.quantity}
+                          onChange={handleNewItemChange}
+                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        />
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Summary Section */}
-                  {billItems.length > 0 && (
-                    <div className="sm:col-span-6">
-                      <div className="bg-gray-50 p-4 rounded-md">
-                        <h3 className="text-lg font-medium leading-6 text-gray-900">Bill Summary</h3>
-                        <div className="mt-4 space-y-2">
-                          <div className="flex justify-between">
-                            <p className="text-sm text-gray-500">Subtotal:</p>
-                            <p className="text-sm font-medium text-gray-900">₹{subtotal.toFixed(2)}</p>
-                          </div>
-                          
-                          {billData.isIGST ? (
-                            <div className="flex justify-between">
-                              <p className="text-sm text-gray-500">IGST:</p>
-                              <p className="text-sm font-medium text-gray-900">₹{igst.toFixed(2)}</p>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="flex justify-between">
-                                <p className="text-sm text-gray-500">CGST:</p>
-                                <p className="text-sm font-medium text-gray-900">₹{cgst.toFixed(2)}</p>
-                              </div>
-                              <div className="flex justify-between">
-                                <p className="text-sm text-gray-500">SGST:</p>
-                                <p className="text-sm font-medium text-gray-900">₹{sgst.toFixed(2)}</p>
-                              </div>
-                            </>
-                          )}
-                          
-                          <div className="pt-2 border-t border-gray-200 flex justify-between">
-                            <p className="text-base font-medium text-gray-900">Total:</p>
-                            <p className="text-base font-medium text-gray-900">₹{grandTotal.toFixed(2)}</p>
+                    <div className="sm:col-span-1">
+                      <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                        Price
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          name="price"
+                          id="price"
+                          value={newItem.price}
+                          onChange={handleNewItemChange}
+                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-1 flex items-end">
+                      <button
+                        type="button"
+                        onClick={addItemToBill}
+                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        Add Item
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Items Table */}
+                <div className="sm:col-span-6">
+                  {billItems.length === 0 ? (
+                    <p className="mt-2 text-sm text-gray-500">No items added to this bill yet.</p>
+                  ) : (
+                    <div className="mt-4 flex flex-col">
+                      <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                            <table className="min-w-full divide-y divide-gray-300">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                    Item
+                                  </th>
+                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    HSN
+                                  </th>
+                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Qty
+                                  </th>
+                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Price
+                                  </th>
+                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Amount
+                                  </th>
+                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Tax Rate
+                                  </th>
+                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Tax Amount
+                                  </th>
+                                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                    <span className="sr-only">Actions</span>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-200 bg-white">
+                                {billItems.map((item, index) => (
+                                  <tr key={index}>
+                                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                      {item.name}
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      {item.hsnCode}
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      {item.quantity}
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      ₹{item.price.toFixed(2)}
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      ₹{item.amount.toFixed(2)}
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      {item.taxRate}%
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      ₹{item.taxAmount.toFixed(2)}
+                                    </td>
+                                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                      <button
+                                        type="button"
+                                        onClick={() => removeItem(index)}
+                                        className="inline-flex items-center text-red-600 hover:text-red-700 p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500"
+                                        aria-label="Remove item"
+                                      >
+                                        <DeleteIcon />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
+
+                {/* Summary Section */}
+                {billItems.length > 0 && (
+                  <div className="sm:col-span-6">
+                    <div className="bg-gray-50 p-4 rounded-md">
+                      <h3 className="text-lg font-medium leading-6 text-gray-900">Bill Summary</h3>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex justify-between">
+                          <p className="text-sm text-gray-500">Subtotal:</p>
+                          <p className="text-sm font-medium text-gray-900">₹{subtotal.toFixed(2)}</p>
+                        </div>
+                        
+                        {billData.isIGST ? (
+                          <div className="flex justify-between">
+                            <p className="text-sm text-gray-500">IGST:</p>
+                            <p className="text-sm font-medium text-gray-900">₹{igst.toFixed(2)}</p>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex justify-between">
+                              <p className="text-sm text-gray-500">CGST:</p>
+                              <p className="text-sm font-medium text-gray-900">₹{cgst.toFixed(2)}</p>
+                            </div>
+                            <div className="flex justify-between">
+                              <p className="text-sm text-gray-500">SGST:</p>
+                              <p className="text-sm font-medium text-gray-900">₹{sgst.toFixed(2)}</p>
+                            </div>
+                          </>
+                        )}
+                        
+                        <div className="pt-2 border-t border-gray-200 flex justify-between">
+                          <p className="text-base font-medium text-gray-900">Total:</p>
+                          <p className="text-base font-medium text-gray-900">₹{grandTotal.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+            </div>
+
+            {/* Action Buttons Footer */}
+            <div className="px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-200 text-right">
+              <div className="flex justify-end space-x-3">
                 <Link
                   href="/dashboard/bills"
-                  className="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                 >
                   Cancel
                 </Link>
                 <button
                   type="submit"
                   disabled={saveLoading || billItems.length === 0}
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                  className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                 >
-                  {saveLoading ? "Saving..." : "Create Bill"}
+                  {saveLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </>
+                  ) : 'Save Bill'}
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
