@@ -485,7 +485,7 @@ export default function BillsPage() {
             {/* Desktop Table View */}
             <div className="hidden md:block bg-white shadow-md sm:rounded-lg overflow-x-auto print:shadow-none print:rounded-none">
               <table className="min-w-full divide-y divide-gray-200 print:divide-none">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 print:bg-transparent">
                   <tr>
                     <th scope="col" className="p-3 sm:p-4 text-left"> {/* Adjusted padding */}
                       <input
@@ -499,15 +499,17 @@ export default function BillsPage() {
                     <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bill #</th>
                     <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                     <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                    <th scope="col" className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Tax Type</th>
-                    <th scope="col" className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total (₹)</th>
-                    <th scope="col" className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th scope="col" className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th scope="col" className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden">Status</th>
+                    <th scope="col" className="relative px-3 sm:px-6 py-3 print:hidden">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-200 print:divide-none">
                   {filteredBills.map((bill) => (
-                    <tr key={bill.id} className={`${selectedBills.includes(bill.id) ? 'bg-indigo-50' : ''} hover:bg-gray-50`}>
-                      <td className="p-3 sm:p-4 whitespace-nowrap"> {/* Adjusted padding */}
+                    <tr key={bill.id} className={`${selectedBills.includes(bill.id) ? 'bg-indigo-50' : ''} hover:bg-gray-50 print:bg-transparent`}>
+                      <td className="p-3 sm:p-4 whitespace-nowrap">
                         <input
                           type="checkbox"
                           className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
@@ -515,20 +517,56 @@ export default function BillsPage() {
                           onChange={() => handleSelectBill(bill.id)}
                         />
                       </td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-900">
-                        <Link href={`/dashboard/bills/${bill.id}`}>{bill.billNumber}</Link>
+                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <Link href={`/dashboard/bills/${bill.id}`} className="text-indigo-600 hover:text-indigo-900">
+                          {bill.billNumber}
+                        </Link>
                       </td>
                       <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(bill.billDate), "dd MMM yyyy")}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-normal break-words text-sm text-gray-500">{bill.customer.name}</td> {/* Added whitespace-normal and break-words */} 
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{bill.isIGST ? "IGST" : "CGST/SGST"}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{bill.total.toFixed(2)}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <Link href={`/dashboard/bills/${bill.id}`} className="text-indigo-600 hover:text-indigo-900 mr-3" title="View Bill">
-                          <SearchIcon className="h-5 w-5 inline"/>
-                        </Link>
-                        <button onClick={() => openDeleteDialog(bill.id)} className="text-red-600 hover:text-red-900" title="Delete Bill">
-                          <DeleteIcon className="h-5 w-5 inline"/>
-                        </button>
+                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{bill.customer.name}</td>
+                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">₹{parseFloat(bill.total.toString()).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center print:hidden">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          Generated {/* You might want a dynamic status here */}
+                        </span>
+                      </td>
+                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium print:hidden">
+                        <div className="flex items-center justify-end space-x-3">
+                           <Link href={`/dashboard/bills/${bill.id}/edit`} className="text-indigo-600 hover:text-indigo-900" title="Edit Bill">
+                            <EditIcon className="h-5 w-5"/>
+                          </Link>
+                          <button onClick={() => openDeleteDialog(bill.id)} className="text-red-600 hover:text-red-900" title="Delete Bill">
+                            <DeleteIcon className="h-5 w-5"/>
+                          </button>
+                          {/* Simple Kebab Menu for more actions if needed */}
+                          {/* <Menu as="div" className="relative inline-block text-left">
+                            <div>
+                              <Menu.Button className="text-gray-400 hover:text-gray-600">
+                                <KebabMenuIcon className="h-5 w-5" />
+                              </Menu.Button>
+                            </div>
+                            <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
+                              <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                                <div className="py-1">
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <a href="#" className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm`}>
+                                        Download PDF
+                                      </a>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <a href="#" className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm`}>
+                                        View Details
+                                      </a>
+                                    )}
+                                  </Menu.Item>
+                                </div>
+                              </Menu.Items>
+                            </Transition>
+                          </Menu> */}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -536,42 +574,55 @@ export default function BillsPage() {
               </table>
             </div>
 
-            {/* Mobile Card View */}
-            <div className="block md:hidden bg-white shadow sm:rounded-lg">
-              {/* Mobile List Header */}
-              <div className="flex items-center p-4 border-b border-gray-200">
-                <div className="mr-3 flex-shrink-0 w-4">{/* Spacer for checkbox alignment */}</div>
-                {/* Updated to flex with specific widths */}
-                <div className="flex flex-1 items-center">
-                  <span className="w-1/4 pr-2 text-xs font-medium text-gray-500 uppercase tracking-wider truncate">Bill #</span>
-                  <span className="w-1/3 pr-2 text-xs font-medium text-gray-500 uppercase tracking-wider truncate">Date</span>
-                  <span className="flex-1 text-xs font-medium text-gray-500 uppercase tracking-wider truncate">Customer</span>
-                </div>
-              </div>
-              <div className="divide-y divide-gray-200">
+            {/* Mobile Card List View */}
+            <div className="block md:hidden"> {/* Show on small screens, hide on md and up */}
+              <div className="space-y-4 px-2 py-2 sm:px-3"> {/* Adjusted padding */}
                 {filteredBills.map((bill) => (
-                  <div key={bill.id} className={`p-4 ${selectedBills.includes(bill.id) ? 'bg-indigo-50' : 'bg-white'} hover:bg-gray-50`}>
-                    <div className="flex items-center">
-                      <div className="mr-3 flex-shrink-0">
+                  <div key={bill.id} className="bg-white shadow rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3"> {/* items-start for better baseline align with checkbox, mb-3 */}
+                      <div className="flex items-center"> {/* Group checkbox and Bill # */}
                         <input
-                          type="checkbox"
-                          className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                          checked={selectedBills.includes(bill.id)}
-                          onChange={() => handleSelectBill(bill.id)}
-                        />
-                      </div>
-                      {/* Updated to flex with specific widths aligning with header */}
-                      <div className="flex flex-1 items-center">
-                        <Link href={`/dashboard/bills/${bill.id}`} className="w-1/4 pr-2 text-sm font-medium text-indigo-600 hover:text-indigo-900 truncate">
-                          {bill.billNumber}
+                            type="checkbox"
+                            className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded mr-3" // Added mr-3
+                            checked={selectedBills.includes(bill.id)}
+                            onChange={() => handleSelectBill(bill.id)}
+                          />
+                        <Link href={`/dashboard/bills/${bill.id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-800 truncate">
+                          Bill #{bill.billNumber}
                         </Link>
-                        <span className="w-1/3 pr-2 text-sm text-gray-500 truncate">{format(new Date(bill.billDate), "dd MMM yy")}</span>
-                        <span className="flex-1 text-sm text-gray-500 truncate">{bill.customer.name}</span>
                       </div>
-                      {/* Actions can be added here if needed, e.g., a Kebab menu */}
+                       <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 whitespace-nowrap"> {/* Added py-0.5 and whitespace-nowrap */}
+                        Generated {/* Dynamic status */}
+                      </span>
                     </div>
-                    <div className="mt-2 pl-7"> {/* Aligned with data, under checkbox area */}
-                        <p className="text-sm text-gray-700 font-semibold">Total: <span className="font-normal text-gray-600">₹{bill.total.toFixed(2)}</span></p>
+                    
+                    <div className="mb-1">
+                      <p className="text-sm text-gray-500">Date: {format(new Date(bill.billDate), "dd MMM yyyy")}</p>
+                      <p className="text-sm text-gray-800 font-medium truncate">To: {bill.customer.name}</p>
+                    </div>
+                    
+                    <p className="text-md font-semibold text-gray-900 mb-3">
+                      Amount: ₹{parseFloat(bill.total.toString()).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                    
+                    <div className="flex justify-end items-center space-x-2 border-t pt-3 mt-3"> {/* Reduced space-x, added mt-3 */}
+                      <Link 
+                        href={`/dashboard/bills/${bill.id}/edit`} 
+                        className="flex items-center text-indigo-600 hover:text-indigo-900 p-2 rounded-md hover:bg-indigo-50 transition-colors duration-150" 
+                        title="Edit Bill"
+                      >
+                        <EditIcon className="h-5 w-5"/>
+                        <span className="ml-1.5 text-xs font-medium">Edit</span>
+                      </Link>
+                      <button 
+                        onClick={() => openDeleteDialog(bill.id)} 
+                        className="flex items-center text-red-600 hover:text-red-900 p-2 rounded-md hover:bg-red-50 transition-colors duration-150" 
+                        title="Delete Bill"
+                      >
+                        <DeleteIcon className="h-5 w-5"/> 
+                        <span className="ml-1.5 text-xs font-medium">Delete</span>
+                      </button>
+                       {/* Add other actions like Download PDF as needed */}
                     </div>
                   </div>
                 ))}
