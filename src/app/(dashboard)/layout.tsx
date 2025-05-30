@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
+import { Transition } from "@headlessui/react";
 
 export default function DashboardLayout({
   children,
@@ -15,6 +16,7 @@ export default function DashboardLayout({
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Extend the session user type to include isAdmin (if not already there)
@@ -148,6 +150,7 @@ export default function DashboardLayout({
               </div>
             </div>
             <div className="hidden md:block">
+              {/* Desktop User Profile Dropdown */}
               <div className="ml-4 flex items-center md:ml-6 relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen((open) => !open)}
@@ -188,48 +191,109 @@ export default function DashboardLayout({
                 )}
               </div>
             </div>
+            {/* Mobile menu button */}
+            <div className="-mr-2 flex md:hidden">
+              <button
+                onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+                type="button"
+                className="relative bg-indigo-600 inline-flex items-center justify-center p-2 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                aria-controls="mobile-menu"
+                aria-expanded={isMobileNavOpen}
+              >
+                <span className="sr-only">Open main menu</span>
+                {/* Icon container for transitions */}
+                <div className="relative h-6 w-6">
+                  {/* Hamburger Icon */}
+                  <Transition
+                    as={Fragment}
+                    show={!isMobileNavOpen}
+                    enter="transition-opacity duration-150 ease-out"
+                    enterFrom="opacity-0 rotate-[-90deg] scale-50"
+                    enterTo="opacity-100 rotate-0 scale-100"
+                    leave="transition-opacity duration-150 ease-in"
+                    leaveFrom="opacity-100 rotate-0 scale-100"
+                    leaveTo="opacity-0 rotate-[-90deg] scale-50"
+                  >
+                    <svg className="absolute inset-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                  </Transition>
+                  {/* Close Icon */}
+                  <Transition
+                    as={Fragment}
+                    show={isMobileNavOpen}
+                    enter="transition-opacity duration-150 ease-out"
+                    enterFrom="opacity-0 rotate-90deg scale-50"
+                    enterTo="opacity-100 rotate-0 scale-100"
+                    leave="transition-opacity duration-150 ease-in"
+                    leaveFrom="opacity-100 rotate-0 scale-100"
+                    leaveTo="opacity-0 rotate-90deg scale-50"
+                  >
+                    <svg className="absolute inset-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </Transition>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navigation.map((item) => (
-              (!item.adminOnly || (item.adminOnly && isAdmin)) && (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`${
-                    isActive(item.href)
-                      ? "bg-indigo-700 text-white"
-                      : "text-white hover:bg-indigo-500"
-                  } block px-3 py-2 rounded-md text-base font-medium flex items-center`}
-                >
-                  {item.icon}
-                  {item.name}
-                </Link>
-              )
-            ))}
-            <Link
-              href="/dashboard/profile"
-              className="flex items-center px-3 py-2 text-base font-medium text-white hover:bg-indigo-500 rounded-md"
-            >
-              <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Profile
-            </Link>
-            <Link
-              href="/api/auth/signout"
-              className="flex items-center px-3 py-2 text-base font-medium text-white bg-indigo-700 rounded-md"
-            >
-              <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Sign out
-            </Link>
+        {/* Mobile menu, show/hide based on menu state. */}
+        <Transition
+          show={isMobileNavOpen}
+          as={Fragment}
+          enter="transition ease-out duration-200 transform"
+          enterFrom="opacity-0 -translate-y-10"
+          enterTo="opacity-100 translate-y-0"
+          leave="transition ease-in duration-150 transform"
+          leaveFrom="opacity-100 translate-y-0"
+          leaveTo="opacity-0 -translate-y-10"
+        >
+          <div className="md:hidden" id="mobile-menu">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navigation.map((item) => (
+                (!item.adminOnly || (item.adminOnly && isAdmin)) && (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className={`${
+                      isActive(item.href)
+                        ? "bg-indigo-700 text-white"
+                        : "text-indigo-100 hover:bg-indigo-500 hover:text-white"
+                    } block px-3 py-2 rounded-md text-base font-medium flex items-center`}
+                  >
+                    {item.icon}
+                    <span className="ml-2">{item.name}</span>
+                  </Link>
+                )
+              ))}
+              {/* Mobile Profile Link */}
+              <Link
+                href="/dashboard/profile"
+                onClick={() => setIsMobileNavOpen(false)}
+                className="flex items-center px-3 py-2 text-base font-medium text-indigo-100 hover:bg-indigo-500 hover:text-white rounded-md"
+              >
+                <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span className="ml-2">Profile</span>
+              </Link>
+              {/* Mobile Sign Out Link */}
+              <Link
+                href="/api/auth/signout"
+                onClick={() => setIsMobileNavOpen(false)}
+                className="flex items-center px-3 py-2 text-base font-medium text-indigo-100 bg-indigo-700 hover:bg-indigo-800 rounded-md mt-2"
+              >
+                <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="ml-2">Sign out</span>
+              </Link>
+            </div>
           </div>
-        </div>
+        </Transition>
       </nav>
 
       <main className="print:p-0 print:m-0">

@@ -104,6 +104,9 @@ export default function UserManagementPage() {
   const [inviteIsLoading, setInviteIsLoading] = useState(false);
   const [inviteMessage, setInviteMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [invitationSearchTerm, setInvitationSearchTerm] = useState('');
+
   const allRolesList = Object.values(Role);
   const allPermissionsList = Object.values(Permission);
 
@@ -572,6 +575,15 @@ export default function UserManagementPage() {
     }
   }, [inviteMessage]);
 
+  const filteredUsers = users.filter(user => 
+    (user.name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || 
+     user.email.toLowerCase().includes(userSearchTerm.toLowerCase()))
+  );
+
+  const filteredInvitations = invitations.filter(invite => 
+    invite.email.toLowerCase().includes(invitationSearchTerm.toLowerCase())
+  );
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <header className="mb-8">
@@ -635,8 +647,24 @@ export default function UserManagementPage() {
 
       {activeTab === 'users' && (
         <section id="registered-users" className="mt-8">
+          <div className="mb-4">
+            <div className="relative rounded-md shadow-sm">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input 
+                type="text"
+                placeholder="Search users by name or email..."
+                value={userSearchTerm}
+                onChange={(e) => setUserSearchTerm(e.target.value)}
+                className="block w-full md:w-1/2 pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 sr-only">Active Users</h2>
-          {loadingUsers ? <Spinner /> : users.length === 0 && initialUsersFetchAttempted ? (
+          {loadingUsers ? <Spinner /> : filteredUsers.length === 0 && initialUsersFetchAttempted ? (
              <div className="text-center py-12">
                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -659,7 +687,7 @@ export default function UserManagementPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map(user => (
+                  {filteredUsers.map(user => (
                     <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150 ease-in-out">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name || 'N/A'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
@@ -668,27 +696,11 @@ export default function UserManagementPage() {
                           {user.isAdmin ? 'Yes' : 'No'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {user.roles && user.roles.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {user.roles.map((r, index) => (
-                              <span 
-                                key={index} 
-                                className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClasses(r.role)}`}
-                              >
-                                {r.role.charAt(0).toUpperCase() + r.role.slice(1).toLowerCase()}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClasses('USER')}`}>USER</span> // Default if no roles, or adjust as needed
-                        )}
-                      </td>
                       <td className="px-6 py-4 text-sm text-gray-500 align-top">
                         <PermissionBadges 
                             permissions={user.roles.flatMap(r => r.permissions)} 
                             initialLimit={2}
-                            badgeColorClass="bg-blue-100 text-blue-800"
+                            defaultBadgeColorClass="bg-blue-100 text-blue-800"
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(user.createdAt), 'dd MMM yyyy')}</td>
@@ -725,8 +737,24 @@ export default function UserManagementPage() {
 
       {activeTab === 'invitations' && (
         <section id="invitations" className="mt-8">
+          <div className="mb-4">
+            <div className="relative rounded-md shadow-sm">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input 
+                type="text"
+                placeholder="Search invitations by email..."
+                value={invitationSearchTerm}
+                onChange={(e) => setInvitationSearchTerm(e.target.value)}
+                className="block w-full md:w-1/2 pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 sr-only">Invitations</h2>
-          {loadingInvitations ? <Spinner /> : invitations.length === 0 && initialInvitationsFetchAttempted ? (
+          {loadingInvitations ? <Spinner /> : filteredInvitations.length === 0 && initialInvitationsFetchAttempted ? (
             <div className="text-center py-12">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -752,7 +780,7 @@ export default function UserManagementPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {invitations.map(invite => {
+                  {filteredInvitations.map(invite => {
                     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
                     const invitationLink = `${baseUrl}/accept-invitation?token=${invite.token}`;
                     
@@ -776,7 +804,7 @@ export default function UserManagementPage() {
                            <PermissionBadges 
                             permissions={invite.permissions} 
                             initialLimit={2}
-                            badgeColorClass="bg-purple-100 text-purple-800"
+                            defaultBadgeColorClass="bg-purple-100 text-purple-800"
                            />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(invite.createdAt), 'dd MMM yyyy HH:mm')}</td>
