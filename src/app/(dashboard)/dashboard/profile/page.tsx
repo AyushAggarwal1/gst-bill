@@ -130,14 +130,20 @@ export default function ProfilePage() {
                 </div>
 
                 {success && (
-                  <div className="mt-4 p-3 bg-green-50 text-green-800 rounded-md">
-                    {success}
+                  <div className="mt-4 p-3 bg-green-50 text-green-700 rounded-md flex items-center">
+                    <svg className="h-5 w-5 text-green-400 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>{success}</span>
                   </div>
                 )}
 
                 {error && (
-                  <div className="mt-4 p-3 bg-red-50 text-red-800 rounded-md">
-                    {error}
+                  <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-md flex items-center">
+                    <svg className="h-5 w-5 text-red-400 mr-2 flex-shrink-0" xmlns="http://www.w.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <span>{error}</span>
                   </div>
                 )}
 
@@ -180,49 +186,52 @@ export default function ProfilePage() {
                     />
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="gstNo"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      GST Number
-                    </label>
-                    <input
-                      type="text"
-                      name="gstNo"
-                      id="gstNo"
-                      value={profile.gstNo}
-                      onChange={handleChange}
-                      required
-                      placeholder="22AAAAA0000A1Z5"
-                      pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
-                      title="Please enter a valid GST Number (e.g., 22AAAAA0000A1Z5)"
-                      className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                      Format: 22AAAAA0000A1Z5
-                    </p>
-                  </div>
+                  {/* GST Number and Phone Number in a 2-column layout on sm screens and up */}
+                  <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+                    <div>
+                      <label
+                        htmlFor="gstNo"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        GST Number
+                      </label>
+                      <input
+                        type="text"
+                        name="gstNo"
+                        id="gstNo"
+                        value={profile.gstNo}
+                        onChange={handleChange}
+                        required
+                        placeholder="22AAAAA0000A1Z5"
+                        pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+                        title="Please enter a valid GST Number (e.g., 22AAAAA0000A1Z5)"
+                        className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        Format: 22AAAAA0000A1Z5
+                      </p>
+                    </div>
 
-                  <div>
-                    <label
-                      htmlFor="phoneNo"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phoneNo"
-                      id="phoneNo"
-                      value={profile.phoneNo}
-                      onChange={handleChange}
-                      placeholder="Enter your business phone number"
-                      className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                      Will be displayed on invoices
-                    </p>
+                    <div>
+                      <label
+                        htmlFor="phoneNo"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        name="phoneNo"
+                        id="phoneNo"
+                        value={profile.phoneNo}
+                        onChange={handleChange}
+                        placeholder="Enter your business phone number"
+                        className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        Will be displayed on invoices
+                      </p>
+                    </div>
                   </div>
 
                   <div>
