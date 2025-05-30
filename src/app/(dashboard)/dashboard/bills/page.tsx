@@ -18,6 +18,7 @@ import {
     DownloadIcon,
     TableIcon,
     KebabMenuIcon,
+    ViewIcon,
 } from "@/components/icons";
 
 interface Bill {
@@ -532,8 +533,8 @@ export default function BillsPage() {
                       </td>
                       <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium print:hidden">
                         <div className="flex items-center justify-end space-x-3">
-                           <Link href={`/dashboard/bills/${bill.id}/edit`} className="text-indigo-600 hover:text-indigo-900" title="Edit Bill">
-                            <EditIcon className="h-5 w-5"/>
+                           <Link href={`/dashboard/bills/${bill.id}`} className="text-indigo-600 hover:text-indigo-900" title="View Bill">
+                            <ViewIcon className="h-5 w-5"/>
                           </Link>
                           <button onClick={() => openDeleteDialog(bill.id)} className="text-red-600 hover:text-red-900" title="Delete Bill">
                             <DeleteIcon className="h-5 w-5"/>
@@ -607,12 +608,12 @@ export default function BillsPage() {
                     
                     <div className="flex justify-end items-center space-x-2 border-t pt-3 mt-3"> {/* Reduced space-x, added mt-3 */}
                       <Link 
-                        href={`/dashboard/bills/${bill.id}/edit`} 
+                        href={`/dashboard/bills/${bill.id}`} 
                         className="flex items-center text-indigo-600 hover:text-indigo-900 p-2 rounded-md hover:bg-indigo-50 transition-colors duration-150" 
-                        title="Edit Bill"
+                        title="View Bill"
                       >
-                        <EditIcon className="h-5 w-5"/>
-                        <span className="ml-1.5 text-xs font-medium">Edit</span>
+                        <ViewIcon className="h-5 w-5"/>
+                        <span className="ml-1.5 text-xs font-medium">View</span>
                       </Link>
                       <button 
                         onClick={() => openDeleteDialog(bill.id)} 
