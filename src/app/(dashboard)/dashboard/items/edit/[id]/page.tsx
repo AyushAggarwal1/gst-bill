@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Spinner from "@/components/Spinner";
 
 interface ItemParams {
   params: {
@@ -25,71 +26,57 @@ export default function EditItemPage({ params }: ItemParams) {
   useEffect(() => {
     const fetchItem = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/items/${id}`);
         if (!res.ok) {
           throw new Error("Failed to fetch item");
         }
         const data = await res.json();
         setItem({
-          name: data.name,
-          hsnCode: data.hsnCode,
-          taxRate: String(data.taxRate),
+          name: data.name || "",
+          hsnCode: data.hsnCode || "",
+          taxRate: data.taxRate !== null && data.taxRate !== undefined ? String(data.taxRate) : "",
         });
-      } catch (error) {
-        console.error("Error fetching item:", error);
-        setError("Failed to load item. Please try again.");
+      } catch (err) {
+        console.error("Error fetching item:", err);
+        setError(err instanceof Error ? err.message : "Failed to load item. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchItem();
+    if (id) {
+      fetchItem();
+    }
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setItem((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setItem((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaveLoading(true);
     setError("");
-
-    // Convert taxRate to number
     const taxRateFloat = parseFloat(item.taxRate);
     if (isNaN(taxRateFloat)) {
       setError("Tax Rate must be a valid number");
       setSaveLoading(false);
       return;
     }
-
     try {
       const res = await fetch(`/api/items/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...item,
-          taxRate: taxRateFloat,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...item, taxRate: taxRateFloat }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         throw new Error(data.message || "Failed to update item");
       }
-
       router.push("/dashboard/items");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to update item"
-      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update item");
     } finally {
       setSaveLoading(false);
     }
@@ -97,16 +84,16 @@ export default function EditItemPage({ params }: ItemParams) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-96">
-        <p className="text-gray-500">Loading item...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Spinner />
       </div>
     );
   }
 
   return (
-    <div>
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900">Edit Item</h1>
         </div>
       </header>
@@ -117,7 +104,7 @@ export default function EditItemPage({ params }: ItemParams) {
             <form onSubmit={handleSubmit}>
               <div className="px-4 py-5 sm:p-6">
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-md">
+                  <div className="mb-4 p-3 bg-red-100 text-sm text-red-700 rounded-lg">
                     {error}
                   </div>
                 )}
@@ -202,7 +189,7 @@ export default function EditItemPage({ params }: ItemParams) {
                   disabled={saveLoading}
                   className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                 >
-                  {saveLoading ? "Saving..." : "Save"}
+                  {saveLoading ? "Saving..." : "Update Item"}
                 </button>
               </div>
             </form>

@@ -6,7 +6,7 @@ export default async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   
   // Define public paths that don't require authentication
-  const publicPaths = ['/','/login', '/register']
+  const publicPaths = ['/','/login', '/register', '/accept-invitation']
   const isPublicPath = publicPaths.includes(path)
   
   // Get the JWT token

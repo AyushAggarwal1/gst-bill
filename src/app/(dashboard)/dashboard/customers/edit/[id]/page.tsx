@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Spinner from "@/components/Spinner";
 
 interface EditCustomerPageProps {
   params: {
@@ -25,28 +26,28 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/customers/${params.id}`);
-
         if (!res.ok) {
           throw new Error("Failed to fetch customer");
         }
-
         const data = await res.json();
         setCustomer({
-          name: data.name,
-          address: data.address,
-          deliveryAddress: data.deliveryAddress,
-          gstNo: data.gstNo,
+          name: data.name || "",
+          address: data.address || "",
+          deliveryAddress: data.deliveryAddress || "",
+          gstNo: data.gstNo || "",
         });
       } catch (error) {
         console.error("Error fetching customer:", error);
-        setError("Failed to load customer. Please try again.");
+        setError("Failed to load customer. Please try again or go back to the list.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchCustomer();
+    if (params.id) {
+        fetchCustomer();
+    }
   }, [params.id]);
 
   const handleChange = (
@@ -72,27 +73,19 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
     e.preventDefault();
     setSaving(true);
     setError("");
-
     try {
       const res = await fetch(`/api/customers/${params.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(customer),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         throw new Error(data.message || "Failed to update customer");
       }
-
       router.push("/dashboard/customers");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to update customer"
-      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update customer");
     } finally {
       setSaving(false);
     }
@@ -100,25 +93,16 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
 
   if (loading) {
     return (
-      <div>
-        <header className="bg-white shadow">
-          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold text-gray-900">Edit Customer</h1>
-          </div>
-        </header>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="text-center py-12">Loading customer data...</div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Spinner />
       </div>
     );
   }
 
   return (
-    <div>
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900">Edit Customer</h1>
         </div>
       </header>
@@ -129,7 +113,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
             <form onSubmit={handleSubmit}>
               <div className="px-4 py-5 sm:p-6">
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-md">
+                  <div className="mb-4 p-3 bg-red-100 text-sm text-red-700 rounded-lg">
                     {error}
                   </div>
                 )}
@@ -229,6 +213,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
                         title="Please enter a valid GST Number (e.g., 22AAAAA0000A1Z5)"
                         value={customer.gstNo}
                         onChange={handleChange}
+                        placeholder="22AAAAA0000A1Z5"
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                       />
                       <p className="mt-1 text-xs text-gray-500">
@@ -250,7 +235,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
                   disabled={saving}
                   className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                 >
-                  {saving ? "Saving..." : "Save"}
+                  {saving ? "Saving..." : "Update Customer"}
                 </button>
               </div>
             </form>
