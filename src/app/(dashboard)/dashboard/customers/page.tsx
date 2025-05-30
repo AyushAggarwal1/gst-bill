@@ -2,7 +2,35 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { format } from 'date-fns';
 import ConfirmDialog from "@/components/ConfirmDialog";
+
+// Define a Spinner component if not already globally available
+const Spinner = () => (
+  <div className="flex justify-center items-center py-10">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+    <p className="ml-4 text-gray-500">Loading...</p>
+  </div>
+);
+
+const AddIcon = () => (
+  <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+  </svg>
+);
+
+// SVG Icons (Heroicons or similar simple style) - Copied from UserManagementPage for now
+const EditIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1 align-text-bottom">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+  </svg>
+);
+
+const DeleteIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 inline-block mr-1 align-text-bottom">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.56 0c1.153 0 2.243.032 3.223.094M7.5 5.25l.47-2.551a.75.75 0 01.684-.528h4.692a.75.75 0 01.684.528l.47 2.551M5.25 5.25h13.5" />
+  </svg>
+);
 
 interface Customer {
   id: string;
@@ -74,7 +102,7 @@ export default function CustomersPage() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <ConfirmDialog
         isOpen={deleteDialogOpen}
         onClose={() => {
@@ -90,14 +118,15 @@ export default function CustomersPage() {
         message="Are you sure you want to delete this customer? This action cannot be undone and will also delete all associated bills."
       />
 
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <header className="bg-white shadow-sm print:hidden">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
             <Link
               href="/dashboard/customers/new"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
+              <AddIcon />
               Add Customer
             </Link>
           </div>
@@ -125,15 +154,13 @@ export default function CustomersPage() {
 
         <div className="px-4 py-0 sm:px-0"> {/* Adjusted py-6 to py-0 here as search bar has mb-6 */}
           {loading ? (
-            <div className="text-center">
-              <p className="text-gray-500">Loading customers...</p>
-            </div>
+            <Spinner />
           ) : error ? (
-            <div className="p-4 bg-red-50 text-red-800 rounded-md">
+            <div className="p-4 mb-4 bg-red-50 text-red-700 rounded-md">
               {error}
             </div>
           ) : filteredCustomers.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-16">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
                 fill="none"
@@ -154,71 +181,63 @@ export default function CustomersPage() {
               <p className="mt-1 text-sm text-gray-500">
                 {searchTerm ? 'Try adjusting your search terms or add a new customer.' : 'Get started by adding a new customer.'}
               </p>
-              <div className="mt-6">
+              <div className="mt-8">
                 <Link
                   href="/dashboard/customers/new"
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <svg
-                    className="-ml-1 mr-2 h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <AddIcon />
                   Add Customer
                 </Link>
               </div>
             </div>
           ) : (
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-              <ul className="divide-y divide-gray-200">
-                {filteredCustomers.map((customer) => (
-                  <li key={customer.id}>
-                    <div className="px-4 py-4 flex items-center sm:px-6 hover:bg-gray-50 transition-colors">
-                      <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
-                        <div>
-                          <div className="flex text-sm">
-                            <p className="font-medium text-indigo-600 truncate">
-                              {customer.name}
-                            </p>
-                            <p className="ml-1 flex-shrink-0 font-normal text-gray-500">
-                              {customer.gstNo}
-                            </p>
-                          </div>
-                          <div className="mt-2 flex">
-                            <div className="flex items-center text-sm text-gray-500">
-                              <p>{customer.address}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="mt-4 flex-shrink-0 sm:mt-0">
-                          <div className="flex space-x-4">
-                            <Link
-                              href={`/dashboard/customers/edit/${customer.id}`}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                              Edit
-                            </Link>
-                            <button
-                              onClick={() => openDeleteDialog(customer.id)}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+            <div className="bg-white shadow-md sm:rounded-lg overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GST No</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                    <th scope="col" className="relative px-6 py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredCustomers.map((customer) => (
+                    <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {customer.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {customer.gstNo || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {customer.address || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {format(new Date(customer.createdAt), 'dd MMM yyyy')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <Link
+                          href={`/dashboard/customers/edit/${customer.id}`}
+                          className="inline-flex items-center text-indigo-600 hover:text-indigo-900 font-medium mr-3"
+                        >
+                          <EditIcon /> Edit
+                        </Link>
+                        <button
+                          onClick={() => openDeleteDialog(customer.id)}
+                          className="inline-flex items-center text-red-600 hover:text-red-900 font-medium"
+                        >
+                          <DeleteIcon /> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
