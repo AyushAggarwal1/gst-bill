@@ -1,10 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function RegisterPage() {
+// Main form component
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [name, setName] = useState("");
@@ -244,5 +246,24 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrap the component with Suspense for useSearchParams
+export default function RegisterPage() {
+  return (
+    <Suspense 
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="text-center">
+              <h2 className="text-3xl font-extrabold text-gray-900">Loading...</h2>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 } 

@@ -19,15 +19,37 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['xlsx']
   },
+  // Configure dynamic routes
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/api/:path*',
+          destination: '/api/:path*',
+          has: [
+            {
+              type: 'header',
+              key: 'Cache-Control',
+              value: 'no-store',
+            },
+          ],
+        },
+      ],
+    };
+  },
+  // Configure headers
   async headers() {
     return [
       {
         source: '/api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'no-store' }
+          { key: 'Cache-Control', value: 'no-store' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' }
         ],
       },
-    ]
+    ];
   },
 };
 

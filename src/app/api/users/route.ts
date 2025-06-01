@@ -1,53 +1,41 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 
-const prisma = new PrismaClient();
+// Configure route to be dynamic
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-export async function GET(request: Request) {
+export async function GET(req: Request) {
   try {
-    const currentUser = await getCurrentUser(request);
+    const currentUser = await getCurrentUser(req);
 
-    if (!currentUser || !currentUser.isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized. Only admins can view users.' }, { status: 403 });
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Only get users from the same tenant
+    // Get users for the current tenant only
     const users = await prisma.user.findMany({
       where: {
-        tenantId: currentUser.tenantId
+        tenantId: currentUser.tenantId,
       },
       select: {
         id: true,
-        email: true,
         name: true,
+        email: true,
         isAdmin: true,
+        roles: true,
         createdAt: true,
         updatedAt: true,
-        roles: {
-          select: {
-            role: true,
-            permissions: true,
-          }
-        },
-        receivedInvitation: {
-          select: {
-            status: true,
-            createdAt: true
-          }
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     });
 
-    return NextResponse.json(users, { status: 200 });
-
+    return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 } 
