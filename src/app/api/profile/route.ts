@@ -1,20 +1,24 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+
+// Tell Next.js to always render this route dynamically
+export const dynamic = 'force-dynamic';
 
 // GET: Fetch user profile
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
+    // Find the user with their profile
+    const user = await prisma.user.findFirst({
       where: {
-        email: session.user.email,
+        id: currentUser.id,
+        tenantId: currentUser.tenantId,
       },
       include: {
         profile: true,
@@ -54,9 +58,9 @@ export async function GET() {
 // POST: Update or create user profile
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -79,10 +83,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
+    // Find the user
+    const user = await prisma.user.findFirst({
       where: {
-        email: session.user.email,
+        id: currentUser.id,
+        tenantId: currentUser.tenantId,
       },
     });
 
@@ -99,9 +104,7 @@ export async function POST(req: Request) {
         firmName,
         address,
         gstNo,
-
         phoneNo: phoneNo || null,
-
         bankDetails: bankDetails || null,
       },
       create: {

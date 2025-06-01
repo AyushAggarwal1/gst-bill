@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { format } from "date-fns";
 import fs from "fs";
 import path from "path";
@@ -108,7 +108,10 @@ import NumberToWords from "@/components/NumberToWords";
 //   return result.trim() + ' Only';
 // }
 
-// Generate HTML content for a single bill (copied and adapted from pdf-merge/route.ts)
+// Tell Next.js to always render this route dynamically
+export const dynamic = 'force-dynamic';
+
+// Generate HTML content for a single bill
 function generateBillHTML(bill: any, profile: any): string {
   try {
     const templatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
@@ -189,16 +192,10 @@ function generateBillHTML(bill: any, profile: any): string {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const currentUser = await getCurrentUser(req);
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!currentUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { billIds } = await req.json();
@@ -206,14 +203,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No bill IDs provided" }, { status: 400 });
     }
 
+    // Get the user's profile
     const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
+      where: { userId: currentUser.id },
     });
 
+    // Get bills with tenant isolation
     const billsDetails = await prisma.bill.findMany({
       where: {
         id: { in: billIds },
-        userId: user.id,
+        tenantId: currentUser.tenantId,
       },
       include: {
         customer: true,
@@ -229,7 +228,7 @@ export async function POST(req: Request) {
     });
 
     if (billsDetails.length === 0) {
-      return NextResponse.json({ error: "No matching bills found" }, { status: 404 });
+      return NextResponse.json({ error: "No matching bills found in your organization" }, { status: 404 });
     }
 
     const billHtmls = billsDetails.map(bill => generateBillHTML(bill, profile));

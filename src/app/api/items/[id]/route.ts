@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 interface RouteParams {
   params: {
@@ -12,36 +12,21 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const item = await prisma.item.findUnique({
+    const item = await prisma.item.findFirst({
       where: {
         id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (!item) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
-
-    // Check if this item belongs to the current user
-    if (item.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Item not found in your organization" }, { status: 404 });
     }
 
     return NextResponse.json(item);
@@ -58,9 +43,9 @@ export async function GET(req: Request, { params }: RouteParams) {
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -69,45 +54,29 @@ export async function PUT(req: Request, { params }: RouteParams) {
     // Validate input
     if (!name || !hsnCode || taxRate === undefined) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "Name, HSN code, and tax rate are required" },
         { status: 400 }
       );
     }
 
-    // Validate tax rate is a number between 0 and 100
-    const taxRateFloat = parseFloat(String(taxRate));
-    if (isNaN(taxRateFloat) || taxRateFloat < 0 || taxRateFloat > 100) {
+    // Validate tax rate
+    if (taxRate < 0 || taxRate > 100) {
       return NextResponse.json(
-        { error: "Tax rate must be a number between 0 and 100" },
+        { error: "Tax rate must be between 0 and 100" },
         { status: 400 }
       );
-    }
-
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Find the item
-    const existingItem = await prisma.item.findUnique({
+    const existingItem = await prisma.item.findFirst({
       where: {
         id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (!existingItem) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
-
-    // Check if this item belongs to the current user
-    if (existingItem.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Item not found in your organization" }, { status: 404 });
     }
 
     // Update the item
@@ -118,7 +87,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       data: {
         name,
         hsnCode,
-        taxRate: taxRateFloat,
+        taxRate,
       },
     });
 
@@ -139,43 +108,31 @@ export async function PUT(req: Request, { params }: RouteParams) {
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     // Find the item
-    const item = await prisma.item.findUnique({
+    const item = await prisma.item.findFirst({
       where: {
         id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (!item) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
-
-    // Check if this item belongs to the current user
-    if (item.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Item not found in your organization" }, { status: 404 });
     }
 
     // Check if this item is referenced in any bills
     const billItemCount = await prisma.billItem.count({
       where: {
         itemId: id,
+        bill: {
+          tenantId: currentUser.tenantId,
+        },
       },
     });
 

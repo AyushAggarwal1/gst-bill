@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 // GET all bills for the current user
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -17,20 +17,9 @@ export async function GET(req: Request) {
     const endDate = url.searchParams.get("endDate");
     const customerName = url.searchParams.get("customerName");
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     // Build the where clause for filtering
     const whereClause: any = {
-      userId: user.id,
+      tenantId: currentUser.tenantId,
     };
 
     if (startDate || endDate) {
@@ -56,7 +45,7 @@ export async function GET(req: Request) {
       };
     }
 
-    // Get all bills for this user with customer details
+    // Get all bills for this tenant with customer details
     const bills = await prisma.bill.findMany({
       where: whereClause,
       include: {
@@ -85,9 +74,9 @@ export async function GET(req: Request) {
 // POST to create a new bill
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -108,29 +97,33 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find the user
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Check if bill number is unique for this user
+    // Check if bill number is unique for this tenant
     const existingBill = await prisma.bill.findFirst({
       where: {
         billNumber,
-        userId: user.id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (existingBill) {
       return NextResponse.json(
-        { error: "Bill number already exists" },
+        { error: "Bill number already exists in your organization" },
         { status: 400 }
+      );
+    }
+
+    // Verify customer belongs to the same tenant
+    const customer = await prisma.customer.findFirst({
+      where: {
+        id: customerId,
+        tenantId: currentUser.tenantId,
+      },
+    });
+
+    if (!customer) {
+      return NextResponse.json(
+        { error: "Customer not found in your organization" },
+        { status: 404 }
       );
     }
 
@@ -138,15 +131,24 @@ export async function POST(req: Request) {
     let subtotal = 0;
     let totalTax = 0;
 
-    // First, fetch all items to get their tax rates
+    // First, fetch all items to get their tax rates (only from this tenant)
     const itemIds = items.map((item: any) => item.itemId);
     const itemsData = await prisma.item.findMany({
       where: {
         id: {
           in: itemIds,
         },
+        tenantId: currentUser.tenantId,
       },
     });
+
+    // Verify all items exist and belong to this tenant
+    if (itemsData.length !== itemIds.length) {
+      return NextResponse.json(
+        { error: "One or more items not found in your organization" },
+        { status: 404 }
+      );
+    }
 
     // Create item objects with calculations
     const itemsWithCalculations = items.map((item: any) => {
@@ -195,14 +197,15 @@ export async function POST(req: Request) {
           billNumber,
           billDate: billDate ? new Date(billDate) : new Date(),
           customerId,
-          userId: user.id,
+          userId: currentUser.id,
+          tenantId: currentUser.tenantId,
           isIGST: isIGST || false,
           subtotal,
           cgst,
           sgst,
           igst,
           total,
-          deliveryAddress: deliveryAddress || null,
+          deliveryAddress,
           items: {
             create: itemsWithCalculations,
           },

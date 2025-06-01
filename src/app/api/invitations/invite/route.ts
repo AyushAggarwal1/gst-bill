@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 const prisma = new PrismaClient();
 
 // Placeholder for getting current user - replace with your actual implementation
-async function getCurrentUser(request: Request): Promise<{ id: string; isAdmin: boolean } | null> {
+async function getCurrentUser(request: Request): Promise<{ id: string; isAdmin: boolean; tenantId: string } | null> {
   // This is a mock. In a real app, you'd get this from session, token, etc.
   // For testing, you might hardcode an admin user or read from a header.
   console.log('getCurrentUser mock called. Ensure to replace with actual auth.', request.headers.get('user-id'));
@@ -16,7 +16,7 @@ async function getCurrentUser(request: Request): Promise<{ id: string; isAdmin: 
   if (userId) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
-      return { id: user.id, isAdmin: user.isAdmin };
+      return { id: user.id, isAdmin: user.isAdmin, tenantId: user.tenantId };
     }
   }
   return null;
@@ -48,10 +48,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid permissions' }, { status: 400 });
     }
     
-    // Check if user already exists with this email
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    // Check if user already exists with this email in the same tenant
+    const existingUser = await prisma.user.findFirst({ 
+      where: { 
+        email,
+        tenantId: currentUser.tenantId
+      } 
+    });
     if (existingUser) {
-        return NextResponse.json({ error: 'User with this email already exists.' }, { status: 409 });
+        return NextResponse.json({ error: 'User with this email already exists in your organization.' }, { status: 409 });
     }
 
     // Check if an active invitation already exists for this email
@@ -81,6 +86,7 @@ export async function POST(request: Request) {
         token: invitationToken,
         expiresAt,
         status: 'PENDING',
+        tenantId: currentUser.tenantId,
       },
     });
 

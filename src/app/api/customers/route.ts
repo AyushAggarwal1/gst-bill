@@ -1,31 +1,21 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 // GET all customers for the current user
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Get all customers for this user
+    // Get all customers for this user's tenant
     const customers = await prisma.customer.findMany({
       where: {
-        userId: user.id,
+        tenantId: currentUser.tenantId,
       },
       orderBy: {
         name: "asc",
@@ -45,9 +35,9 @@ export async function GET() {
 // POST to create a new customer
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -70,17 +60,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     // Create the customer
     const customer = await prisma.customer.create({
       data: {
@@ -88,7 +67,8 @@ export async function POST(req: Request) {
         address,
         deliveryAddress: deliveryAddress || null,
         gstNo,
-        userId: user.id,
+        userId: currentUser.id,
+        tenantId: currentUser.tenantId,
       },
     });
 

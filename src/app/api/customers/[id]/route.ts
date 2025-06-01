@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 interface RouteParams {
   params: {
@@ -12,36 +12,21 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const customer = await prisma.customer.findUnique({
+    const customer = await prisma.customer.findFirst({
       where: {
         id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (!customer) {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
-    }
-
-    // Check if this customer belongs to the current user
-    if (customer.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Customer not found in your organization" }, { status: 404 });
     }
 
     return NextResponse.json(customer);
@@ -58,9 +43,9 @@ export async function GET(req: Request, { params }: RouteParams) {
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -83,31 +68,16 @@ export async function PUT(req: Request, { params }: RouteParams) {
       );
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     // Find the customer
-    const existingCustomer = await prisma.customer.findUnique({
+    const existingCustomer = await prisma.customer.findFirst({
       where: {
         id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (!existingCustomer) {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
-    }
-
-    // Check if this customer belongs to the current user
-    if (existingCustomer.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Customer not found in your organization" }, { status: 404 });
     }
 
     // Update the customer
@@ -140,43 +110,29 @@ export async function PUT(req: Request, { params }: RouteParams) {
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const session = await getServerSession();
+    const currentUser = await getCurrentUser(req);
 
-    if (!session || !session.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     // Find the customer
-    const customer = await prisma.customer.findUnique({
+    const customer = await prisma.customer.findFirst({
       where: {
         id,
+        tenantId: currentUser.tenantId,
       },
     });
 
     if (!customer) {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
-    }
-
-    // Check if this customer belongs to the current user
-    if (customer.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ error: "Customer not found in your organization" }, { status: 404 });
     }
 
     // Check if this customer has any associated bills
     const billCount = await prisma.bill.count({
       where: {
         customerId: id,
+        tenantId: currentUser.tenantId,
       },
     });
 

@@ -120,12 +120,20 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.TenantScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   password: 'password',
   name: 'name',
   isAdmin: 'isAdmin',
+  tenantId: 'tenantId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -149,6 +157,7 @@ exports.Prisma.InvitationScalarFieldEnum = {
   token: 'token',
   expiresAt: 'expiresAt',
   status: 'status',
+  tenantId: 'tenantId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -170,6 +179,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   deliveryAddress: 'deliveryAddress',
   gstNo: 'gstNo',
   userId: 'userId',
+  tenantId: 'tenantId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -180,6 +190,7 @@ exports.Prisma.ItemScalarFieldEnum = {
   hsnCode: 'hsnCode',
   taxRate: 'taxRate',
   userId: 'userId',
+  tenantId: 'tenantId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -190,6 +201,7 @@ exports.Prisma.BillScalarFieldEnum = {
   billDate: 'billDate',
   customerId: 'customerId',
   userId: 'userId',
+  tenantId: 'tenantId',
   isIGST: 'isIGST',
   subtotal: 'subtotal',
   cgst: 'cgst',
@@ -247,6 +259,7 @@ exports.Permission = exports.$Enums.Permission = {
 };
 
 exports.Prisma.ModelName = {
+  Tenant: 'Tenant',
   User: 'User',
   UserRole: 'UserRole',
   Invitation: 'Invitation',

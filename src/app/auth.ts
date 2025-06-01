@@ -10,17 +10,32 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        organizationName: { label: "Organization Name", type: "text" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials?.password || !credentials?.organizationName) {
           return null
         }
 
-        const user = await prisma.user.findUnique({
+        // First find the tenant
+        const tenant = await prisma.tenant.findFirst({
+          where: { name: credentials.organizationName }
+        });
+
+        if (!tenant) {
+          return null;
+        }
+
+        // Then find user in that tenant
+        const user = await prisma.user.findFirst({
           where: {
             email: credentials.email,
+            tenantId: tenant.id
           },
+          include: {
+            tenant: true
+          }
         })
 
         if (!user || !user.password) {
@@ -41,6 +56,8 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           isAdmin: user.isAdmin,
+          tenantId: tenant.id,
+          tenantName: tenant.name,
         }
       }
     })
@@ -53,6 +70,8 @@ export const authOptions: NextAuthOptions = {
         email?: string | null;
         image?: string | null;
         isAdmin?: boolean;
+        tenantId?: string;
+        tenantName?: string;
       }
 
       return {
@@ -61,6 +80,8 @@ export const authOptions: NextAuthOptions = {
           ...session.user as SessionUser,
           id: token.id as string,
           isAdmin: token.isAdmin as boolean,
+          tenantId: token.tenantId as string,
+          tenantName: token.tenantName as string,
         },
       }
     },
@@ -70,6 +91,8 @@ export const authOptions: NextAuthOptions = {
           ...token,
           id: user.id,
           isAdmin: (user as any).isAdmin,
+          tenantId: (user as any).tenantId,
+          tenantName: (user as any).tenantName,
         }
       }
       return token

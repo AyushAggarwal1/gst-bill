@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [invitationToken, setInvitationToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get invitation token from URL if present
+    const token = searchParams?.get('invitationToken');
+    if (token) {
+      setInvitationToken(token);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +38,7 @@ export default function RegisterPage() {
           name,
           email,
           password,
+          ...(invitationToken ? { invitationToken } : { organizationName }),
         }),
       });
 
@@ -52,7 +64,7 @@ export default function RegisterPage() {
             GST Bill Maker
           </h2>
           <p className="mt-2 text-sm text-indigo-600 font-medium">
-            Simplified Billing Solution
+            {invitationToken ? "Complete your registration" : "Create your organization"}
           </p>
         </div>
       </div>
@@ -100,6 +112,31 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+
+            {!invitationToken && (
+              <div>
+                <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
+                  Organization Name
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v4H7V5zm6 6H7v2h6v-2z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <input
+                    id="organizationName"
+                    name="organizationName"
+                    type="text"
+                    required={!invitationToken}
+                    value={organizationName}
+                    onChange={(e) => setOrganizationName(e.target.value)}
+                    placeholder="Your organization name"
+                    className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-3"
+                  />
+                </div>
+              </div>
+            )}
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
