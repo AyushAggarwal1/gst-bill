@@ -35,12 +35,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.7.0
- * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+ * Prisma Client JS version: 6.8.2
+ * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
  */
 Prisma.prismaVersion = {
-  client: "6.7.0",
-  engine: "3cff47a7f5d65c3ea74883f1d736e41d68ce91ed"
+  client: "6.8.2",
+  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -262,23 +262,24 @@ const config = {
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
-  "clientVersion": "6.7.0",
-  "engineVersion": "3cff47a7f5d65c3ea74883f1d736e41d68ce91ed",
+  "clientVersion": "6.8.2",
+  "engineVersion": "2060c79ba17c6bb9f5823312b6f6b7f4a845738e",
   "datasourceNames": [
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNjJjNzExYmEtMGYyOC00ZWNkLTk0NjUtYzAzYWUyYzRlMTAzIiwidGVuYW50X2lkIjoiNmVjNWU4MzViYmQ5MmFkODUyNTFhMDFmOWZiY2YyMmVmNzNmZjJhZTI1Y2Q1MDlhYTlmNTI1Nzk2MzgxODBjMyIsImludGVybmFsX3NlY3JldCI6IjU4ODM3NGU1LTgxNWUtNDJlZS04NWNkLWM0NTYxYjYxN2QzYiJ9.TEKxotPA6Eq51U3zbGLuum4qQu0EOOGFGyU-S9hQaOs"
+        "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum Permission {\n  CREATE_BILLS\n  READ_BILLS\n  UPDATE_BILLS\n  DELETE_BILLS\n  CREATE_CUSTOMERS\n  READ_CUSTOMERS\n  UPDATE_CUSTOMERS\n  DELETE_CUSTOMERS\n  CREATE_ITEMS\n  READ_ITEMS\n  UPDATE_ITEMS\n  DELETE_ITEMS\n  INVITE_USERS\n}\n\nmodel User {\n  id                 String       @id @default(uuid())\n  email              String       @unique\n  password           String?\n  name               String?\n  isAdmin            Boolean      @default(false)\n  createdAt          DateTime     @default(now())\n  updatedAt          DateTime     @updatedAt\n  profile            Profile?\n  customers          Customer[]\n  items              Item[]\n  bills              Bill[]\n  roles              UserRole[]\n  sentInvitations    Invitation[] @relation(\"SentInvitations\")\n  receivedInvitation Invitation?  @relation(\"ReceivedInvitation\")\n}\n\nmodel UserRole {\n  id          String       @id @default(uuid())\n  userId      String\n  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)\n  role        Role\n  permissions Permission[]\n  createdAt   DateTime     @default(now())\n  updatedAt   DateTime     @updatedAt\n\n  @@unique([userId, role])\n}\n\nmodel Invitation {\n  id            String       @id @default(uuid())\n  email         String       @unique\n  role          Role\n  permissions   Permission[]\n  invitedById   String\n  invitedBy     User         @relation(\"SentInvitations\", fields: [invitedById], references: [id])\n  invitedUserId String?      @unique\n  invitedUser   User?        @relation(\"ReceivedInvitation\", fields: [invitedUserId], references: [id])\n  token         String       @unique\n  expiresAt     DateTime\n  status        String       @default(\"PENDING\")\n  createdAt     DateTime     @default(now())\n  updatedAt     DateTime     @updatedAt\n}\n\nmodel Profile {\n  id          String  @id @default(uuid())\n  firmName    String\n  address     String\n  gstNo       String\n  phoneNo     String?\n  bankDetails String?\n  userId      String  @unique\n  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Customer {\n  id              String   @id @default(uuid())\n  name            String\n  address         String\n  deliveryAddress String?\n  gstNo           String\n  userId          String\n  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bills           Bill[]\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n}\n\nmodel Item {\n  id        String     @id @default(uuid())\n  name      String\n  hsnCode   String\n  taxRate   Float\n  userId    String\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  billItems BillItem[]\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n\nmodel Bill {\n  id              String     @id @default(uuid())\n  billNumber      String     @unique\n  billDate        DateTime   @default(now())\n  customerId      String\n  customer        Customer   @relation(fields: [customerId], references: [id])\n  userId          String\n  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  items           BillItem[]\n  isIGST          Boolean    @default(false)\n  subtotal        Float\n  cgst            Float      @default(0)\n  sgst            Float      @default(0)\n  igst            Float      @default(0)\n  total           Float\n  deliveryAddress String?\n  createdAt       DateTime   @default(now())\n  updatedAt       DateTime   @updatedAt\n}\n\nmodel BillItem {\n  id        String @id @default(uuid())\n  billId    String\n  bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)\n  itemId    String\n  item      Item   @relation(fields: [itemId], references: [id])\n  quantity  Int\n  price     Float\n  taxAmount Float\n  amount    Float\n}\n",
-  "inlineSchemaHash": "afce8eb46018ddd62de6f4e7dcdf86ba79888e6672b76576a5294df0c0e31415",
-  "copyEngine": false
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum Permission {\n  CREATE_BILLS\n  READ_BILLS\n  UPDATE_BILLS\n  DELETE_BILLS\n  CREATE_CUSTOMERS\n  READ_CUSTOMERS\n  UPDATE_CUSTOMERS\n  DELETE_CUSTOMERS\n  CREATE_ITEMS\n  READ_ITEMS\n  UPDATE_ITEMS\n  DELETE_ITEMS\n  INVITE_USERS\n}\n\nmodel User {\n  id                 String       @id @default(uuid())\n  email              String       @unique\n  password           String?\n  name               String?\n  isAdmin            Boolean      @default(false)\n  createdAt          DateTime     @default(now())\n  updatedAt          DateTime     @updatedAt\n  profile            Profile?\n  customers          Customer[]\n  items              Item[]\n  bills              Bill[]\n  roles              UserRole[]\n  sentInvitations    Invitation[] @relation(\"SentInvitations\")\n  receivedInvitation Invitation?  @relation(\"ReceivedInvitation\")\n}\n\nmodel UserRole {\n  id          String       @id @default(uuid())\n  userId      String\n  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)\n  role        Role\n  permissions Permission[]\n  createdAt   DateTime     @default(now())\n  updatedAt   DateTime     @updatedAt\n\n  @@unique([userId, role])\n}\n\nmodel Invitation {\n  id            String       @id @default(uuid())\n  email         String       @unique\n  role          Role\n  permissions   Permission[]\n  invitedById   String\n  invitedBy     User         @relation(\"SentInvitations\", fields: [invitedById], references: [id])\n  invitedUserId String?      @unique\n  invitedUser   User?        @relation(\"ReceivedInvitation\", fields: [invitedUserId], references: [id])\n  token         String       @unique\n  expiresAt     DateTime\n  status        String       @default(\"PENDING\")\n  createdAt     DateTime     @default(now())\n  updatedAt     DateTime     @updatedAt\n}\n\nmodel Profile {\n  id          String  @id @default(uuid())\n  firmName    String\n  address     String\n  gstNo       String\n  phoneNo     String?\n  bankDetails String?\n  userId      String  @unique\n  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Customer {\n  id              String   @id @default(uuid())\n  name            String\n  address         String\n  deliveryAddress String?\n  gstNo           String\n  userId          String\n  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bills           Bill[]\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n}\n\nmodel Item {\n  id        String     @id @default(uuid())\n  name      String\n  hsnCode   String\n  taxRate   Float\n  userId    String\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  billItems BillItem[]\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n\nmodel Bill {\n  id              String     @id @default(uuid())\n  billNumber      String     @unique\n  billDate        DateTime   @default(now())\n  customerId      String\n  customer        Customer   @relation(fields: [customerId], references: [id])\n  userId          String\n  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  items           BillItem[]\n  isIGST          Boolean    @default(false)\n  subtotal        Float\n  cgst            Float      @default(0)\n  sgst            Float      @default(0)\n  igst            Float      @default(0)\n  total           Float\n  deliveryAddress String?\n  createdAt       DateTime   @default(now())\n  updatedAt       DateTime   @updatedAt\n}\n\nmodel BillItem {\n  id        String @id @default(uuid())\n  billId    String\n  bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)\n  itemId    String\n  item      Item   @relation(fields: [itemId], references: [id])\n  quantity  Int\n  price     Float\n  taxAmount Float\n  amount    Float\n}\n",
+  "inlineSchemaHash": "853dcdc9821849670844aa207d2b4183a2f1d56d162a3535d6594b52c0a25fca",
+  "copyEngine": true
 }
 
 const fs = require('fs')
@@ -315,3 +316,9 @@ const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-darwin-arm64.dylib.node")
+// file annotations for bundling tools to include these files
+path.join(__dirname, "schema.prisma");
+path.join(process.cwd(), "src/generated/prisma/schema.prisma")

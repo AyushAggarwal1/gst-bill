@@ -1,13 +1,49 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
+
+-- CreateEnum
+CREATE TYPE "Permission" AS ENUM ('CREATE_BILLS', 'READ_BILLS', 'UPDATE_BILLS', 'DELETE_BILLS', 'CREATE_CUSTOMERS', 'READ_CUSTOMERS', 'UPDATE_CUSTOMERS', 'DELETE_CUSTOMERS', 'CREATE_ITEMS', 'READ_ITEMS', 'UPDATE_ITEMS', 'DELETE_ITEMS', 'INVITE_USERS');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "name" TEXT,
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserRole" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "role" "Role" NOT NULL,
+    "permissions" "Permission"[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "UserRole_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Invitation" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "role" "Role" NOT NULL,
+    "permissions" "Permission"[],
+    "invitedById" TEXT NOT NULL,
+    "invitedUserId" TEXT,
+    "token" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'PENDING',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Invitation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -16,6 +52,8 @@ CREATE TABLE "Profile" (
     "firmName" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "gstNo" TEXT NOT NULL,
+    "phoneNo" TEXT,
+    "bankDetails" TEXT,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
@@ -26,7 +64,7 @@ CREATE TABLE "Customer" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "deliveryAddress" TEXT NOT NULL,
+    "deliveryAddress" TEXT,
     "gstNo" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -61,6 +99,7 @@ CREATE TABLE "Bill" (
     "sgst" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "igst" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "total" DOUBLE PRECISION NOT NULL,
+    "deliveryAddress" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -84,10 +123,31 @@ CREATE TABLE "BillItem" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "UserRole_userId_role_key" ON "UserRole"("userId", "role");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Invitation_email_key" ON "Invitation"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Invitation_invitedUserId_key" ON "Invitation"("invitedUserId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Invitation_token_key" ON "Invitation"("token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Profile_userId_key" ON "Profile"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Bill_billNumber_key" ON "Bill"("billNumber");
+
+-- AddForeignKey
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_invitedById_fkey" FOREIGN KEY ("invitedById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_invitedUserId_fkey" FOREIGN KEY ("invitedUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
