@@ -46,5 +46,5 @@ docker-compose.yml
 DOCKER.md
 
 # exported data of prod database
-exportedSupabaseDbProdEnv/
-exportedPrismaDbProdEnv/
+/exportedSupabaseDbProdEnv/
+/exportedPrismaDbProdEnv/
