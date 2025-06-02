@@ -10,6 +10,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,11 +23,12 @@ export default function LoginPage() {
       const res = await signIn("credentials", {
         email,
         password,
+        organizationName,
         redirect: false,
       });
 
       if (res?.error) {
-        setError("Invalid email or password");
+        setError("Invalid credentials or organization name");
       } else {
         router.push("/dashboard");
       }
@@ -70,6 +72,29 @@ export default function LoginPage() {
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
+                Organization Name
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm6 6H7v2h6v-2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  id="organizationName"
+                  name="organizationName"
+                  type="text"
+                  required
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                  placeholder="Your Organization"
+                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-3"
+                />
+              </div>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address

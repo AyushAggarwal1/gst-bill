@@ -322,8 +322,10 @@ export default function BillDetailPage({ params }: BillParams) {
 
         <div className="text-center text-sm text-gray-600 mb-6 print:mb-3">
             <span className="font-semibold text-gray-700">Invoice No:</span> {bill.billNumber}
-            <span className="mx-2">|</span>
+            <span className="mx-3">|</span>
             <span className="font-semibold text-gray-700">Date:</span> {format(new Date(bill.billDate), "dd MMMM yyyy")}
+            <span className="mx-3">|</span>
+            <span className="font-semibold text-gray-700">Tax Type:</span> {bill?.isIGST ? "IGST" : "CGST/ SGST"}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 print:grid-cols-2 print:gap-4 print:mb-4">

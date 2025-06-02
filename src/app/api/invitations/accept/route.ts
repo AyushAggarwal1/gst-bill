@@ -19,6 +19,9 @@ export async function POST(request: Request) {
 
     const invitation = await prisma.invitation.findUnique({
       where: { token },
+      include: {
+        tenant: true // Include tenant information
+      }
     });
 
     if (!invitation) {
@@ -37,39 +40,46 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invitation has expired.' }, { status: 400 });
     }
     
-    // Check if a user already exists with this email (e.g., if they signed up normally after invite was sent but before accepting)
-    let user = await prisma.user.findUnique({ where: { email: invitation.email } });
+    // Check if a user already exists with this email IN THIS TENANT
+    let user = await prisma.user.findFirst({ 
+      where: { 
+        email: invitation.email,
+        tenantId: invitation.tenantId
+      } 
+    });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (user) {
-        // User exists, but maybe didn't set password via invite. Update their password.
-        // Or, this could be an error condition depending on your desired flow if an active user gets re-invited.
-        // For now, we'll assume it's okay to update the password if they are accepting an invite.
+        // User exists in this tenant, update their details
         user = await prisma.user.update({
             where: { id: user.id },
             data: {
                 password: hashedPassword,
-                name: name || user.name, // Update name if provided
-                // Roles and permissions are set via UserRole table
+                name: name || user.name
             }
         });
     } else {
-        // Create new user
+        // Create new user in this tenant
         user = await prisma.user.create({
             data: {
                 email: invitation.email,
                 password: hashedPassword,
                 name: name || null,
-                isAdmin: false, // Invited users are not admins by default
-                // Roles and permissions will be linked via UserRole
+                isAdmin: false,
+                tenant: {
+                    connect: { id: invitation.tenantId }
+                }
             },
         });
     }
 
     // Assign role and permissions to the user
-    // First, remove any existing roles for this user if they are being re-assigned through a new invite (edge case)
-    await prisma.userRole.deleteMany({ where: { userId: user.id }});
+    await prisma.userRole.deleteMany({ 
+      where: { 
+        userId: user.id,
+      }
+    });
     
     await prisma.userRole.create({
         data: {
@@ -88,10 +98,12 @@ export async function POST(request: Request) {
       },
     });
 
-    // TODO: Here you might want to automatically sign in the user
-    // and redirect them to the dashboard or a welcome page.
-
-    return NextResponse.json({ message: 'Invitation accepted successfully. You can now log in.', userId: user.id }, { status: 200 });
+    return NextResponse.json({ 
+      message: 'Invitation accepted successfully. You can now log in.', 
+      userId: user.id,
+      tenantId: invitation.tenantId,
+      tenantName: invitation.tenant.name
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Error accepting invitation:', error);

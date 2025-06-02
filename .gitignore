@@ -44,3 +44,7 @@ next-env.d.ts
 # docker
 docker-compose.yml
 DOCKER.md
+
+# exported data of prod database
+exportedSupabaseDbProdEnv/
+exportedPrismaDbProdEnv/
