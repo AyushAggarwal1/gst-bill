@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
     const customerName = url.searchParams.get("customerName");
+    const billNumber = url.searchParams.get("billNumber");
 
     // Build the where clause for filtering
     const whereClause: any = {
@@ -42,6 +43,14 @@ export async function GET(req: Request) {
           contains: customerName.trim(),
           mode: 'insensitive'
         }
+      };
+    }
+
+    // Add bill number filter
+    if (billNumber && billNumber.trim() !== "") {
+      whereClause.billNumber = {
+        contains: billNumber.trim(),
+        mode: 'insensitive'
       };
     }
 
