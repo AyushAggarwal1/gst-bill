@@ -223,7 +223,7 @@ export async function POST(req: Request) {
         },
       },
       orderBy: {
-        billDate: "asc",
+        billNumber: "asc",
       }
     });
 
