@@ -2,7 +2,16 @@
 
 A modern, user-friendly application for creating and managing GST bills. Built with Next.js, Prisma, and PostgreSQL.
 
-🌐 **Live Demo**: [https://gstbillmaker.netlify.app](https://gstbillmaker.netlify.app)  
+🌐 **Hosted on  Netlify**: [https://gstbillmaker.netlify.app](https://gstbillmaker.netlify.app) 
+
+🎬 **To Start Self Demo**: [https://demogstbillmaker.netlify.app](https://demogstbillmaker.netlify.app/) 
+
+```
+  Creds for Demo Env
+  Organization Name - ayush1
+  Email - ayush1@ayush.com
+  Password - ayush1@ayush.com
+```
 
 ![Dashboard Screenshot](public/images/dashboard.png)
 
