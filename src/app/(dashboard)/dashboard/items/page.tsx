@@ -5,7 +5,7 @@ import Link from "next/link";
 import { format } from 'date-fns';
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Spinner from "@/components/Spinner";
-import { AddIcon, EditIcon, DeleteIcon, KebabMenuIcon } from "@/components/icons";
+import { AddIcon, EditIcon, DeleteIcon, KebabMenuIcon, SuccessIcon } from "@/components/icons";
 
 interface Item {
   id: string;
@@ -21,6 +21,7 @@ export default function ItemsPage() {
   const [error, setError] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -59,6 +60,10 @@ export default function ItemsPage() {
       }
 
       setItems((prev) => prev.filter((item) => item.id !== id));
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+      setDeleteSuccess("Item deleted successfully.");
+      setTimeout(() => setDeleteSuccess(""), 3000);
     } catch (error) {
       console.error("Error deleting item:", error);
       setError("Failed to delete item. Please try again.");
@@ -68,6 +73,10 @@ export default function ItemsPage() {
   const openDeleteDialog = (id: string) => {
     setItemToDelete(id);
     setDeleteDialogOpen(true);
+  };
+
+  const handleDismissSuccess = () => {
+    setDeleteSuccess("");
   };
 
   const filteredItems = items.filter(item => 
@@ -126,7 +135,24 @@ export default function ItemsPage() {
           </div>
         </div>
 
-        <div className="px-4 py-0 sm:px-0">
+        <div className="px-4 py-0 sm:px-0"> {/* Adjusted py-6 to py-0 here as search bar has mb-6 */}
+          {deleteSuccess && (
+            <div className="flex items-center justify-between p-4 mb-4 bg-gradient-to-r from-green-100 via-green-50 to-green-100 border-l-4 border-green-500 text-green-800 rounded-lg shadow-lg animate-fade-in relative">
+              <div className="flex items-center">
+                <SuccessIcon className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                <span className="font-medium text-green-900">{deleteSuccess}</span>
+              </div>
+              <button
+                className="absolute top-2 right-2 text-green-700 hover:text-green-900 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+                aria-label="Dismiss success message"
+                onClick={handleDismissSuccess}
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
           {loading ? (
             <Spinner />
           ) : error ? (

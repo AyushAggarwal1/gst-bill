@@ -18,6 +18,7 @@ export { default as ChevronUpIcon } from './ChevronUpIcon';
 export { default as TableIcon } from './TableIcon';
 export { default as KebabMenuIcon } from './KebabMenuIcon';
 export { default as ViewIcon } from './ViewIcon';
+export { default as SuccessIcon } from './SuccessIcon';
 
 // If other icons like UserManagementIcon, SearchIcon, etc., are indeed 
 // located in this directory (src/components/icons/),

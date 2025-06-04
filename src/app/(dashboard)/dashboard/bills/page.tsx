@@ -19,6 +19,7 @@ import {
     TableIcon,
     KebabMenuIcon,
     ViewIcon,
+    SuccessIcon,
 } from "@/components/icons";
 
 interface Bill {
@@ -52,6 +53,7 @@ export default function BillsPage() {
   const [billToDelete, setBillToDelete] = useState<string | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState("");
 
   const customerNameInputRef = useRef<HTMLInputElement>(null);
   const billNumberInputRef = useRef<HTMLInputElement>(null);
@@ -98,6 +100,8 @@ export default function BillsPage() {
       setBills((prev) => prev.filter((bill) => bill.id !== id));
       setSelectedBills((prev) => prev.filter((billId) => billId !== id));
       closeDeleteDialog();
+      setDeleteSuccess("Bill deleted successfully.");
+      setTimeout(() => setDeleteSuccess(""), 3000);
     } catch (error) {
       console.error("Error deleting bill:", error);
       setError(error instanceof Error ? error.message : "Failed to delete bill. Please try again.");
@@ -112,6 +116,10 @@ export default function BillsPage() {
     );
   };
 
+  const handleDismissSuccess = () => {
+    setDeleteSuccess("");
+  };
+  
   const handleSelectAll = () => {
     if (selectedBills.length === bills.length && bills.length > 0) {
       setSelectedBills([]);
@@ -356,6 +364,24 @@ export default function BillsPage() {
           role="alert"
         >
           {actionMessage.text}
+        </div>
+      )}
+
+      {deleteSuccess && (
+        <div className="flex items-center justify-between p-4 mb-4 bg-gradient-to-r from-green-100 via-green-50 to-green-100 border-l-4 border-green-500 text-green-800 rounded-lg shadow-lg animate-fade-in relative">
+          <div className="flex items-center">
+            <SuccessIcon className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+            <span className="font-medium text-green-900">{deleteSuccess}</span>
+          </div>
+          <button
+            className="absolute top-2 right-2 text-green-700 hover:text-green-900 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+            aria-label="Dismiss success message"
+            onClick={handleDismissSuccess}
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       )}
 
