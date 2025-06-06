@@ -4,11 +4,11 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-// Simple Loading Spinner component
+// Enhanced Loading Spinner component
 function LoadingSpinner() {
   return (
     <div className="flex justify-center items-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-200 border-t-blue-600"></div>
     </div>
   );
 }
@@ -27,8 +27,8 @@ function AcceptInvitationForm() {
   const [tokenError, setTokenError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token && !searchParams) { // Also check if searchParams itself is still loading
-        // Still waiting for searchParams, do nothing yet or show a specific loading state for token
+    if (!token && !searchParams) {
+        // Still waiting for searchParams
     } else if (!token) {
       setTokenError('Invitation token is missing or invalid. Please check the link or contact the sender.');
     }
@@ -73,146 +73,256 @@ function AcceptInvitationForm() {
     }
   };
   
-  // Show loading if token is not yet available from searchParams
+  // Loading state
   if (!searchParams) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-2xl rounded-lg">
-            <LoadingSpinner />
-            <p className="text-center text-gray-500 mt-2">Loading invitation details...</p>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col justify-center px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-sm sm:max-w-md">
+            <div className="bg-white/90 backdrop-blur-sm py-8 px-4 sm:px-8 shadow-xl rounded-xl sm:rounded-2xl border border-white/20">
+              <div className="text-center space-y-4">
+                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center">
+                  <LoadingSpinner />
+                </div>
+                <p className="text-gray-600">Loading invitation details...</p>
+              </div>
+            </div>
           </div>
         </div>
       );
   }
 
+  // Token error state
   if (tokenError) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-2xl rounded-lg">
-            {/* Logo Placeholder */}
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-              <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col justify-center px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-sm sm:max-w-md">
+          {/* Header */}
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-lg">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
               </svg>
             </div>
-            <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">Invalid Invitation</h2>
-            <p className="mt-2 text-center text-sm text-red-600">{tokenError}</p>
-            <div className="mt-8">
-              <Link href="/login" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  Go to Login
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">GST Bill Maker</h1>
+          </div>
+
+          {/* Error Card */}
+          <div className="bg-white/90 backdrop-blur-sm py-6 px-4 sm:py-8 sm:px-8 shadow-xl rounded-xl sm:rounded-2xl border border-white/20">
+            <div className="text-center space-y-6">
+              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Invalid Invitation</h2>
+                <p className="text-sm text-red-600">{tokenError}</p>
+              </div>
+              <Link 
+                href="/login" 
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Go to Login
               </Link>
             </div>
+          </div>
         </div>
       </div>
     );
   }
   
+  // Success state
   if (message?.type === 'success') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-2xl rounded-lg">
-            {/* Logo Placeholder */}
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-              <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col justify-center px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-sm sm:max-w-md">
+          {/* Header */}
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-lg">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
               </svg>
             </div>
-            <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">Success!</h2>
-            <p className="mt-2 text-center text-sm text-green-600">{message.text}</p>
-            <div className="mt-8">
-              <Link href="/login" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  Proceed to Login
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">GST Bill Maker</h1>
+          </div>
+
+          {/* Success Card */}
+          <div className="bg-white/90 backdrop-blur-sm py-6 px-4 sm:py-8 sm:px-8 shadow-xl rounded-xl sm:rounded-2xl border border-white/20">
+            <div className="text-center space-y-6">
+              <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Welcome to the Team!</h2>
+                <p className="text-sm text-emerald-600">{message.text}</p>
+              </div>
+              <Link 
+                href="/login" 
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Continue to Login
               </Link>
             </div>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Main form
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 p-8 bg-white shadow-2xl rounded-lg">
-        <div>
-          {/* Logo Placeholder - Replace with your actual logo or app name styling */}
-          <div className="text-center">
-            <svg className="mx-auto h-12 w-auto text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col justify-center px-4 py-6 sm:px-6 lg:px-8">
+      {/* Header */}
+      <div className="mx-auto w-full max-w-sm sm:max-w-md">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-lg">
+            <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
             </svg>
-            {/* Or simply: <h1 className="text-3xl font-bold text-indigo-600">Your App Name</h1> */}
           </div>
-          <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">
-            Accept Your Invitation
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Set a password to complete your account setup.
-          </p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">GST Bill Maker</h1>
+          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">Accept Your Invitation</p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {message && message.type === 'error' && (
-            <div className="p-3 mb-4 bg-red-50 text-red-700 rounded-md text-sm border border-red-200">
-              {message.text}
-            </div>
-          )}
-          <div className="space-y-4 rounded-md shadow-sm">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name (Optional)
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="Your full name"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="Choose a strong password"
-              />
-               <p className="mt-1 text-xs text-gray-500">Minimum 8 characters.</p>
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="Confirm your password"
-              />
-            </div>
+      </div>
+
+      {/* Form Card */}
+      <div className="mx-auto w-full max-w-sm sm:max-w-md">
+        <div className="bg-white/90 backdrop-blur-sm py-6 px-4 sm:py-8 sm:px-8 shadow-xl rounded-xl sm:rounded-2xl border border-white/20">
+          <div className="mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 text-center mb-2">
+              Complete Your Account Setup
+            </h2>
+            <p className="text-sm text-gray-600 text-center">
+              Set your details to join the organization
+            </p>
           </div>
 
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={isLoading || !token}
-              className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 transition duration-150 ease-in-out"
-            >
-              {isLoading ? <LoadingSpinner /> : 'Create Account & Join'}
-            </button>
+          {/* Error Message */}
+          {message && message.type === 'error' && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex">
+                <svg className="w-5 h-5 text-red-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <p className="ml-3 text-sm font-medium text-red-800">{message.text}</p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name Input */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+                Full Name (Optional)
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2.5 sm:py-3 border border-gray-300 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm sm:text-base"
+                  placeholder="Your full name"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2.5 sm:py-3 border border-gray-300 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm sm:text-base"
+                  placeholder="Choose a strong password"
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-500">Minimum 8 characters required</p>
+            </div>
+
+            {/* Confirm Password Input */}
+            <div>
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2.5 sm:py-3 border border-gray-300 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm sm:text-base"
+                  placeholder="Confirm your password"
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isLoading || !token}
+                className="w-full flex items-center justify-center px-4 py-2.5 sm:py-3 text-sm sm:text-base font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+              >
+                {isLoading ? (
+                  <>
+                    <LoadingSpinner />
+                    <span className="ml-2">Creating Account...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    Create Account & Join
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Footer Link */}
+          <div className="mt-6 text-center">
+            <Link href="/login" className="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-200">
+              Already have an account? Sign in
+            </Link>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
@@ -223,10 +333,16 @@ export default function AcceptInvitationPage() {
     return (
         <Suspense 
             fallback={
-                <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-2xl rounded-lg">
-                        <LoadingSpinner />
-                        <p className="text-center text-gray-500 mt-2">Loading invitation...</p>
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col justify-center px-4 py-6 sm:px-6 lg:px-8">
+                    <div className="mx-auto w-full max-w-sm sm:max-w-md">
+                        <div className="bg-white/90 backdrop-blur-sm py-8 px-4 sm:px-8 shadow-xl rounded-xl sm:rounded-2xl border border-white/20">
+                            <div className="text-center space-y-4">
+                                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center">
+                                    <LoadingSpinner />
+                                </div>
+                                <p className="text-gray-600">Loading invitation...</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
