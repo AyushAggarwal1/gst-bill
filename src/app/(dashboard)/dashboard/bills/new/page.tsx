@@ -469,7 +469,7 @@ export default function NewBillPage() {
                 </div>
               )}
 
-              {/* Bill Details Section */}
+                {/* Bill Details Section */}
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
@@ -483,8 +483,8 @@ export default function NewBillPage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   <div>
                     <label htmlFor="billNumber" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Bill Number
-                    </label>
+                    Bill Number
+                  </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <div className="w-5 h-5 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -493,23 +493,23 @@ export default function NewBillPage() {
                           </svg>
                         </div>
                       </div>
-                      <input
-                        type="text"
-                        name="billNumber"
-                        id="billNumber"
-                        required
-                        value={billData.billNumber}
-                        onChange={handleBillDataChange}
+                    <input
+                      type="text"
+                      name="billNumber"
+                      id="billNumber"
+                      required
+                      value={billData.billNumber}
+                      onChange={handleBillDataChange}
                         placeholder="Auto-generated"
                         className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-blue-50/30 border border-blue-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-300 text-sm"
-                      />
-                    </div>
+                    />
                   </div>
+                </div>
 
                   <div>
                     <label htmlFor="billDate" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Bill Date
-                    </label>
+                    Bill Date
+                  </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <div className="w-5 h-5 bg-amber-50 rounded-lg flex items-center justify-center">
@@ -518,13 +518,13 @@ export default function NewBillPage() {
                           </svg>
                         </div>
                       </div>
-                      <input
-                        type="date"
-                        name="billDate"
-                        id="billDate"
-                        required
-                        value={billData.billDate}
-                        onChange={handleBillDataChange}
+                    <input
+                      type="date"
+                      name="billDate"
+                      id="billDate"
+                      required
+                      value={billData.billDate}
+                      onChange={handleBillDataChange}
                         className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-amber-50/30 border border-amber-200/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all duration-300 text-sm"
                       />
                     </div>
@@ -573,7 +573,7 @@ export default function NewBillPage() {
                   <div>
                     <label htmlFor="customerId" className="block text-sm font-semibold text-gray-700 mb-2">
                       Select Customer *
-                    </label>
+                  </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <div className="w-5 h-5 bg-emerald-50 rounded-lg flex items-center justify-center">
@@ -582,28 +582,28 @@ export default function NewBillPage() {
                           </svg>
                         </div>
                       </div>
-                      <select
-                        id="customerId"
-                        name="customerId"
-                        required
-                        value={billData.customerId}
-                        onChange={handleBillDataChange}
+                    <select
+                      id="customerId"
+                      name="customerId"
+                      required
+                      value={billData.customerId}
+                      onChange={handleBillDataChange}
                         className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-emerald-50/30 border border-emerald-200/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all duration-300 text-sm appearance-none"
-                      >
-                        <option value="">Select a customer</option>
-                        {customers.map(customer => (
-                          <option key={customer.id} value={customer.id}>
-                            {customer.name} - {customer.gstNo}
-                          </option>
-                        ))}
-                      </select>
+                    >
+                      <option value="">Select a customer</option>
+                      {customers.map(customer => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.name} - {customer.gstNo}
+                        </option>
+                      ))}
+                    </select>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
                     </div>
-                  </div>
+                </div>
 
                   <div>
                     <label htmlFor="deliveryAddress" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -616,23 +616,23 @@ export default function NewBillPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
-                        </div>
-                      </div>
-                      <textarea
-                        id="deliveryAddress"
-                        name="deliveryAddress"
-                        rows={3}
-                        value={billData.deliveryAddress}
-                        onChange={handleBillDataChange}
-                        placeholder="Enter delivery address if different from billing address"
-                        className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-gray-50/30 border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-400 transition-all duration-300 text-sm resize-none"
-                      />
-                    </div>
                   </div>
                 </div>
-              </div>
+                    <textarea
+                      id="deliveryAddress"
+                      name="deliveryAddress"
+                      rows={3}
+                      value={billData.deliveryAddress}
+                      onChange={handleBillDataChange}
+                      placeholder="Enter delivery address if different from billing address"
+                        className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-gray-50/30 border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-400 transition-all duration-300 text-sm resize-none"
+                    />
+                    </div>
+                  </div>
+                  </div>
+                </div>
 
-              {/* Item Selection Section */}
+                {/* Item Selection Section */}
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
@@ -728,13 +728,13 @@ export default function NewBillPage() {
                           className="block w-full pl-12 pr-4 py-3 bg-white border border-emerald-300/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all duration-300 text-sm"
                         />
                       </div>
+                      </div>
                     </div>
-                  </div>
 
                   <div className="mt-6 flex flex-col sm:flex-row sm:justify-end">
-                    <button
-                      type="button"
-                      onClick={addItemToBill}
+                      <button
+                        type="button"
+                        onClick={addItemToBill}
                       className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 group min-w-[140px]"
                     >
                       <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300">
@@ -743,14 +743,14 @@ export default function NewBillPage() {
                         </svg>
                       </div>
                       <span className="group-hover:tracking-wide transition-all duration-300">Add Item</span>
-                    </button>
+                      </button>
+                  </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Items Table */}
+                {/* Items Table */}
               <div className="mb-8">
-                {billItems.length === 0 ? (
+                  {billItems.length === 0 ? (
                   <div className="text-center py-12 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
                     <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
                       <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -771,75 +771,75 @@ export default function NewBillPage() {
                         <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                           <tr>
                             <th scope="col" className="py-4 pl-6 pr-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              Item
-                            </th>
+                                    Item
+                                  </th>
                             <th scope="col" className="px-3 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              HSN
-                            </th>
+                                    HSN
+                                  </th>
                             <th scope="col" className="px-3 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              Qty
-                            </th>
+                                    Qty
+                                  </th>
                             <th scope="col" className="px-3 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              Price
-                            </th>
+                                    Price
+                                  </th>
                             <th scope="col" className="px-3 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              Amount
-                            </th>
+                                    Amount
+                                  </th>
                             <th scope="col" className="px-3 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              Tax Rate
-                            </th>
+                                    Tax Rate
+                                  </th>
                             <th scope="col" className="px-3 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
-                              Tax Amount
-                            </th>
+                                    Tax Amount
+                                  </th>
                             <th scope="col" className="relative py-4 pl-3 pr-6">
                               <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</span>
-                            </th>
-                          </tr>
-                        </thead>
+                                  </th>
+                                </tr>
+                              </thead>
                         <tbody className="divide-y divide-gray-200/50 bg-white">
-                          {billItems.map((item, index) => (
+                                {billItems.map((item, index) => (
                             <tr key={index} className="hover:bg-gray-50/50 transition-colors duration-200">
                               <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">
-                                {item.name}
-                              </td>
-                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {item.hsnCode}
-                              </td>
+                                      {item.name}
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                      {item.hsnCode}
+                                    </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                  {item.quantity}
+                                      {item.quantity}
                                 </span>
-                              </td>
+                                    </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right font-medium">
-                                ₹{item.price.toFixed(2)}
-                              </td>
+                                      ₹{item.price.toFixed(2)}
+                                    </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 text-right font-semibold">
-                                ₹{item.amount.toFixed(2)}
-                              </td>
+                                      ₹{item.amount.toFixed(2)}
+                                    </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                  {item.taxRate}%
+                                      {item.taxRate}%
                                 </span>
-                              </td>
+                                    </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right font-medium">
-                                ₹{item.taxAmount.toFixed(2)}
-                              </td>
+                                      ₹{item.taxAmount.toFixed(2)}
+                                    </td>
                               <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => removeItem(index)}
+                                      <button
+                                        type="button"
+                                        onClick={() => removeItem(index)}
                                   className="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/20"
-                                  aria-label="Remove item"
-                                >
-                                  <DeleteIcon />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                                        aria-label="Remove item"
+                                      >
+                                        <DeleteIcon />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                 )}
               </div>
 
@@ -860,8 +860,8 @@ export default function NewBillPage() {
                       <div className="flex justify-between items-center py-2">
                         <span className="text-sm font-medium text-gray-600">Subtotal</span>
                         <span className="text-lg font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
-                      </div>
-                      
+                </div>
+
                       {billData.isIGST ? (
                         <div className="flex justify-between items-center py-2 bg-purple-50 rounded-lg px-4">
                           <span className="text-sm font-medium text-purple-700">IGST</span>
@@ -876,8 +876,8 @@ export default function NewBillPage() {
                           <div className="flex justify-between items-center py-2 bg-blue-50 rounded-lg px-4">
                             <span className="text-sm font-medium text-blue-700">SGST</span>
                             <span className="text-lg font-semibold text-blue-900">₹{sgst.toFixed(2)}</span>
-                          </div>
-                        </div>
+                            </div>
+                            </div>
                       )}
                       
                       <div className="pt-4 border-t-2 border-indigo-200">
@@ -885,11 +885,11 @@ export default function NewBillPage() {
                           <span className="text-lg font-bold text-emerald-800">Grand Total</span>
                           <span className="text-2xl font-bold text-emerald-900">₹{grandTotal.toFixed(2)}</span>
                         </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             {/* Enhanced Action Buttons Footer */}

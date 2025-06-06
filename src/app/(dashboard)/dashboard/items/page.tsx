@@ -236,14 +236,14 @@ export default function ItemsPage() {
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                     <svg className="h-5 w-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <input 
-                    type="text"
-                    placeholder="Search items by name or HSN code..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <input 
+              type="text"
+              placeholder="Search items by name or HSN code..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
                     className="block w-full pl-12 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all duration-200 text-base sm:text-sm"
                   />
                   {searchTerm && (
@@ -412,13 +412,13 @@ export default function ItemsPage() {
                 </div>
                 <button
                   className="text-green-700 hover:text-green-900 transition-colors rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500/20"
-                  aria-label="Dismiss success message"
-                  onClick={handleDismissSuccess}
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                aria-label="Dismiss success message"
+                onClick={handleDismissSuccess}
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
               </div>
             </div>
           )}
@@ -430,7 +430,7 @@ export default function ItemsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <Spinner />
+            <Spinner />
                 <p className="mt-4 text-sm text-gray-600">Loading your items...</p>
               </div>
             </div>
@@ -451,20 +451,20 @@ export default function ItemsPage() {
           ) : filteredItems.length === 0 ? (
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 sm:p-12 shadow-lg text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <svg
+              <svg
                   className="w-8 h-8 text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  />
-                </svg>
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">
                 {searchTerm ? 'No Items Found' : 'No Items Yet'}
@@ -472,15 +472,15 @@ export default function ItemsPage() {
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
                 {searchTerm ? 'Try adjusting your search terms or add a new item to get started.' : 'Start building your product catalog by adding your first item.'}
               </p>
-              <Link
-                href="/dashboard/items/new"
+                <Link
+                  href="/dashboard/items/new"
                 className="inline-flex items-center px-6 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 group"
               >
                 <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Add Your First Item
-              </Link>
+                </Link>
             </div>
           ) : (
             <div>
@@ -549,7 +549,7 @@ export default function ItemsPage() {
                                 href={`/dashboard/items/edit/${item.id}`}
                                 className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
                               >
-                                {item.name}
+                          {item.name}
                               </Link>
                               <p className="text-xs text-gray-500">Product Item</p>
                             </div>
@@ -713,12 +713,12 @@ export default function ItemsPage() {
                             onMouseLeave={() => setOpenMenuId(null)}
                           >
                                                          <div className="py-2" role="none">
-                               <Link
-                                 href={`/dashboard/items/edit/${item.id}`}
+                              <Link
+                                href={`/dashboard/items/edit/${item.id}`}
                                  className="text-gray-700 hover:bg-amber-50 hover:text-amber-700 group flex items-center px-4 py-3 text-sm w-full text-left transition-colors"
-                                 role="menuitem"
-                                 onClick={() => setOpenMenuId(null)}
-                               >
+                                role="menuitem"
+                                onClick={() => setOpenMenuId(null)}
+                              >
                                  <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center mr-3 group-hover:bg-amber-100">
                                    <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -728,7 +728,7 @@ export default function ItemsPage() {
                                    <p className="font-semibold">Edit Item</p>
                                    <p className="text-xs text-gray-500">Modify item details</p>
                                  </div>
-                               </Link>
+                              </Link>
                               <button
                                 onClick={() => { openDeleteDialog(item.id); setOpenMenuId(null); }}
                                 className="text-gray-700 hover:bg-red-50 hover:text-red-700 group flex items-center px-4 py-3 text-sm w-full text-left transition-colors"
