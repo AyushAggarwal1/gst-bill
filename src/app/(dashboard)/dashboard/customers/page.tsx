@@ -113,7 +113,7 @@ export default function CustomersPage() {
       />
 
       {/* Enhanced Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-40">
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-30">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div className="flex items-center space-x-3">
@@ -141,52 +141,216 @@ export default function CustomersPage() {
       </header>
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* Enhanced Stats Cards */}
+        {/* Enhanced Statistics Widgets */}
         <div className="px-4 mb-6 sm:px-0">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/20">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            {/* Total Customers Widget */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-blue-200/50 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-blue-700">Total</h3>
                   </div>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Total Customers</p>
-                  <p className="text-lg font-semibold text-gray-900">{customers.length}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-blue-900">{customers.length}</p>
+                  <p className="text-xs text-blue-600 mt-1">Customers</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/20">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+
+            {/* GST Registered Customers Widget */}
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-emerald-200/50 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-emerald-700">With GST</h3>
                   </div>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">With GST</p>
-                  <p className="text-lg font-semibold text-gray-900">{customers.filter(c => c.gstNo).length}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-emerald-900">{customers.filter(c => c.gstNo).length}</p>
+                  <p className="text-xs text-emerald-600 mt-1">Registered</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/20">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+
+            {/* Complete Profile Widget */}
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-amber-200/50 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-amber-700">Complete</h3>
+                  </div>
+                  <p className="text-xl sm:text-2xl font-bold text-amber-900">
+                    {customers.filter(c => c.name && c.address && c.gstNo).length}
+                  </p>
+                  <p className="text-xs text-amber-600 mt-1">Profiles</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Customers Widget */}
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-purple-200/50 hover:shadow-xl transition-all duration-300 group">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-purple-700">Recent</h3>
+                  </div>
+                  <p className="text-xl sm:text-2xl font-bold text-purple-900">
+                    {customers.filter(customer => {
+                      const customerDate = new Date(customer.createdAt);
+                      const sevenDaysAgo = new Date();
+                      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                      return customerDate > sevenDaysAgo;
+                    }).length}
+                  </p>
+                  <p className="text-xs text-purple-600 mt-1">Last 7 days</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Advanced Analytics Widgets */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            {/* Customer Distribution Widget */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Customer Distribution</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">GST Registered</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-16 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-emerald-500 h-2 rounded-full transition-all duration-500" 
+                        style={{ 
+                          width: customers.length > 0 
+                            ? `${(customers.filter(c => c.gstNo).length / customers.length) * 100}%` 
+                            : '0%' 
+                        }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-500 w-8">{customers.filter(c => c.gstNo).length}</span>
                   </div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Search Results</p>
-                  <p className="text-lg font-semibold text-gray-900">{filteredCustomers.length}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">No GST</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-16 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-gray-400 h-2 rounded-full transition-all duration-500" 
+                        style={{ 
+                          width: customers.length > 0 
+                            ? `${(customers.filter(c => !c.gstNo).length / customers.length) * 100}%` 
+                            : '0%' 
+                        }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-500 w-8">{customers.filter(c => !c.gstNo).length}</span>
+                  </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Data Completeness Widget */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Data Quality</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-emerald-700">Complete</span>
+                  </div>
+                  <span className="text-sm font-bold text-emerald-900">
+                    {customers.filter(c => c.name && c.address).length}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-amber-700">Missing Info</span>
+                  </div>
+                  <span className="text-sm font-bold text-amber-900">
+                    {customers.filter(c => !c.address || !c.name).length}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions Widget */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Quick Actions</h3>
+              </div>
+              <div className="space-y-3">
+                <Link
+                  href="/dashboard/customers/new"
+                  className="flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors group"
+                >
+                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">Add Customer</p>
+                    <p className="text-xs text-blue-600">Create new entry</p>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group w-full text-left"
+                >
+                  <div className="w-8 h-8 bg-gray-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Clear Search</p>
+                    <p className="text-xs text-gray-600">Reset filters</p>
+                  </div>
+                </button>
               </div>
             </div>
           </div>
@@ -225,22 +389,22 @@ export default function CustomersPage() {
           {deleteSuccess && (
             <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm">
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
+              <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <p className="ml-3 text-sm font-medium text-emerald-800">{deleteSuccess}</p>
-                </div>
-                <button
-                  onClick={handleDismissSuccess}
+              </div>
+              <button
+                onClick={handleDismissSuccess}
                   className="flex-shrink-0 ml-4 text-emerald-500 hover:text-emerald-700 transition-colors"
-                >
+              >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                </svg>
+              </button>
               </div>
             </div>
           )}
@@ -262,7 +426,7 @@ export default function CustomersPage() {
           {loading ? (
             <div className="flex justify-center items-center py-16">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg text-center">
-                <Spinner />
+            <Spinner />
                 <p className="mt-4 text-sm text-gray-600">Loading customers...</p>
               </div>
             </div>
@@ -272,14 +436,14 @@ export default function CustomersPage() {
                 <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
+              </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {searchTerm ? 'No Customers Found' : 'No Customers Yet'}
-                </h3>
+                {searchTerm ? 'No Customers Found' : 'No Customers Yet'}
+              </h3>
                 <p className="text-sm text-gray-600 mb-6">
                   {searchTerm ? 'Try adjusting your search terms or add a new customer.' : 'Get started by adding your first customer to the system.'}
-                </p>
+              </p>
                 <Link
                   href="/dashboard/customers/new"
                   className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
@@ -309,10 +473,10 @@ export default function CustomersPage() {
                           Address
                         </th>
                         <th scope="col" className="relative px-6 py-4">
-                          <span className="sr-only">Actions</span>
-                        </th>
-                      </tr>
-                    </thead>
+                        <span className="sr-only">Actions</span>
+                      </th>
+                    </tr>
+                  </thead>
                     <tbody className="divide-y divide-gray-100">
                       {filteredCustomers.map((customer, index) => (
                         <tr key={customer.id} className="hover:bg-blue-50/30 transition-colors duration-150 group">
@@ -330,12 +494,12 @@ export default function CustomersPage() {
                                   href={`/dashboard/customers/edit/${customer.id}`}
                                   className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
                                 >
-                                  {customer.name}
+                          {customer.name}
                                 </Link>
                                 <div className="text-xs text-gray-500">Customer #{index + 1}</div>
                               </div>
                             </div>
-                          </td>
+                        </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {customer.gstNo ? (
                               <div className="text-sm text-gray-900 font-mono">{customer.gstNo}</div>
@@ -344,7 +508,7 @@ export default function CustomersPage() {
                                 Not provided
                               </span>
                             )}
-                          </td>
+                        </td>
                           <td className="px-6 py-4">
                             {customer.address ? (
                               <div className="text-sm text-gray-900 max-w-xs truncate" title={customer.address}>
@@ -355,52 +519,52 @@ export default function CustomersPage() {
                                 Not provided
                               </span>
                             )}
-                          </td>
+                        </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
-                            <button
-                              onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
                               className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
-                            >
+                          >
                               <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                               </svg>
-                            </button>
-                            {openMenuId === customer.id && (
-                              <div
+                          </button>
+                          {openMenuId === customer.id && (
+                            <div
                                 className="origin-top-right absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 border border-gray-100"
-                                role="menu"
-                                onMouseLeave={() => setOpenMenuId(null)}
-                              >
+                              role="menu"
+                              onMouseLeave={() => setOpenMenuId(null)}
+                            >
                                 <div className="py-2" role="none">
-                                  <Link
-                                    href={`/dashboard/customers/edit/${customer.id}`}
+                                <Link
+                                  href={`/dashboard/customers/edit/${customer.id}`}
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                                    role="menuitem"
-                                    onClick={() => setOpenMenuId(null)}
-                                  >
+                                  role="menuitem"
+                                  onClick={() => setOpenMenuId(null)}
+                                >
                                     <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                     Edit Customer
-                                  </Link>
-                                  <button
-                                    onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
+                                </Link>
+                                <button
+                                  onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
                                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
-                                    role="menuitem"
-                                  >
+                                  role="menuitem"
+                                >
                                     <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                     Delete Customer
-                                  </button>
-                                </div>
+                                </button>
                               </div>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 </div>
               </div>
 

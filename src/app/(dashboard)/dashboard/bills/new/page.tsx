@@ -30,6 +30,18 @@ interface BillItem {
   taxAmount: number;
 }
 
+interface DraftData {
+  billData: {
+    billNumber: string;
+    billDate: string;
+    customerId: string;
+    isIGST: boolean;
+    deliveryAddress: string;
+  };
+  billItems: BillItem[];
+  timestamp: number;
+}
+
 export default function NewBillPage() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -38,6 +50,9 @@ export default function NewBillPage() {
   const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
   const [error, setError] = useState("");
+  const [draftStatus, setDraftStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
+  const [showDraftRecovery, setShowDraftRecovery] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<DraftData | null>(null);
   
   const [billData, setBillData] = useState({
     billNumber: "",
@@ -53,6 +68,76 @@ export default function NewBillPage() {
     quantity: 0,
     price: 0,
   });
+
+  // Auto-save functionality
+  const saveDraft = async () => {
+    if (billItems.length === 0 && !billData.customerId && !billData.deliveryAddress) {
+      return; // Don't save empty drafts
+    }
+
+    setDraftStatus('saving');
+    try {
+      const draftData: DraftData = {
+        billData,
+        billItems,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('billDraft', JSON.stringify(draftData));
+      setDraftStatus('saved');
+      
+      // Clear the status after 3 seconds
+      setTimeout(() => setDraftStatus(null), 3000);
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      setDraftStatus('error');
+      setTimeout(() => setDraftStatus(null), 3000);
+    }
+  };
+
+  // Load draft from localStorage
+  const loadDraft = () => {
+    try {
+      const draftStr = localStorage.getItem('billDraft');
+      if (draftStr) {
+        const draft: DraftData = JSON.parse(draftStr);
+        // Check if draft is not older than 24 hours
+        const hoursSinceLastSave = (Date.now() - draft.timestamp) / (1000 * 60 * 60);
+        if (hoursSinceLastSave < 24) {
+          setSavedDraft(draft);
+          setShowDraftRecovery(true);
+        } else {
+          // Remove old draft
+          localStorage.removeItem('billDraft');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading draft:', error);
+      localStorage.removeItem('billDraft');
+    }
+  };
+
+  // Recover draft data
+  const recoverDraft = () => {
+    if (savedDraft) {
+      setBillData(savedDraft.billData);
+      setBillItems(savedDraft.billItems);
+      setShowDraftRecovery(false);
+      setSavedDraft(null);
+    }
+  };
+
+  // Dismiss draft recovery
+  const dismissDraft = () => {
+    localStorage.removeItem('billDraft');
+    setShowDraftRecovery(false);
+    setSavedDraft(null);
+  };
+
+  // Clear draft when bill is successfully saved
+  const clearDraft = () => {
+    localStorage.removeItem('billDraft');
+    setDraftStatus(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +172,9 @@ export default function NewBillPage() {
           const { billNumber } = await billNumberRes.json();
           setBillData(prev => ({ ...prev, billNumber }));
         }
+
+        // Check for saved draft
+        loadDraft();
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load data. Please try again.");
@@ -97,6 +185,30 @@ export default function NewBillPage() {
 
     fetchData();
   }, []);
+
+  // Auto-save when data changes
+  useEffect(() => {
+    if (!loading && (billItems.length > 0 || billData.customerId || billData.deliveryAddress)) {
+      const timeoutId = setTimeout(() => {
+        saveDraft();
+      }, 2000); // Save after 2 seconds of inactivity
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [billData, billItems, loading]);
+
+  // Warn user before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (billItems.length > 0 || billData.customerId || billData.deliveryAddress) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [billItems, billData]);
 
   const handleBillDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
@@ -207,6 +319,8 @@ export default function NewBillPage() {
         throw new Error(data.error || "Failed to create bill");
       }
 
+      // Clear draft after successful save
+      clearDraft();
       router.push("/dashboard/bills");
     } catch (error) {
       console.error("Error creating bill:", error);
@@ -221,30 +335,164 @@ export default function NewBillPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">Create New Bill</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      {/* Draft Recovery Modal */}
+      {showDraftRecovery && savedDraft && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-white/20">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Draft Found</h3>
+                <p className="text-sm text-gray-600">You have unsaved work from earlier</p>
+              </div>
+            </div>
+            
+            <div className="bg-amber-50 rounded-xl p-4 mb-6 border border-amber-200">
+              <div className="text-sm space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-amber-700 font-medium">Items:</span>
+                  <span className="text-amber-800">{savedDraft.billItems.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700 font-medium">Customer:</span>
+                  <span className="text-amber-800">{savedDraft.billData.customerId ? 'Selected' : 'None'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700 font-medium">Last saved:</span>
+                  <span className="text-amber-800">
+                    {new Date(savedDraft.timestamp).toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={dismissDraft}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200"
+              >
+                Start Fresh
+              </button>
+              <button
+                onClick={recoverDraft}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-xl transition-all duration-200 shadow-lg"
+              >
+                Recover Draft
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Create New Bill</h1>
+                <p className="text-sm text-gray-600 mt-1">Generate a new invoice for your customer</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              {/* Draft Status Indicator */}
+              {draftStatus && (
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
+                  draftStatus === 'saved' 
+                    ? 'bg-green-50 border-green-200 text-green-700'
+                    : draftStatus === 'saving'
+                    ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
+                    : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
+                  {draftStatus === 'saved' && (
+                    <>
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="font-medium">Draft saved</span>
+                    </>
+                  )}
+                  {draftStatus === 'saving' && (
+                    <>
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                      <span className="font-medium">Saving...</span>
+                    </>
+                  )}
+                  {draftStatus === 'error' && (
+                    <>
+                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <span className="font-medium">Save failed</span>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-blue-700 font-medium">
+                  {billItems.length} item{billItems.length !== 1 ? 's' : ''} added
+                </span>
+              </div>
+              {subtotal > 0 && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                  <span className="text-emerald-700 font-medium">₹{grandTotal.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="max-w-7xl mx-auto py-6 px-3 sm:px-6 lg:px-8">
+        <div className="bg-white/90 backdrop-blur-sm shadow-xl overflow-hidden rounded-2xl border border-white/20">
           <form onSubmit={handleSubmit}>
-            <div className="px-4 py-5 sm:p-6">
+            <div className="px-4 py-6 sm:p-8">
               {error && (
-                <div className="mb-4 p-3 bg-red-50 text-sm text-red-700 rounded-lg">
-                  {error}
+                <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-sm text-red-700 rounded-xl flex items-center gap-3">
+                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <span>{error}</span>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 {/* Bill Details Section */}
-                <div className="sm:col-span-3">
-                  <label htmlFor="billNumber" className="block text-sm font-medium text-gray-700">
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Bill Information</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div>
+                    <label htmlFor="billNumber" className="block text-sm font-semibold text-gray-700 mb-2">
                     Bill Number
                   </label>
-                  <div className="mt-1">
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div className="w-5 h-5 bg-blue-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      </div>
                     <input
                       type="text"
                       name="billNumber"
@@ -252,16 +500,24 @@ export default function NewBillPage() {
                       required
                       value={billData.billNumber}
                       onChange={handleBillDataChange}
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        placeholder="Auto-generated"
+                        className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-blue-50/30 border border-blue-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-300 text-sm"
                     />
                   </div>
                 </div>
 
-                <div className="sm:col-span-3">
-                  <label htmlFor="billDate" className="block text-sm font-medium text-gray-700">
+                  <div>
+                    <label htmlFor="billDate" className="block text-sm font-semibold text-gray-700 mb-2">
                     Bill Date
                   </label>
-                  <div className="mt-1">
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div className="w-5 h-5 bg-amber-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      </div>
                     <input
                       type="date"
                       name="billDate"
@@ -269,23 +525,70 @@ export default function NewBillPage() {
                       required
                       value={billData.billDate}
                       onChange={handleBillDataChange}
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    />
+                        className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-amber-50/30 border border-amber-200/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all duration-300 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-2 lg:col-span-1">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Tax Type
+                    </label>
+                    <div className="relative">
+                      <label className="flex items-center gap-3 p-4 bg-gradient-to-r from-white to-purple-50/30 border border-purple-200/50 rounded-xl cursor-pointer hover:bg-purple-50/50 transition-all duration-300">
+                        <input
+                          id="isIGST"
+                          name="isIGST"
+                          type="checkbox"
+                          checked={billData.isIGST}
+                          onChange={handleBillDataChange}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 bg-purple-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">Apply IGST (Interstate)</span>
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="sm:col-span-4">
-                  <label htmlFor="customerId" className="block text-sm font-medium text-gray-700">
-                    Customer
+              {/* Customer Selection Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Customer Details</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  <div>
+                    <label htmlFor="customerId" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Select Customer *
                   </label>
-                  <div className="mt-1">
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div className="w-5 h-5 bg-emerald-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                      </div>
                     <select
                       id="customerId"
                       name="customerId"
                       required
                       value={billData.customerId}
                       onChange={handleBillDataChange}
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-emerald-50/30 border border-emerald-200/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all duration-300 text-sm appearance-none"
                     >
                       <option value="">Select a customer</option>
                       {customers.map(customer => (
@@ -294,30 +597,27 @@ export default function NewBillPage() {
                         </option>
                       ))}
                     </select>
-                  </div>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
                 </div>
 
-                <div className="sm:col-span-2">
-                  <div className="flex items-center h-full mt-6">
-                    <input
-                      id="isIGST"
-                      name="isIGST"
-                      type="checkbox"
-                      checked={billData.isIGST}
-                      onChange={handleBillDataChange}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="isIGST" className="ml-2 block text-sm text-gray-700">
-                      Apply IGST (Interstate)
+                  <div>
+                    <label htmlFor="deliveryAddress" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Delivery Address (Optional)
                     </label>
+                    <div className="relative">
+                      <div className="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                        <div className="w-5 h-5 bg-gray-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
                   </div>
                 </div>
-
-                <div className="sm:col-span-6">
-                  <label htmlFor="deliveryAddress" className="block text-sm font-medium text-gray-700">
-                    Delivery Address (Optional)
-                  </label>
-                  <div className="mt-1">
                     <textarea
                       id="deliveryAddress"
                       name="deliveryAddress"
@@ -325,26 +625,44 @@ export default function NewBillPage() {
                       value={billData.deliveryAddress}
                       onChange={handleBillDataChange}
                       placeholder="Enter delivery address if different from billing address"
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                        className="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-gray-50/30 border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-400 transition-all duration-300 text-sm resize-none"
                     />
+                    </div>
+                  </div>
                   </div>
                 </div>
 
                 {/* Item Selection Section */}
-                <div className="sm:col-span-6 mt-8 pt-6 border-t border-gray-200">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">Bill Items</h2>
-                  <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                    <div className="sm:col-span-3">
-                      <label htmlFor="itemId" className="block text-sm font-medium text-gray-700">
-                        Item
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Add Items</h2>
+                </div>
+                
+                <div className="bg-gradient-to-r from-indigo-50/50 to-blue-50/50 rounded-xl p-6 border border-indigo-200/50">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="lg:col-span-2">
+                      <label htmlFor="itemId" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Select Item *
                       </label>
-                      <div className="mt-1">
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <div className="w-5 h-5 bg-indigo-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                          </div>
+                        </div>
                         <select
                           id="itemId"
                           name="itemId"
                           value={newItem.itemId}
                           onChange={handleNewItemChange}
-                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          className="block w-full pl-12 pr-8 py-3 bg-white border border-indigo-300/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-300 text-sm appearance-none"
                         >
                           <option value="">Select an item</option>
                           {items.map(item => (
@@ -353,123 +671,164 @@ export default function NewBillPage() {
                             </option>
                           ))}
                         </select>
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="sm:col-span-1">
-                      <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                        Quantity
+                    <div>
+                      <label htmlFor="quantity" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Quantity *
                       </label>
-                      <div className="mt-1">
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <div className="w-5 h-5 bg-amber-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        </div>
                         <input
                           type="number"
                           min="1"
                           name="quantity"
                           id="quantity"
-                          value={newItem.quantity}
+                          value={newItem.quantity || ''}
                           onChange={handleNewItemChange}
-                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          placeholder="0"
+                          className="block w-full pl-12 pr-4 py-3 bg-white border border-amber-300/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all duration-300 text-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="sm:col-span-1">
-                      <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                        Price
+                    <div>
+                      <label htmlFor="price" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Price (₹) *
                       </label>
-                      <div className="mt-1">
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <div className="w-5 h-5 bg-emerald-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                            </svg>
+                          </div>
+                        </div>
                         <input
                           type="number"
                           step="0.01"
                           min="0"
                           name="price"
                           id="price"
-                          value={newItem.price}
+                          value={newItem.price || ''}
                           onChange={handleNewItemChange}
-                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          placeholder="0.00"
+                          className="block w-full pl-12 pr-4 py-3 bg-white border border-emerald-300/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all duration-300 text-sm"
                         />
+                      </div>
                       </div>
                     </div>
 
-                    <div className="sm:col-span-1 flex items-end">
+                  <div className="mt-6 flex flex-col sm:flex-row sm:justify-end">
                       <button
                         type="button"
                         onClick={addItemToBill}
-                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Add Item
+                      className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 group min-w-[140px]"
+                    >
+                      <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </div>
+                      <span className="group-hover:tracking-wide transition-all duration-300">Add Item</span>
                       </button>
-                    </div>
+                  </div>
                   </div>
                 </div>
 
                 {/* Items Table */}
-                <div className="sm:col-span-6">
+              <div className="mb-8">
                   {billItems.length === 0 ? (
-                    <p className="mt-2 text-sm text-gray-500">No items added to this bill yet.</p>
-                  ) : (
-                    <div className="mt-4 flex flex-col">
-                      <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-300">
-                              <thead className="bg-gray-50">
-                                <tr>
-                                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                  <div className="text-center py-12 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
+                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Items Added</h3>
+                    <p className="text-sm text-gray-500">Add items to your bill using the form above</p>
+                  </div>
+                ) : (
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+                    <div className="px-6 py-4 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-200/50">
+                      <h3 className="text-lg font-bold text-gray-900">Bill Items ({billItems.length})</h3>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200/50">
+                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                          <tr>
+                            <th scope="col" className="py-4 pl-6 pr-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     Item
                                   </th>
-                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <th scope="col" className="px-3 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     HSN
                                   </th>
-                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <th scope="col" className="px-3 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     Qty
                                   </th>
-                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <th scope="col" className="px-3 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     Price
                                   </th>
-                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <th scope="col" className="px-3 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     Amount
                                   </th>
-                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <th scope="col" className="px-3 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     Tax Rate
                                   </th>
-                                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <th scope="col" className="px-3 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     Tax Amount
                                   </th>
-                                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                    <span className="sr-only">Actions</span>
+                            <th scope="col" className="relative py-4 pl-3 pr-6">
+                              <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</span>
                                   </th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-gray-200 bg-white">
+                        <tbody className="divide-y divide-gray-200/50 bg-white">
                                 {billItems.map((item, index) => (
-                                  <tr key={index}>
-                                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                            <tr key={index} className="hover:bg-gray-50/50 transition-colors duration-200">
+                              <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">
                                       {item.name}
                                     </td>
                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                       {item.hsnCode}
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                       {item.quantity}
+                                </span>
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right font-medium">
                                       ₹{item.price.toFixed(2)}
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 text-right font-semibold">
                                       ₹{item.amount.toFixed(2)}
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                                       {item.taxRate}%
+                                </span>
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right font-medium">
                                       ₹{item.taxAmount.toFixed(2)}
                                     </td>
-                                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                              <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right">
                                       <button
                                         type="button"
                                         onClick={() => removeItem(index)}
-                                        className="inline-flex items-center text-red-600 hover:text-red-700 p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500"
+                                  className="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/20"
                                         aria-label="Remove item"
                                       >
                                         <DeleteIcon />
@@ -481,74 +840,93 @@ export default function NewBillPage() {
                             </table>
                           </div>
                         </div>
+                )}
+              </div>
+
+              {/* Enhanced Summary Section */}
+              {billItems.length > 0 && (
+                <div className="mb-8">
+                  <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-6 border border-indigo-200/50">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
                       </div>
+                      <h3 className="text-xl font-bold text-gray-900">Bill Summary</h3>
                     </div>
-                  )}
+                    
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-sm font-medium text-gray-600">Subtotal</span>
+                        <span className="text-lg font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
                 </div>
 
-                {/* Summary Section */}
-                {billItems.length > 0 && (
-                  <div className="sm:col-span-6">
-                    <div className="bg-gray-50 p-4 rounded-md">
-                      <h3 className="text-lg font-medium leading-6 text-gray-900">Bill Summary</h3>
-                      <div className="mt-4 space-y-2">
-                        <div className="flex justify-between">
-                          <p className="text-sm text-gray-500">Subtotal:</p>
-                          <p className="text-sm font-medium text-gray-900">₹{subtotal.toFixed(2)}</p>
+                      {billData.isIGST ? (
+                        <div className="flex justify-between items-center py-2 bg-purple-50 rounded-lg px-4">
+                          <span className="text-sm font-medium text-purple-700">IGST</span>
+                          <span className="text-lg font-semibold text-purple-900">₹{igst.toFixed(2)}</span>
                         </div>
-                        
-                        {billData.isIGST ? (
-                          <div className="flex justify-between">
-                            <p className="text-sm text-gray-500">IGST:</p>
-                            <p className="text-sm font-medium text-gray-900">₹{igst.toFixed(2)}</p>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center py-2 bg-blue-50 rounded-lg px-4">
+                            <span className="text-sm font-medium text-blue-700">CGST</span>
+                            <span className="text-lg font-semibold text-blue-900">₹{cgst.toFixed(2)}</span>
                           </div>
-                        ) : (
-                          <>
-                            <div className="flex justify-between">
-                              <p className="text-sm text-gray-500">CGST:</p>
-                              <p className="text-sm font-medium text-gray-900">₹{cgst.toFixed(2)}</p>
+                          <div className="flex justify-between items-center py-2 bg-blue-50 rounded-lg px-4">
+                            <span className="text-sm font-medium text-blue-700">SGST</span>
+                            <span className="text-lg font-semibold text-blue-900">₹{sgst.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between">
-                              <p className="text-sm text-gray-500">SGST:</p>
-                              <p className="text-sm font-medium text-gray-900">₹{sgst.toFixed(2)}</p>
                             </div>
-                          </>
-                        )}
-                        
-                        <div className="pt-2 border-t border-gray-200 flex justify-between">
-                          <p className="text-base font-medium text-gray-900">Total:</p>
-                          <p className="text-base font-medium text-gray-900">₹{grandTotal.toFixed(2)}</p>
+                      )}
+                      
+                      <div className="pt-4 border-t-2 border-indigo-200">
+                        <div className="flex justify-between items-center py-3 bg-gradient-to-r from-emerald-100 to-emerald-200 rounded-xl px-6">
+                          <span className="text-lg font-bold text-emerald-800">Grand Total</span>
+                          <span className="text-2xl font-bold text-emerald-900">₹{grandTotal.toFixed(2)}</span>
+                        </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
-              </div>
             </div>
 
-            {/* Action Buttons Footer */}
-            <div className="px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-200 text-right">
-              <div className="flex justify-end space-x-3">
+            {/* Enhanced Action Buttons Footer */}
+            <div className="px-4 py-6 sm:px-8 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200/50">
+              <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
                 <Link
                   href="/dashboard/bills"
-                  className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                  className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:ring-offset-2 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-300"
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                   Cancel
                 </Link>
                 <button
                   type="submit"
                   disabled={saveLoading || billItems.length === 0}
-                  className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                  className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
                 >
                   {saveLoading ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Saving...
+                      <span>Saving...</span>
                     </>
-                  ) : 'Save Bill'}
+                  ) : (
+                    <>
+                      <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span>Save Bill</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
