@@ -1,10 +1,6 @@
 "use client";
 
-import { Fragment } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-// It's good practice to have an icon, e.g., for a warning or question
-// For example, from heroicons (npm install @heroicons/react)
-// import { ExclamationTriangleIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+import { ConfirmDialog as UIConfirmDialog } from './ui/confirm-dialog';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -14,7 +10,8 @@ interface ConfirmDialogProps {
   message: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
-  confirmButtonColor?: string; // e.g., 'red', 'indigo', 'green'
+  confirmButtonColor?: string;
+  isLoading?: boolean;
 }
 
 export default function ConfirmDialog({
@@ -25,87 +22,35 @@ export default function ConfirmDialog({
   message,
   confirmButtonText = 'Confirm',
   cancelButtonText = 'Cancel',
-  confirmButtonColor = 'red', // Default to red for destructive actions like 'revoke'
+  confirmButtonColor = 'danger',
+  isLoading = false,
 }: ConfirmDialogProps) {
-
-  const colorClasses = {
-    red: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
-    indigo: 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500',
-    green: 'bg-green-600 hover:bg-green-700 focus:ring-green-500',
-    // Add more colors as needed
+  // Map old color names to new variant names
+  const getVariant = (color: string) => {
+    switch (color) {
+      case 'red':
+        return 'danger';
+      case 'indigo':
+      case 'blue':
+        return 'primary';
+      case 'yellow':
+        return 'warning';
+      default:
+        return 'danger';
+    }
   };
 
-  const selectedColorClass = colorClasses[confirmButtonColor as keyof typeof colorClasses] || colorClasses.red;
-
   return (
-    <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-20" onClose={onClose}> {/* Higher z-index if needed */}
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enterTo="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    {/* Optional: Icon. Example for a warning. You can make this dynamic. */}
-                    {/* <div className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${confirmButtonColor === 'red' ? 'bg-red-100' : 'bg-indigo-100'} sm:mx-0 sm:h-10 sm:w-10`}>
-                      {confirmButtonColor === 'red' && <ExclamationTriangleIcon className="h-6 w-6 text-red-600" aria-hidden="true" />} 
-                    </div> */}
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                        {title}
-                      </Dialog.Title>
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">
-                          {message}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button
-                    type="button"
-                    className={`inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto disabled:opacity-50 ${selectedColorClass}`}
-                    onClick={() => {
-                      onConfirm();
-                        // onClose(); // Typically onConfirm will lead to a state change that closes the modal, or parent calls onClose
-                    }}
-                  >
-                    {confirmButtonText}
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto disabled:opacity-50"
-                    onClick={onClose}
-                  >
-                    {cancelButtonText}
-                  </button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition.Root>
-  )
+    <UIConfirmDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title={title}
+      message={message}
+      confirmText={confirmButtonText}
+      cancelText={cancelButtonText}
+      variant={getVariant(confirmButtonColor)}
+      isLoading={isLoading}
+    />
+  );
 } 
