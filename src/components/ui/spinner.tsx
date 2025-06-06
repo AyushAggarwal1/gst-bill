@@ -18,8 +18,8 @@ export const Spinner = ({
   };
 
   const colorClasses = {
-    primary: 'text-blue-600',
-    secondary: 'text-gray-600',
+    primary: 'text-primary-600',
+    secondary: 'text-secondary-600',
     white: 'text-white'
   };
 
@@ -57,6 +57,6 @@ export const FullPageSpinner = () => {
   );
 };
 
-export const ButtonSpinner = () => {
-  return <Spinner size="sm" color="white" className="mr-2" />;
+export const ButtonSpinner = ({ className = '' }: { className?: string }) => {
+  return <Spinner size="sm" color="white" className={className} />;
 }; 
