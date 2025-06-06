@@ -17,7 +17,7 @@ const Spinner: React.FC<SpinnerProps> = ({
 }) => (
   <div className={className}>
     <div className={spinnerClassName}></div>
-    {showText && <p className={textClassName}>Loading...</p>}
+    {showText && <p className={textClassName}></p>}
   </div>
 );
 

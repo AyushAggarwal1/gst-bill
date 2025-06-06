@@ -18,22 +18,29 @@ interface Customer {
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState("");
+  const [initialLoad, setInitialLoad] = useState(true);
 
   useEffect(() => {
     fetchCustomers();
   }, []);
 
   const fetchCustomers = async () => {
+    if (initialLoad) {
+      setLoading(true);
+    }
     try {
       const res = await fetch("/api/customers");
       if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("Unauthorized access");
+        }
         throw new Error("Failed to fetch customers");
       }
       const data = await res.json();
@@ -42,11 +49,13 @@ export default function CustomersPage() {
         a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       );
       setCustomers(sortedCustomers);
+      setError(""); // Clear any previous errors
     } catch (error) {
       console.error("Error fetching customers:", error);
-      setError("Failed to load customers. Please try again.");
+      setError(error instanceof Error ? error.message : "Failed to load customers. Please try again.");
     } finally {
       setLoading(false);
+      setInitialLoad(false);
     }
   };
 
@@ -87,7 +96,7 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
       <ConfirmDialog
         isOpen={deleteDialogOpen}
         onClose={() => {
@@ -103,15 +112,28 @@ export default function CustomersPage() {
         message="Are you sure you want to delete this customer? This action cannot be undone and will also delete all associated bills."
       />
 
-      <header className="bg-white shadow-sm print:hidden">
+      {/* Enhanced Header */}
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-40">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Customers</h1>
+                <p className="text-sm text-gray-600">Manage your customer database</p>
+              </div>
+            </div>
             <Link
               href="/dashboard/customers/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
             >
-              <AddIcon />
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
               Add Customer
             </Link>
           </div>
@@ -119,208 +141,373 @@ export default function CustomersPage() {
       </header>
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* Search Bar */}
+        {/* Enhanced Stats Cards */}
         <div className="px-4 mb-6 sm:px-0">
-          <div className="relative rounded-md shadow-sm">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/20">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-600">Total Customers</p>
+                  <p className="text-lg font-semibold text-gray-900">{customers.length}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/20">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-600">With GST</p>
+                  <p className="text-lg font-semibold text-gray-900">{customers.filter(c => c.gstNo).length}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/20">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-600">Search Results</p>
+                  <p className="text-lg font-semibold text-gray-900">{filteredCustomers.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Search Bar */}
+        <div className="px-4 mb-6 sm:px-0">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+              <svg className="h-5 w-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
               </svg>
             </div>
             <input 
               type="text"
-              placeholder="Search customers by name, GST No, or address..."
+              placeholder="Search customers by Name, GST No, or Address..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block w-full pl-12 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all duration-200 text-sm sm:text-base"
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="px-4 py-0 sm:px-0"> {/* Adjusted py-6 to py-0 here as search bar has mb-6 */}
+        <div className="px-4 sm:px-0">
+          {/* Enhanced Success Message */}
           {deleteSuccess && (
-            <div className="flex items-center justify-between p-4 mb-4 bg-gradient-to-r from-green-100 via-green-50 to-green-100 border-l-4 border-green-500 text-green-800 rounded-lg shadow-lg animate-fade-in relative">
-              <div className="flex items-center">
-                <SuccessIcon className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
-                <span className="font-medium text-green-900">{deleteSuccess}</span>
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="ml-3 text-sm font-medium text-emerald-800">{deleteSuccess}</p>
+                </div>
+                <button
+                  onClick={handleDismissSuccess}
+                  className="flex-shrink-0 ml-4 text-emerald-500 hover:text-emerald-700 transition-colors"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <button
-                className="absolute top-2 right-2 text-green-700 hover:text-green-900 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-green-400"
-                aria-label="Dismiss success message"
-                onClick={handleDismissSuccess}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
             </div>
           )}
+
+          {/* Enhanced Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="ml-3 text-sm font-medium text-red-800">{error}</p>
+              </div>
+            </div>
+          )}
+
           {loading ? (
-            <Spinner />
-          ) : error ? (
-            <div className="p-4 mb-4 bg-red-50 text-red-700 rounded-md">
-              {error}
+            <div className="flex justify-center items-center py-16">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg text-center">
+                <Spinner />
+                <p className="mt-4 text-sm text-gray-600">Loading customers...</p>
+              </div>
             </div>
           ) : filteredCustomers.length === 0 ? (
             <div className="text-center py-16">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                {searchTerm ? 'No Customers Found' : 'No Customers Yet'}
-              </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {searchTerm ? 'Try adjusting your search terms or add a new customer.' : 'Get started by adding a new customer.'}
-              </p>
-              <div className="mt-8">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg max-w-md mx-auto">
+                <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {searchTerm ? 'No Customers Found' : 'No Customers Yet'}
+                </h3>
+                <p className="text-sm text-gray-600 mb-6">
+                  {searchTerm ? 'Try adjusting your search terms or add a new customer.' : 'Get started by adding your first customer to the system.'}
+                </p>
                 <Link
                   href="/dashboard/customers/new"
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
                 >
-                  <AddIcon />
-                  Add Customer
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Add Your First Customer
                 </Link>
               </div>
             </div>
           ) : (
             <div>
-              {/* Desktop Table View - Hidden on mobile */}
-              <div className="hidden md:block bg-white shadow-md sm:rounded-lg overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GST No</th>
-                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                      <th scope="col" className="relative px-1 py-3">
-                        <span className="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredCustomers.map((customer) => (
-                      <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {customer.name}
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {customer.gstNo || 'N/A'}
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-normal text-sm text-gray-500 break-words">
-                          {customer.address || 'N/A'}
-                        </td>
-                        <td className="px-1 py-4 whitespace-nowrap text-center text-sm font-medium relative">
-                          <button
-                            onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
-                            className="p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
-                          >
-                            <KebabMenuIcon className="h-5 w-5 text-gray-500" />
-                          </button>
-                          {openMenuId === customer.id && (
-                            <div
-                              className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                              role="menu"
-                              aria-orientation="vertical"
-                              aria-labelledby="menu-button"
-                              onMouseLeave={() => setOpenMenuId(null)}
-                            >
-                              <div className="py-1" role="none">
-                                <Link
+              {/* Enhanced Desktop Table View */}
+              <div className="hidden lg:block bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl overflow-hidden border border-white/20">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-50/80">
+                      <tr>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Customer Details
+                        </th>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          GST Number
+                        </th>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Address
+                        </th>
+                        <th scope="col" className="relative px-6 py-4">
+                          <span className="sr-only">Actions</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {filteredCustomers.map((customer, index) => (
+                        <tr key={customer.id} className="hover:bg-blue-50/30 transition-colors duration-150 group">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center">
+                              <div className={`w-10 h-10 bg-gradient-to-br ${
+                                customer.gstNo ? 'from-emerald-600 to-emerald-700' : 'from-blue-600 to-blue-700'
+                              } rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                                <span className="text-white font-semibold text-sm">
+                                  {customer.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              <div className="ml-4">
+                                <Link 
                                   href={`/dashboard/customers/edit/${customer.id}`}
-                                  className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
-                                  role="menuitem"
-                                  onClick={() => setOpenMenuId(null)}
+                                  className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
                                 >
-                                  <EditIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                                  Edit
+                                  {customer.name}
                                 </Link>
-                                <button
-                                  onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
-                                  className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
-                                  role="menuitem"
-                                >
-                                  <DeleteIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                                  Delete
-                                </button>
+                                <div className="text-xs text-gray-500">Customer #{index + 1}</div>
                               </div>
                             </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {customer.gstNo ? (
+                              <div className="text-sm text-gray-900 font-mono">{customer.gstNo}</div>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                Not provided
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            {customer.address ? (
+                              <div className="text-sm text-gray-900 max-w-xs truncate" title={customer.address}>
+                                {customer.address}
+                              </div>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                Not provided
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
+                            <button
+                              onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
+                              className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
+                            >
+                              <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                              </svg>
+                            </button>
+                            {openMenuId === customer.id && (
+                              <div
+                                className="origin-top-right absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 border border-gray-100"
+                                role="menu"
+                                onMouseLeave={() => setOpenMenuId(null)}
+                              >
+                                <div className="py-2" role="none">
+                                  <Link
+                                    href={`/dashboard/customers/edit/${customer.id}`}
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                    role="menuitem"
+                                    onClick={() => setOpenMenuId(null)}
+                                  >
+                                    <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    Edit Customer
+                                  </Link>
+                                  <button
+                                    onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
+                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                                    role="menuitem"
+                                  >
+                                    <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete Customer
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              {/* Mobile Card View - Hidden on md and up */}
-              <div className="block md:hidden space-y-4">
-                {filteredCustomers.map((customer) => (
-                  <div key={customer.id} className="bg-white shadow rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-grow">
-                        <h3 className="text-lg font-semibold text-gray-800">{customer.name}</h3>
-                        {customer.gstNo && (
-                           <p className="text-sm text-gray-600 mt-1">
-                            <span className="font-medium">GST:</span> {customer.gstNo}
-                          </p>
-                        )}
-                        {customer.address && (
-                          <p className="text-sm text-gray-600 mt-1">
-                             <span className="font-medium">Address:</span> {customer.address}
-                          </p>
-                        )}
+              {/* Enhanced Mobile Card View */}
+              <div className="block lg:hidden space-y-4">
+                {filteredCustomers.map((customer, index) => (
+                  <div key={customer.id} className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-white/20 hover:shadow-xl transition-shadow duration-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-4 flex-grow">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${
+                          customer.gstNo ? 'from-emerald-600 to-emerald-700' : 'from-blue-600 to-blue-700'
+                        } rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                          <span className="text-white font-semibold">
+                            {customer.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-grow min-w-0">
+                          <Link 
+                            href={`/dashboard/customers/edit/${customer.id}`}
+                            className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer truncate"
+                          >
+                            {customer.name}
+                          </Link>
+                          <p className="text-sm text-gray-500">Customer #{index + 1}</p>
+                        </div>
                       </div>
-                      <div className="ml-4 flex-shrink-0 relative">
+                      <div className="relative flex-shrink-0 ml-4">
                         <button
                           onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
-                          className="p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
+                          className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
                         >
-                          <KebabMenuIcon className="h-5 w-5 text-gray-500" />
+                          <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          </svg>
                         </button>
                         {openMenuId === customer.id && (
                           <div
-                            className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20" // Increased z-index
+                            className="origin-top-right absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 border border-gray-100"
                             role="menu"
-                            aria-orientation="vertical"
-                            aria-labelledby={`menu-button-${customer.id}`}
                             onMouseLeave={() => setOpenMenuId(null)}
                           >
-                            <div className="py-1" role="none">
+                            <div className="py-2" role="none">
                               <Link
                                 href={`/dashboard/customers/edit/${customer.id}`}
-                                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                                 role="menuitem"
                                 onClick={() => setOpenMenuId(null)}
                               >
-                                <EditIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                                Edit
+                                <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit Customer
                               </Link>
                               <button
                                 onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
-                                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 group flex items-center px-4 py-2 text-sm w-full text-left"
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
                                 role="menuitem"
                               >
-                                <DeleteIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                                Delete
+                                <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete Customer
                               </button>
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
+                    
+                    <div className="mt-4 space-y-3">
+                      {customer.gstNo && (
+                        <div className="flex items-center text-sm">
+                          <svg className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-gray-600 font-medium mr-2">GST:</span>
+                          <span className="text-gray-900">{customer.gstNo}</span>
+                        </div>
+                      )}
+                      {customer.address && (
+                        <div className="flex items-start text-sm">
+                          <svg className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          <div>
+                            <span className="text-gray-600 font-medium">Address:</span>
+                            <p className="text-gray-900 mt-1 leading-relaxed">{customer.address}</p>
+                          </div>
+                        </div>
+                      )}
+                      {!customer.gstNo && !customer.address && (
+                        <div className="text-sm text-gray-400 italic">
+                          No additional details provided
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Results Count */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600">
+                  Showing {filteredCustomers.length} of {customers.length} customers
+                  {searchTerm && ` matching "${searchTerm}"`}
+                </p>
               </div>
             </div>
           )}
