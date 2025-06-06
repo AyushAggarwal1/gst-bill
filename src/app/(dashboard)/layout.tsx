@@ -111,7 +111,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b border-gray-200 print:hidden">
+      <nav className="bg-white shadow-sm border-b border-gray-200 print:hidden relative z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
@@ -173,7 +173,7 @@ export default function DashboardLayout({
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <div className="origin-top-right absolute right-0 top-full mt-2 w-56 rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 z-20 border border-gray-200">
+                  <div className="origin-top-right absolute right-0 top-full mt-2 w-56 rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 z-50 border border-gray-200">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900">{session?.user?.name}</p>
                       <p className="text-sm text-gray-500 truncate">{session?.user?.email}</p>

@@ -76,7 +76,7 @@ export default function NewCustomerPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
       {/* Mobile-Optimized Header with Progress */}
-      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-40">
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-30">
         <div className="max-w-7xl mx-auto py-3 px-3 sm:py-4 sm:px-6 lg:px-8">
           {/* Mobile Header Layout */}
           <div className="flex items-start justify-between mb-3 sm:mb-0 sm:items-center">
@@ -163,10 +163,10 @@ export default function NewCustomerPage() {
         </div>
 
         <div className="bg-white/90 backdrop-blur-sm shadow-2xl rounded-xl sm:rounded-2xl border border-white/20 overflow-hidden">
-          <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
             <div className="p-4 sm:p-6 lg:p-8">
               {/* Mobile-Optimized Error Message */}
-              {error && (
+                {error && (
                 <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg sm:rounded-xl shadow-sm">
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
@@ -181,8 +181,8 @@ export default function NewCustomerPage() {
                       <p className="text-xs sm:text-sm text-red-700 mt-1">{error}</p>
                     </div>
                   </div>
-                </div>
-              )}
+                  </div>
+                )}
 
               <div className="grid grid-cols-1 gap-6 sm:gap-8">
                 {/* Mobile-Optimized Customer Information Section */}
@@ -203,8 +203,8 @@ export default function NewCustomerPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <label htmlFor="name" className="block text-sm font-semibold text-gray-900">
-                        Customer Name
-                      </label>
+                      Customer Name
+                    </label>
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                         <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -261,8 +261,8 @@ export default function NewCustomerPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <label htmlFor="address" className="block text-sm font-semibold text-gray-900">
-                        Business Address
-                      </label>
+                      Business Address
+                    </label>
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                         <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -305,7 +305,7 @@ export default function NewCustomerPage() {
                       <div className="flex items-center gap-2">
                         <label htmlFor="deliveryAddress" className="block text-sm font-semibold text-gray-900">
                           Delivery Address
-                        </label>
+                      </label>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -368,8 +368,8 @@ export default function NewCustomerPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <label htmlFor="gstNo" className="block text-sm font-semibold text-gray-900">
-                        GST Number
-                      </label>
+                      GST Number
+                    </label>
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                         <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -499,8 +499,8 @@ export default function NewCustomerPage() {
                   )}
                 </button>
               </div>
-            </div>
-          </form>
+              </div>
+            </form>
         </div>
       </div>
     </div>

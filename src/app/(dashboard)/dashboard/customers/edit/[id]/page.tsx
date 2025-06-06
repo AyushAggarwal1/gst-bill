@@ -138,7 +138,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
       {/* Mobile-Optimized Header with Status */}
-      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-40">
+      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-30">
         <div className="max-w-7xl mx-auto py-3 px-3 sm:py-4 sm:px-6 lg:px-8">
           {/* Mobile Header Layout */}
           <div className="flex items-start justify-between mb-3 sm:mb-0 sm:items-center">
