@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function SignOutPage() {
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(30000000);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -37,65 +37,77 @@ export default function SignOutPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-indigo-50">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">
-            GST Bill Maker
+    <div className="min-h-screen bg-white flex flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="text-center">
+          {/* Clean Icon */}
+          <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          
+          {/* Simple Header */}
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            You're signed out
           </h1>
-          <p className="mt-2 text-sm text-indigo-600 font-medium">
-            Simplified Billing Solution
+          <p className="text-gray-600 mb-8">
+            Thanks for using GST Bill Maker
           </p>
         </div>
 
-        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-indigo-100">
-          <div className="flex flex-col items-center justify-center space-y-6">
-            {/* Loading Animation */}
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-indigo-600">
-                {countdown}
-              </div>
+        {/* Error State */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex">
+              <svg className="w-5 h-5 text-red-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="ml-3 text-sm text-red-800">{error}</p>
             </div>
+          </div>
+        )}
 
-            <h2 className="text-2xl font-bold text-gray-900">Signed Out</h2>
-            
-            {error ? (
-              <div className="rounded-md bg-red-50 p-4 border-l-4 border-red-500">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className="text-gray-600 text-center">
-                  You have been successfully signed out of your account.
-                </p>
-                <p className="text-gray-500 text-sm">
-                  Redirecting to home page in {countdown} seconds...
-                </p>
-              </>
+        {/* Main Card */}
+        <div className="bg-gray-50 px-6 py-8 rounded-lg border border-gray-200">
+          <div className="text-center space-y-6">
+            {/* Simple Message */}
+            {!error && (
+              <p className="text-gray-600">
+                Redirecting you to the home page in <span className="font-semibold text-gray-900">{countdown}</span> seconds...
+              </p>
             )}
-
-            <Link 
-              href="/"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-            >
-              Return to Home Page
-            </Link>
+            
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Link 
+                href="/"
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Go to Home Page
+              </Link>
+              <Link 
+                href="/login"
+                className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Sign In Again
+              </Link>
+            </div>
           </div>
         </div>
 
+        {/* Simple Footer */}
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
-            Thank you for using GST Bill Maker
+            GST Bill Maker
+            <br />
+            Your data is safe and secure with us
           </p>
         </div>
       </div>
