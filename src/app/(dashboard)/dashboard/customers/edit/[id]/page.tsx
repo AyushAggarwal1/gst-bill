@@ -534,7 +534,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
                       <div className="bg-orange-100 px-2 py-1 rounded-full self-start">
                         <span className="text-xs font-medium text-orange-800">Modified</span>
                       </div>
-                    )}c
+                    )}
                   </div>
                   {/* @ayushaggarwal1136 june 6 2025 */}
 
