@@ -11,14 +11,27 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const items = await prisma.item.findMany({
+    // Get query parameters
+    const url = new URL(req.url);
+    const limitParam = url.searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+
+    // Build query options
+    const queryOptions: any = {
       where: {
         tenantId: currentUser.tenantId,
       },
       orderBy: {
         name: "asc",
       },
-    });
+    };
+
+    // Add limit if specified
+    if (limit && limit > 0) {
+      queryOptions.take = limit;
+    }
+
+    const items = await prisma.item.findMany(queryOptions);
 
     return NextResponse.json(items);
   } catch (error) {

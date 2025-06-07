@@ -17,6 +17,8 @@ export async function GET(req: Request) {
     const endDate = url.searchParams.get("endDate");
     const customerName = url.searchParams.get("customerName");
     const billNumber = url.searchParams.get("billNumber");
+    const limitParam = url.searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
 
     // Build the where clause for filtering
     const whereClause: any = {
@@ -54,8 +56,8 @@ export async function GET(req: Request) {
       };
     }
 
-    // Get all bills for this tenant with customer details
-    const bills = await prisma.bill.findMany({
+    // Build query options
+    const queryOptions: any = {
       where: whereClause,
       include: {
         customer: {
@@ -68,7 +70,15 @@ export async function GET(req: Request) {
       orderBy: {
         createdAt: "desc",
       },
-    });
+    };
+
+    // Add limit if specified
+    if (limit && limit > 0) {
+      queryOptions.take = limit;
+    }
+
+    // Get bills for this tenant with customer details
+    const bills = await prisma.bill.findMany(queryOptions);
 
     return NextResponse.json(bills);
   } catch (error) {

@@ -12,15 +12,28 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get all customers for this user's tenant
-    const customers = await prisma.customer.findMany({
+    // Get query parameters
+    const url = new URL(req.url);
+    const limitParam = url.searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+
+    // Build query options
+    const queryOptions: any = {
       where: {
         tenantId: currentUser.tenantId,
       },
       orderBy: {
         name: "asc",
       },
-    });
+    };
+
+    // Add limit if specified
+    if (limit && limit > 0) {
+      queryOptions.take = limit;
+    }
+
+    // Get customers for this user's tenant
+    const customers = await prisma.customer.findMany(queryOptions);
 
     return NextResponse.json(customers);
   } catch (error) {
