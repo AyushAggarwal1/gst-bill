@@ -105,7 +105,7 @@ export default function Dashboard() {
               title: 'New Bill Generated',
               description: `Bill #${bill.billNumber} for ${bill.customer?.name || 'Unknown Customer'}`,
               createdAt: bill.createdAt,
-              href: `/dashboard/bills/view/${bill.id}`
+              href: `/dashboard/bills/${bill.id}`
             });
           });
         }
