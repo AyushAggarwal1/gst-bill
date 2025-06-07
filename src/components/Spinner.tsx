@@ -1,24 +1,40 @@
 "use client";
 
 import React from 'react';
+import { cn } from '../lib/utils';
 
-interface SpinnerProps {
-  className?: string; // For the outer div
-  spinnerClassName?: string; // For the actual spinner element
-  textClassName?: string; // For the text
-  showText?: boolean;
+interface LoadingSpinnerProps {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+  text?: string;
 }
 
-const Spinner: React.FC<SpinnerProps> = ({ 
-  className = "flex justify-center items-center py-10", 
-  spinnerClassName = "animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500",
-  textClassName = "ml-4 text-gray-500",
-  showText = true,
-}) => (
-  <div className={className}>
-    <div className={spinnerClassName}></div>
-    {showText && <p className={textClassName}></p>}
-  </div>
-);
+const sizeClasses = {
+  sm: 'h-8 w-8',
+  md: 'h-12 w-12',
+  lg: 'h-20 w-20',
+};
 
-export default Spinner; 
+export const LoadingSpinner = ({ 
+  size = 'md', 
+  className,
+  text 
+}: LoadingSpinnerProps) => {
+  return (
+    <div className={cn('flex flex-col items-center justify-center space-y-4', className)}>
+      <div className="relative">
+        <div className={cn(
+          'animate-spin rounded-full border-4 border-primary-200',
+          sizeClasses[size]
+        )}></div>
+        <div className={cn(
+          'animate-spin rounded-full border-4 border-primary-600 border-t-transparent absolute top-0 left-0',
+          sizeClasses[size]
+        )}></div>
+      </div>
+      {text && (
+        <p className="text-sm text-gray-600 animate-pulse">{text}</p>
+      )}
+    </div>
+  );
+}; 

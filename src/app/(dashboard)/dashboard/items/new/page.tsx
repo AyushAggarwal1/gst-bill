@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { PageHeader } from "@/components/ui";
 
 export default function NewItemPage() {
   const router = useRouter();
@@ -63,186 +64,274 @@ export default function NewItemPage() {
     }
   };
 
+  // Validation helpers
+  const isValidHSN = item.hsnCode.length >= 4 && item.hsnCode.length <= 8;
+  const isValidTaxRate = item.taxRate && !isNaN(parseFloat(item.taxRate)) && parseFloat(item.taxRate) >= 0 && parseFloat(item.taxRate) <= 100;
+  const formCompletion = ((item.name ? 1 : 0) + (isValidHSN ? 1 : 0) + (isValidTaxRate ? 1 : 0)) / 3;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
-      {/* Enhanced Header with Blue Theme */}
-      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <PageHeader
+        title="Add New Item"
+        description="Create a new product for your inventory catalog"
+        icon={
+          <svg className="h-6 w-6 sm:h-7 sm:w-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        }
+      >
+        <Link
+          href="/dashboard/items"
+          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm transition-all duration-200"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Items
+        </Link>
+      </PageHeader>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Add New Item</h1>
-                <p className="text-sm text-gray-600 mt-1">Create a new product for your inventory</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span>Creating item...</span>
+              <p className="ml-3 text-sm font-medium text-red-800">{error}</p>
             </div>
           </div>
-        </div>
-      </header>
+        )}
 
-      <div className="max-w-4xl mx-auto py-6 px-3 sm:px-6 lg:px-8">
-        <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl border border-white/20 overflow-hidden">
-          <form onSubmit={handleSubmit}>
-            {/* Form Header with Blue Theme */}
-            <div className="bg-gradient-to-r from-blue-50 to-white px-6 py-4 border-b border-blue-100">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <div className="w-5 h-5 bg-blue-100 rounded-md flex items-center justify-center">
-                  <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                Item Information
-              </h3>
-              <p className="text-sm text-gray-600 mt-1">Fill in the details for your new item</p>
-            </div>
-
-            <div className="px-6 py-6 space-y-6">
-              {error && (
-                <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-4 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-red-900">Validation Error</h3>
-                      <p className="text-sm text-red-700">{error}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                {/* Item Name */}
-                <div className="sm:col-span-2">
-                  <label htmlFor="name" className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-2">
-                    <div className="w-5 h-5 bg-blue-50 rounded-md flex items-center justify-center">
-                      <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* Form */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="p-6 sm:p-8">
+              <div className="space-y-8">
+                {/* Basic Information Section */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-sm">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                     </div>
-                    Item Name
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    required
-                    value={item.name}
-                    onChange={handleChange}
-                    placeholder="Enter descriptive item name (e.g., Premium Laptop, Steel Chair)"
-                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all duration-200 text-base sm:text-sm"
-                  />
-                  <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Enter a clear, descriptive name for easy identification
-                  </p>
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+                      <p className="text-sm text-gray-600">Essential details about the product</p>
+                    </div>
+                  </div>
+
+                  {/* Item Name */}
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                      Item Name <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        required
+                        value={item.name}
+                        onChange={handleChange}
+                        placeholder="Enter descriptive item name (e.g., Premium Laptop, Steel Chair)"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors"
+                      />
+                    </div>
+                    {item.name && (
+                      <div className="flex items-center text-xs text-green-600">
+                        <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Valid item name
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* HSN Code */}
-                <div>
-                  <label htmlFor="hsnCode" className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-2">
-                    <div className="w-5 h-5 bg-yellow-50 rounded-md flex items-center justify-center">
-                      <svg className="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                {/* Classification & Tax Section */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center shadow-sm">
+                      <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    HSN/SAC Code
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="hsnCode"
-                    id="hsnCode"
-                    required
-                    value={item.hsnCode}
-                    onChange={handleChange}
-                    placeholder="8471"
-                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all duration-200 text-base sm:text-sm font-mono"
-                  />
-                  <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    4-8 digit HSN or SAC classification code
-                  </p>
-                </div>
-
-                {/* Tax Rate */}
-                <div>
-                  <label htmlFor="taxRate" className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-2">
-                    <div className="w-5 h-5 bg-green-50 rounded-md flex items-center justify-center">
-                      <span className="text-xs font-bold text-green-600">%</span>
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900">Classification & Tax</h2>
+                      <p className="text-sm text-gray-600">HSN/SAC code and tax rate information</p>
                     </div>
-                    Tax Rate (%)
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="100"
-                    name="taxRate"
-                    id="taxRate"
-                    required
-                    value={item.taxRate}
-                    onChange={handleChange}
-                    placeholder="18"
-                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all duration-200 text-base sm:text-sm"
-                  />
-                  <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    Common GST rates: 0, 5, 12, 18, 28%
-                  </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {/* HSN Code */}
+                    <div className="space-y-2">
+                      <label htmlFor="hsnCode" className="block text-sm font-medium text-gray-700">
+                        HSN/SAC Code <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                          </svg>
+                        </div>
+                        <input
+                          type="text"
+                          name="hsnCode"
+                          id="hsnCode"
+                          required
+                          value={item.hsnCode}
+                          onChange={handleChange}
+                          placeholder="8471"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder-gray-500 transition-colors tracking-wider"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center text-gray-500">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                          4-8 digit classification code
+                        </div>
+                        <div className={`flex items-center ${isValidHSN ? 'text-green-600' : 'text-gray-400'}`}>
+                          <span className="font-medium">{item.hsnCode.length}/8</span>
+                        </div>
+                      </div>
+                      {isValidHSN && (
+                        <div className="flex items-center text-xs text-green-600">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          Valid HSN/SAC code length
+                        </div>
+                      )}
+                      {item.hsnCode && !isValidHSN && (
+                        <div className="flex items-center text-xs text-amber-600">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                          </svg>
+                          HSN/SAC code should be 4-8 digits
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tax Rate */}
+                    <div className="space-y-2">
+                      <label htmlFor="taxRate" className="block text-sm font-medium text-gray-700">
+                        Tax Rate (%) <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <span className="text-gray-400 font-bold text-sm">%</span>
+                        </div>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="100"
+                          name="taxRate"
+                          id="taxRate"
+                          required
+                          value={item.taxRate}
+                          onChange={handleChange}
+                          placeholder="18"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center text-gray-500">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                          Common rates: 0, 5, 12, 18, 28%
+                        </div>
+                        {item.taxRate && (
+                          <div className={`flex items-center ${isValidTaxRate ? 'text-green-600' : 'text-amber-600'}`}>
+                            <span className="font-medium">{item.taxRate}%</span>
+                          </div>
+                        )}
+                      </div>
+                      {isValidTaxRate && (
+                        <div className="flex items-center text-xs text-green-600">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          Valid tax rate
+                        </div>
+                      )}
+                      {item.taxRate && !isValidTaxRate && (
+                        <div className="flex items-center text-xs text-amber-600">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                          </svg>
+                          Tax rate must be between 0 and 100
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Enhanced Action Buttons */}
-            <div className="bg-gray-50/50 px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4">
-              <Link
-                href="/dashboard/items"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm transition-all duration-200 active:scale-95"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span className="hidden sm:inline">Back to Items</span>
-                <span className="sm:hidden">Back</span>
-              </Link>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 mr-2 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                    Creating Item...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Create Item
-                  </>
-                )}
-              </button>
+            {/* Action Buttons */}
+            <div className="px-6 py-6 sm:px-8 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200 rounded-b-xl">
+              <div className="flex flex-col sm:flex-row gap-4 sm:justify-end">
+                <Link
+                  href="/dashboard/items"
+                  className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-lg text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md transition-all duration-200 group"
+                >
+                  <svg className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Cancel
+                </Link>
+                <button
+                  type="submit"
+                  disabled={loading || !item.name || !isValidHSN || !isValidTaxRate}
+                  className="inline-flex items-center justify-center px-8 py-3 text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 group"
+                >
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Creating Item...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                      Create Item
+                    </>
+                  )}
+                </button>
+              </div>
+              
+              {/* Form Progress Indicator */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                  <span>Form Completion</span>
+                  <span>{Math.round(formCompletion * 100)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${formCompletion * 100}%` }}
+                  />
+                </div>
+              </div>
             </div>
           </form>
         </div>
