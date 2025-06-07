@@ -111,46 +111,46 @@ export default function CustomersPage() {
         description="Manage your customer database with ease"
         icon={
           <svg className="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
         }
       >
-        <Link
-          href="/dashboard/customers/new"
+            <Link
+              href="/dashboard/customers/new"
           className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md transition-all duration-200"
-        >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Add Customer
-        </Link>
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add Customer
+            </Link>
       </PageHeader>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
         {/* Success Message */}
-        {deleteSuccess && (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
+          {deleteSuccess && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm">
+              <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p className="ml-3 text-sm font-medium text-emerald-800">{deleteSuccess}</p>
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="ml-3 text-sm font-medium text-emerald-800">{deleteSuccess}</p>
               </div>
               <button
                 onClick={handleDismissSuccess}
-                className="flex-shrink-0 ml-4 text-emerald-500 hover:text-emerald-700 transition-colors"
+                  className="flex-shrink-0 ml-4 text-emerald-500 hover:text-emerald-700 transition-colors"
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
@@ -255,41 +255,53 @@ export default function CustomersPage() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <div className="relative max-w-md sm:max-w-lg">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search customers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-          {searchTerm && (
-            <div className="mt-2 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-xs sm:text-sm text-blue-700">
-                <span className="font-medium">{filteredCustomers.length}</span> customer{filteredCustomers.length !== 1 ? 's' : ''} found
-                <span className="hidden sm:inline"> matching "{searchTerm}"</span>
-              </p>
+        {/* Search */}
+        <Card className="mb-6">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder="Search customers by name, GST number, or address..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm("")}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="font-medium">{filteredCustomers.length} customers</span>
+                </div>
+                {searchTerm && (
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+                    </svg>
+                    <span>Filtered</span>
             </div>
           )}
-        </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Customer List */}
         {filteredCustomers.length === 0 ? (
@@ -309,7 +321,7 @@ export default function CustomersPage() {
               }}
               className="py-16"
             />
-          </div>
+            </div>
         ) : (
           <div>
             {/* Desktop Table View */}
@@ -318,83 +330,83 @@ export default function CustomersPage() {
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                   <div className="w-5 h-5 bg-blue-100 rounded-md flex items-center justify-center">
                     <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+                </div>
                   Customer Directory
-                </h3>
+              </h3>
               </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
                   <thead className="bg-gray-50">
-                    <tr>
+                      <tr>
                       <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Customer
-                      </th>
+                        </th>
                       <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        GST Number
-                      </th>
+                          GST Number
+                        </th>
                       <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Address
-                      </th>
-                      <th scope="col" className="relative px-6 py-4">
+                          Address
+                        </th>
+                        <th scope="col" className="relative px-6 py-4">
                         <span className="sr-only">Actions</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {filteredCustomers.map((customer, index) => (
+                      {filteredCustomers.map((customer, index) => (
                       <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
+                            <div className="flex items-center">
                             <div className={`w-10 h-10 ${
                               customer.gstNo ? 'bg-emerald-100' : 'bg-slate-100'
                             } rounded-lg flex items-center justify-center flex-shrink-0`}>
                               <span className={`text-sm font-semibold ${
                                 customer.gstNo ? 'text-emerald-700' : 'text-slate-700'
                               }`}>
-                                {customer.name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <div className="ml-4">
-                              <Link 
-                                href={`/dashboard/customers/edit/${customer.id}`}
+                                  {customer.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              <div className="ml-4">
+                                <Link 
+                                  href={`/dashboard/customers/edit/${customer.id}`}
                                 className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                              >
-                                {customer.name}
-                              </Link>
-                              <div className="text-xs text-gray-500">Customer #{index + 1}</div>
+                                >
+                          {customer.name}
+                                </Link>
+                                <div className="text-xs text-gray-500">Customer #{index + 1}</div>
+                              </div>
                             </div>
-                          </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {customer.gstNo ? (
-                            <div className="text-sm text-gray-900 font-mono">{customer.gstNo}</div>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                              Not provided
-                            </span>
-                          )}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {customer.gstNo ? (
+                              <div className="text-sm text-gray-900 font-mono">{customer.gstNo}</div>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                Not provided
+                              </span>
+                            )}
                         </td>
-                        <td className="px-6 py-4">
-                          {customer.address ? (
-                            <div className="text-sm text-gray-900 max-w-xs truncate" title={customer.address}>
-                              {customer.address}
-                            </div>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                              Not provided
-                            </span>
-                          )}
+                          <td className="px-6 py-4">
+                            {customer.address ? (
+                              <div className="text-sm text-gray-900 max-w-xs truncate" title={customer.address}>
+                                {customer.address}
+                              </div>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                Not provided
+                              </span>
+                            )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
                           <button
                             onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
-                            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
+                              className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
                           >
-                            <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
+                              <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                              </svg>
                           </button>
                           {openMenuId === customer.id && (
                             <div
@@ -405,24 +417,24 @@ export default function CustomersPage() {
                               <div className="py-1" role="none">
                                 <Link
                                   href={`/dashboard/customers/edit/${customer.id}`}
-                                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                                   role="menuitem"
                                   onClick={() => setOpenMenuId(null)}
                                 >
-                                  <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                  Edit Customer
+                                    <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    Edit Customer
                                 </Link>
                                 <button
                                   onClick={() => { openDeleteDialog(customer.id); setOpenMenuId(null); }}
-                                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
                                   role="menuitem"
                                 >
-                                  <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                  Delete Customer
+                                    <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete Customer
                                 </button>
                               </div>
                             </div>
@@ -432,12 +444,12 @@ export default function CustomersPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
-            </div>
 
             {/* Mobile Card View */}
             <div className="block lg:hidden space-y-3 sm:space-y-4">
-              {filteredCustomers.map((customer, index) => (
+                {filteredCustomers.map((customer, index) => (
                 <div key={customer.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 active:scale-[0.98] touch-manipulation">
                   <div className="p-3 sm:p-4">
                     <div className="flex items-start justify-between mb-3">
@@ -531,10 +543,10 @@ export default function CustomersPage() {
                         </div>
                       )}
                     </div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
             {/* Results Summary */}
             <div className="mt-4 sm:mt-6 text-center">
@@ -554,9 +566,9 @@ export default function CustomersPage() {
                   )}
                 </p>
               </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );

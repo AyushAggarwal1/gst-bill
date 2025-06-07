@@ -73,18 +73,18 @@ export default function NewCustomerPage() {
         icon={
           <svg className="h-6 w-6 sm:h-7 sm:w-7 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
             <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
+                </svg>
         }
       >
-        <Link
-          href="/dashboard/customers"
+            <Link
+              href="/dashboard/customers"
           className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm transition-all duration-200"
-        >
+            >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
           Back to Customers
-        </Link>
+            </Link>
       </PageHeader>
 
       {/* Main Content */}
@@ -99,9 +99,9 @@ export default function NewCustomerPage() {
                 </svg>
               </div>
               <p className="ml-3 text-sm font-medium text-red-800">{error}</p>
-            </div>
-          </div>
-        )}
+                  </div>
+                  </div>
+                )}
 
         {/* Form */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -131,7 +131,7 @@ export default function NewCustomerPage() {
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
+                          </svg>
                       </div>
                       <input
                         type="text"
@@ -178,7 +178,7 @@ export default function NewCustomerPage() {
                       <div className="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
                         <svg className="h-5 w-5 text-gray-400 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                        </svg>
+                          </svg>
                       </div>
                       <textarea
                         id="address"
@@ -224,7 +224,7 @@ export default function NewCustomerPage() {
                       <div className="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
                         <svg className="h-5 w-5 text-gray-400 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M20 8l-8 5-8-5V6l8 5 8-5v2zm0-2H4l8 4.99L20 6z"/>
-                        </svg>
+                          </svg>
                       </div>
                       <textarea
                         id="deliveryAddress"
@@ -262,7 +262,7 @@ export default function NewCustomerPage() {
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
-                        </svg>
+                          </svg>
                       </div>
                       <input
                         type="text"
@@ -302,7 +302,7 @@ export default function NewCustomerPage() {
                           <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                         GST number must be exactly 15 characters
-                      </div>
+                    </div>
                     )}
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export default function NewCustomerPage() {
                     <>
                        <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="currentColor" viewBox="0 0 24 24">
                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                       </svg>
+                      </svg>
                        Create Customer
                     </>
                   )}
@@ -358,8 +358,8 @@ export default function NewCustomerPage() {
                   />
                 </div>
               </div>
-            </div>
-          </form>
+              </div>
+            </form>
         </div>
       </div>
     </div>
