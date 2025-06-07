@@ -9,6 +9,15 @@ import {
   LoadingSpinner 
 } from "@/components/ui";
 
+interface Activity {
+  id: string;
+  type: 'customer' | 'item' | 'bill';
+  title: string;
+  description: string;
+  createdAt: string;
+  href?: string;
+}
+
 export default function Dashboard() {
   const { data: session } = useSession();
   const [stats, setStats] = useState({
@@ -16,7 +25,9 @@ export default function Dashboard() {
     items: 0,
     bills: 0,
   });
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -47,7 +58,73 @@ export default function Dashboard() {
       }
     };
 
+    const fetchRecentActivities = async () => {
+      try {
+        const [customersRes, itemsRes, billsRes] = await Promise.all([
+          fetch("/api/customers?limit=3"),
+          fetch("/api/items?limit=3"),
+          fetch("/api/bills?limit=3")
+        ]);
+
+        const allActivities: Activity[] = [];
+
+        if (customersRes.ok) {
+          const customers = await customersRes.json();
+          customers.forEach((customer: any) => {
+            allActivities.push({
+              id: `customer-${customer.id}`,
+              type: 'customer',
+              title: 'New Customer Added',
+              description: `${customer.name} was added to the system`,
+              createdAt: customer.createdAt,
+              href: `/dashboard/customers/edit/${customer.id}`
+            });
+          });
+        }
+
+        if (itemsRes.ok) {
+          const items = await itemsRes.json();
+          items.forEach((item: any) => {
+            allActivities.push({
+              id: `item-${item.id}`,
+              type: 'item',
+              title: 'New Item Created',
+              description: `${item.name} was added to inventory`,
+              createdAt: item.createdAt,
+              href: `/dashboard/items/edit/${item.id}`
+            });
+          });
+        }
+
+        if (billsRes.ok) {
+          const bills = await billsRes.json();
+          bills.forEach((bill: any) => {
+            allActivities.push({
+              id: `bill-${bill.id}`,
+              type: 'bill',
+              title: 'New Bill Generated',
+              description: `Bill #${bill.billNumber} for ${bill.customer?.name || 'Unknown Customer'}`,
+              createdAt: bill.createdAt,
+              href: `/dashboard/bills/view/${bill.id}`
+            });
+          });
+        }
+
+        // Sort by creation date (most recent first) and take top 8
+        const sortedActivities = allActivities
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 8);
+
+        setActivities(sortedActivities);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      } finally {
+        setActivitiesLoading(false);
+      }
+    };
+
     fetchStats();
+    fetchRecentActivities();
   }, []);
 
   if (isLoading) {
@@ -179,16 +256,128 @@ export default function Dashboard() {
 
         {/* Recent Activity Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-          <div className="text-center py-8">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No recent activity</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Start creating bills and managing customers to see activity here.
-            </p>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span>Live</span>
+            </div>
           </div>
+
+          {activitiesLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <LoadingSpinner text="Loading activities..." />
+            </div>
+          ) : activities.length === 0 ? (
+            <div className="text-center py-8">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No recent activity</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Start creating bills and managing customers to see activity here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {activities.map((activity) => {
+                const getActivityIcon = (type: string) => {
+                  switch (type) {
+                    case 'customer':
+                      return (
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                      );
+                    case 'item':
+                      return (
+                        <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          </svg>
+                        </div>
+                      );
+                    case 'bill':
+                      return (
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                      );
+                    default:
+                      return (
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                      );
+                  }
+                };
+
+                const formatTimeAgo = (dateString: string) => {
+                  const now = new Date();
+                  const activityDate = new Date(dateString);
+                  const diffInMinutes = Math.floor((now.getTime() - activityDate.getTime()) / (1000 * 60));
+                  
+                  if (diffInMinutes < 1) return 'Just now';
+                  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+                  
+                  const diffInHours = Math.floor(diffInMinutes / 60);
+                  if (diffInHours < 24) return `${diffInHours}h ago`;
+                  
+                  const diffInDays = Math.floor(diffInHours / 24);
+                  if (diffInDays < 7) return `${diffInDays}d ago`;
+                  
+                  return activityDate.toLocaleDateString();
+                };
+
+                return (
+                  <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                    {getActivityIcon(activity.type)}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {activity.title}
+                        </p>
+                        <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                          {formatTimeAgo(activity.createdAt)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 truncate">
+                        {activity.description}
+                      </p>
+                    </div>
+                    {activity.href && (
+                      <a
+                        href={activity.href}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-gray-200 text-gray-400 hover:text-gray-600"
+                        title="View details"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+              
+              {activities.length >= 8 && (
+                <div className="pt-4 border-t border-gray-100">
+                  <button 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors py-2"
+                  >
+                    Go to top ↑
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

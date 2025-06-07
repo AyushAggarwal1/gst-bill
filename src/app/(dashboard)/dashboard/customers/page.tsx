@@ -81,6 +81,47 @@ export default function CustomersPage() {
     setDeleteSuccess("");
   };
 
+  const exportTop10CustomersToCSV = () => {
+    // Get top 10 customers (sorted by creation date, most recent first)
+    const top10Customers = customers
+      .sort((b, a) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10);
+
+    if (top10Customers.length === 0) {
+      alert("No customers available to export.");
+      return;
+    }
+
+    // CSV headers
+    const headers = ["S.No", "Customer Name", "GST Number", "Address", "Delivery Address", "Created Date"];
+    
+    // Convert customers to CSV rows
+    const csvRows = top10Customers.map((customer, index) => [
+      index + 1,
+      `"${customer.name.replace(/"/g, '""')}"`, // Escape quotes in names
+      customer.gstNo || "Not Provided",
+      `"${(customer.address || "Not Provided").replace(/"/g, '""')}"`, // Escape quotes in address
+      `"${(customer.deliveryAddress || "Not Provided").replace(/"/g, '""')}"`, // Escape quotes in delivery address
+      new Date(customer.createdAt).toLocaleDateString()
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [headers, ...csvRows]
+      .map(row => row.join(","))
+      .join("\n");
+
+    // Create and download the CSV file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `top-10-customers-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
@@ -242,9 +283,9 @@ export default function CustomersPage() {
             />
 
             <QuickActionCard
-              title="Export Customer Data"
-              description="Download customer information"
-              href="#"
+              title="Export Top 10 Customers"
+              description="Download CSV of recent customers"
+              onClick={exportTop10CustomersToCSV}
               icon={
                 <svg className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
