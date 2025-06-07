@@ -11,15 +11,18 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/favicon.svg',
+        url: '/favicon.svg?v=2',
         type: 'image/svg+xml',
+        sizes: '32x32',
       },
       {
-        url: '/favicon.ico',
+        url: '/favicon-16x16.svg?v=2',
+        type: 'image/svg+xml',
         sizes: '16x16',
-        type: 'image/x-icon',
       }
     ],
+    shortcut: '/favicon.svg?v=2',
+    apple: '/favicon.svg?v=2',
   },
 };
 
@@ -31,8 +34,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/favicon.ico" sizes="16x16" type="image/x-icon" />
+        <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" sizes="32x32" />
+        <link rel="icon" href="/favicon-16x16.svg?v=2" type="image/svg+xml" sizes="16x16" />
+        <link rel="shortcut icon" href="/favicon.svg?v=2" />
+        <link rel="apple-touch-icon" href="/favicon.svg?v=2" />
       </head>
       <body className={`${inter.className} h-full`}>
         <Providers>{children}</Providers>
