@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
-import Spinner from "@/components/Spinner";
-import { PrintIcon, DownloadIcon, DeleteIcon, BackIcon } from "@/components/icons";
+import { LoadingSpinner } from "@/components/ui";
+import { PrintIcon, DownloadIcon, DeleteIcon } from "@/components/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import NumberToWords from "@/components/NumberToWords";
 
@@ -233,20 +233,37 @@ export default function BillDetailPage({ params }: BillParams) {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Spinner /></div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="flex items-center justify-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
   }
 
   if (error && !bill) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full text-center">
-            <h2 className="text-2xl font-semibold text-red-600 mb-4">Error Loading Bill</h2>
-            <p className="text-gray-700 mb-6">{error}</p>
-            <Link href="/dashboard/bills"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+          <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center border border-gray-200">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Bill</h2>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <Link
+              href="/dashboard/bills"
+              className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm transition-colors"
             >
-                <BackIcon /> <span className="ml-2">Back to Bills List</span>
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Bills
             </Link>
+          </div>
         </div>
       </div>
     );
@@ -254,55 +271,56 @@ export default function BillDetailPage({ params }: BillParams) {
 
   if (!bill) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full text-center">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">No Bill Data</h2>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+          <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center border border-gray-200">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Bill Data</h2>
             <p className="text-gray-600 mb-6">The bill information could not be displayed.</p>
-            <Link href="/dashboard/bills"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            <Link
+              href="/dashboard/bills"
+              className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm transition-colors"
             >
-                 <BackIcon /> <span className="ml-2">Back to Bills List</span>
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Bills
             </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
-      <header className="bg-white shadow-sm border-b border-gray-200 print:hidden">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Page Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <Link href="/dashboard/bills" className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors duration-200 group">
-                <BackIcon />
-                <span className="ml-2 group-hover:underline">← Back to Bills</span>
+              <Link href="/dashboard/bills" className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group mb-2">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                                 <span className="group-hover:underline">Back to Bills</span>
               </Link>
-              <div className="mt-2">
-                <h1 className="text-3xl font-bold text-gray-900">Invoice #{bill.billNumber}</h1>
-                <div className="mt-1 flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {format(new Date(bill.billDate), "MMM dd, yyyy")}
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    ₹{bill.total.toFixed(2)}
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    {bill.customer.name}
-                  </span>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-900">{`Invoice #${bill.billNumber}`}</h1>
+                  <p className="text-sm text-gray-600">View and manage invoice details</p>
                 </div>
               </div>
             </div>
-            
             <div className="flex items-center gap-2">
               <div className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full border border-blue-200">
                 {bill.items.length} {bill.items.length === 1 ? 'item' : 'items'}
@@ -313,171 +331,270 @@ export default function BillDetailPage({ params }: BillParams) {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Actions</h2>
-            <div className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex">
+              <svg className="w-5 h-5 text-red-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Bill Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Date</p>
+                <p className="text-lg font-semibold text-gray-900">{format(new Date(bill.billDate), "MMM dd, yyyy")}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Customer</p>
+                <p className="text-lg font-semibold text-gray-900">{bill.customer.name}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Items</p>
+                <p className="text-lg font-semibold text-gray-900">{bill.items.length}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Amount</p>
+                <p className="text-lg font-semibold text-gray-900">₹{bill.total.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+              <p className="text-sm text-gray-600">Manage this invoice</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handlePrint}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg shadow-sm text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm transition-colors border border-gray-300"
               >
-                <PrintIcon /> 
+                <PrintIcon />
                 <span className="ml-2">Print Invoice</span>
               </button>
               <button
-                onClick={handlePrint}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg shadow-sm text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
+                onClick={handleDownloadPDF}
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm transition-colors border border-gray-300"
               >
-                <DownloadIcon /> 
+                <DownloadIcon />
                 <span className="ml-2">Download PDF</span>
               </button>
-              <div className="h-6 w-px bg-gray-300"></div>
               <button
                 onClick={openDeleteDialog}
-                className="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-lg shadow-sm text-red-700 bg-red-50 hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-sm transition-colors border border-red-200"
               >
-                <DeleteIcon /> 
+                <DeleteIcon />
                 <span className="ml-2">Delete Bill</span>
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {error && (
-         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-4">
-            <div className="p-4 bg-red-100 text-sm text-red-700 rounded-lg">
-                {error}
+        {/* Invoice Content */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" id="bill-content-for-display">
+          {/* Invoice Header */}
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-wider">Tax Invoice</h2>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
+                <span><span className="font-semibold">Invoice No:</span> {bill.billNumber}</span>
+                <span className="text-gray-400">|</span>
+                <span><span className="font-semibold">Date:</span> {format(new Date(bill.billDate), "dd MMMM yyyy")}</span>
+                <span className="text-gray-400">|</span>
+                <span><span className="font-semibold">Tax Type:</span> {bill.isIGST ? "IGST" : "CGST/SGST"}</span>
+              </div>
             </div>
-        </div>
-      )}
-
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-md p-6 sm:p-8 print:shadow-none print:p-0" id="bill-content-for-display">
-        <div className="text-center mb-4 print:mb-2">
-          <h2 className="text-2xl font-bold uppercase tracking-wider text-gray-800">Tax Invoice</h2>
-        </div>
-
-        <div className="text-center text-sm text-gray-600 mb-6 print:mb-3">
-            <span className="font-semibold text-gray-700">Invoice No:</span> {bill.billNumber}
-            <span className="mx-3">|</span>
-            <span className="font-semibold text-gray-700">Date:</span> {format(new Date(bill.billDate), "dd MMMM yyyy")}
-            <span className="mx-3">|</span>
-            <span className="font-semibold text-gray-700">Tax Type:</span> {bill?.isIGST ? "IGST" : "CGST/SGST"}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 print:grid-cols-2 print:gap-4 print:mb-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">Billed By:</h3>
-            {profile ? (
-              <>
-                <p className="text-gray-800 font-medium text-md">{profile.firmName}</p>
-                <p className="text-gray-600 text-sm whitespace-pre-line">{profile.address}</p>
-                <p className="text-gray-600 text-sm">GSTIN: {profile.gstNo}</p>
-                {profile.phoneNo && <p className="text-gray-600 text-sm">Phone: {profile.phoneNo}</p>}
-              </>
-            ) : (
-              <p className="text-sm text-gray-500">Loading profile...</p>
-            )}
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">Billed To:</h3>
-            <p className="text-gray-800 font-medium text-md">{bill.customer.name}</p>
-            <p className="text-gray-600 text-sm whitespace-pre-line">{bill.customer.address}</p>
-            <p className="text-gray-600 text-sm">GSTIN: {bill.customer.gstNo}</p>
-          </div>
-        </div>
 
-        {bill.deliveryAddress && (
-          <div className="mb-8 print:mb-4">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">Delivery Address:</h3>
-            <p className="text-gray-600 text-sm whitespace-pre-line">{bill.deliveryAddress}</p>
-          </div>
-        )}
-
-        <div className="mb-8 print:mb-4">
-          <h3 className="text-lg font-semibold text-gray-700 mb-3">Items:</h3>
-          <div className="overflow-x-auto rounded-lg border border-gray-200 print:border-none print:overflow-visible">
-            <table className="min-w-full divide-y divide-gray-200 print:divide-y-0">
-              <thead className="bg-gray-50 print:bg-transparent">
-                <tr>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">S.No</th>
-                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">Item Description</th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">HSN</th>
-                  <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">Qty</th>
-                  <th scope="col" className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">Rate (₹)</th>
-                  <th scope="col" className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">Amount (₹)</th>
-                  <th scope="col" className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">Tax %</th>
-                  <th scope="col" className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider print:px-1 print:py-1">Tax Amt (₹)</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200 print:bg-transparent print:divide-y-0">
-                {bill.items.map((item, index) => (
-                  <tr key={item.id} className="print:border-b print:border-gray-300">
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 print:px-1 print:py-1">{index + 1}</td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 print:px-1 print:py-1">{item.item.name}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 print:px-1 print:py-1">{item.item.hsnCode}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-center print:px-1 print:py-1">{item.quantity}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-right print:px-1 print:py-1">{item.price.toFixed(2)}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-right print:px-1 print:py-1">{item.amount.toFixed(2)}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-center print:px-1 print:py-1">{item.item.taxRate}%</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-right print:px-1 print:py-1">{item.taxAmount.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 print:grid-cols-3 print:gap-4 print:mb-4">
-            <div className="md:col-span-2">
-                <h3 className="text-md font-semibold text-gray-700 mb-1">Amount in words:</h3>
-                <p className="text-sm text-gray-600 capitalize">{NumberToWords(bill.total)}</p>
-                
-                {profile && profile.bankDetails && (
-                <div className="mt-6 print:mt-3">
-                    <h3 className="text-md font-semibold text-gray-700 mb-1">Bank Details:</h3>
-                    <p className="text-sm text-gray-600 whitespace-pre-line">{profile.bankDetails}</p>
-                </div>
-                )}
-            </div>
-
-            <div className="text-sm">
-                <div className="flex justify-between py-1 border-b">
-                    <span className="text-gray-600">Subtotal:</span>
-                    <span className="text-gray-800 font-medium">₹{bill.subtotal.toFixed(2)}</span>
-                </div>
-                {bill.isIGST ? (
-                    <div className="flex justify-between py-1 border-b">
-                    <span className="text-gray-600">IGST ({bill.items.length > 0 ? bill.items[0].item.taxRate : 0}%):</span>
-                    <span className="text-gray-800 font-medium">₹{bill.igst.toFixed(2)}</span>
-                    </div>
+          <div className="p-6">
+            {/* Billing Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Billed By</h3>
+                {profile ? (
+                  <div className="space-y-2">
+                    <p className="text-gray-900 font-semibold">{profile.firmName}</p>
+                    <p className="text-gray-600 text-sm whitespace-pre-line">{profile.address}</p>
+                    <p className="text-gray-600 text-sm"><span className="font-medium">GSTIN:</span> {profile.gstNo}</p>
+                    {profile.phoneNo && <p className="text-gray-600 text-sm"><span className="font-medium">Phone:</span> {profile.phoneNo}</p>}
+                  </div>
                 ) : (
-                    <>
-                    <div className="flex justify-between py-1 border-b">
-                        <span className="text-gray-600">CGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%):</span>
-                        <span className="text-gray-800 font-medium">₹{bill.cgst.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between py-1 border-b">
-                        <span className="text-gray-600">SGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%):</span>
-                        <span className="text-gray-800 font-medium">₹{bill.sgst.toFixed(2)}</span>
-                    </div>
-                    </>
+                  <div className="animate-pulse space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  </div>
                 )}
-                <div className="flex justify-between py-2 mt-1">
-                    <span className="text-lg font-bold text-gray-900">Grand Total:</span>
-                    <span className="text-lg font-bold text-gray-900">₹{bill.total.toFixed(2)}</span>
-                </div>
-            </div>
-        </div>
+              </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-500 print:mt-6 print:pt-3">
-          <p>This is a system-generated invoice.</p>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Billed To</h3>
+                <div className="space-y-2">
+                  <p className="text-gray-900 font-semibold">{bill.customer.name}</p>
+                  <p className="text-gray-600 text-sm whitespace-pre-line">{bill.customer.address}</p>
+                  <p className="text-gray-600 text-sm"><span className="font-medium">GSTIN:</span> {bill.customer.gstNo}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Address */}
+            {bill.deliveryAddress && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Delivery Address</h3>
+                <p className="text-gray-600 text-sm whitespace-pre-line">{bill.deliveryAddress}</p>
+              </div>
+            )}
+
+            {/* Items Table */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Items</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">S.No</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Item Description</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">HSN</th>
+                      <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Qty</th>
+                      <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Rate (₹)</th>
+                      <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Amount (₹)</th>
+                      <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Tax %</th>
+                      <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Tax Amt (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {bill.items.map((item, index) => (
+                      <tr key={item.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{item.item.name}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{item.item.hsnCode}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-center">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {item.quantity}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right font-medium">₹{item.price.toFixed(2)}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">₹{item.amount.toFixed(2)}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-center">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                            {item.item.taxRate}%
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right font-medium">₹{item.taxAmount.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Summary Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div>
+                  <h4 className="text-md font-semibold text-gray-900 mb-2">Amount in Words</h4>
+                  <p className="text-sm text-gray-600 capitalize bg-gray-50 p-4 rounded-lg">{NumberToWords(bill.total)}</p>
+                </div>
+
+                {profile && profile.bankDetails && (
+                  <div>
+                    <h4 className="text-md font-semibold text-gray-900 mb-2">Bank Details</h4>
+                    <div className="text-sm text-gray-600 bg-gray-50 p-4 rounded-lg whitespace-pre-line">{profile.bankDetails}</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Bill Summary</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                    <span className="text-sm text-gray-600">Subtotal</span>
+                    <span className="text-sm font-medium text-gray-900">₹{bill.subtotal.toFixed(2)}</span>
+                  </div>
+                  
+                  {bill.isIGST ? (
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-sm text-gray-600">IGST ({bill.items.length > 0 ? bill.items[0].item.taxRate : 0}%)</span>
+                      <span className="text-sm font-medium text-gray-900">₹{bill.igst.toFixed(2)}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span className="text-sm text-gray-600">CGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%)</span>
+                        <span className="text-sm font-medium text-gray-900">₹{bill.cgst.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span className="text-sm text-gray-600">SGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%)</span>
+                        <span className="text-sm font-medium text-gray-900">₹{bill.sgst.toFixed(2)}</span>
+                      </div>
+                    </>
+                  )}
+                  
+                  <div className="flex justify-between items-center pt-3 border-t-2 border-gray-300">
+                    <span className="text-lg font-bold text-gray-900">Grand Total</span>
+                    <span className="text-lg font-bold text-blue-600">₹{bill.total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+              <p className="text-xs text-gray-500">This is a system-generated invoice.</p>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={closeDeleteDialog}
