@@ -4,14 +4,12 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-// Import dashboard image directly
-import dashboardImage from "../../public/images/dashboard.png";
-
+ 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [imageError, setImageError] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -124,30 +122,94 @@ export default function Home() {
               <span className="font-semibold">LIVE PREVIEW</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 sm:mb-6 px-4 sm:px-0">
-              See it in <span className="text-blue-600">action</span>
+              Watch it in <span className="text-blue-600">action</span>
             </h2>
             <p className="max-w-2xl mx-auto text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed px-4 sm:px-0">
-              Experience our intuitive dashboard designed for modern businesses. Everything you need at your fingertips.
+              See our GST Bill Maker in action with this comprehensive demo video. Discover how easy it is to create professional bills and manage your business.
             </p>
           </div>
           
           <div className="relative">
-            {!imageError ? (
+            {!videoError ? (
               <div className="relative">
-                <Image
-                  className="rounded-xl sm:rounded-2xl shadow-2xl ring-1 ring-gray-900/10"
-                  src={dashboardImage}
-                  alt="GST Bill Maker Dashboard"
-                  priority
-                  onError={() => setImageError(true)}
-                />
+                {imageLoading && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl sm:rounded-4xl shadow-2xl border-2 border-white/60 flex items-center justify-center">
+                    <div className="text-center bg-white/90 backdrop-blur-md rounded-2xl p-10 shadow-2xl border-2 border-blue-200/50 ring-4 ring-white/30">
+                      <div className="relative">
+                        <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                        <div className="absolute inset-0 w-20 h-20 border-2 border-purple-400 border-b-transparent rounded-full animate-spin mx-auto" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
+                      </div>
+                      <p className="text-gray-800 text-base font-semibold mb-2">Loading demo animation...</p>
+                      <p className="text-gray-600 text-sm">Large file - please wait</p>
+                      <div className="mt-4 flex justify-center space-x-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="relative p-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl sm:rounded-4xl shadow-2xl border-2 border-white/60">
+                  {/* Multiple border layers */}
+                  <div className="relative p-3 bg-gradient-to-r from-blue-100/50 to-purple-100/50 rounded-2xl sm:rounded-3xl border border-blue-200/70 shadow-lg">
+                    <div className="relative p-2 bg-white/80 rounded-xl sm:rounded-2xl border-2 border-gradient-to-r from-blue-300 to-purple-300 shadow-md">
+                      <div className="relative overflow-hidden rounded-lg sm:rounded-xl ring-4 ring-blue-200/60 shadow-xl border-2 border-white/90">
+                        <img
+                          src="/images/gst_bill_demo.gif"
+                          alt="GST Bill Maker Demo - See the application in action"
+                          className="w-full h-auto"
+                          onError={() => {
+                            console.error('Failed to load GIF');
+                            setVideoError(true);
+                            setImageLoading(false);
+                          }}
+                          onLoad={() => {
+                            console.log('GIF loaded successfully');
+                            setImageLoading(false);
+                          }}
+                        />
+                        
+                        {/* Enhanced decorative corner elements */}
+                        <div className="absolute top-0 left-0 w-12 h-12 border-t-6 border-l-6 border-blue-500 rounded-tl-2xl opacity-80"></div>
+                        <div className="absolute top-0 right-0 w-12 h-12 border-t-6 border-r-6 border-purple-500 rounded-tr-2xl opacity-80"></div>
+                        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-6 border-l-6 border-green-500 rounded-bl-2xl opacity-80"></div>
+                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-6 border-r-6 border-orange-500 rounded-br-2xl opacity-80"></div>
+                        
+                        {/* Additional corner accents */}
+                        <div className="absolute top-2 left-2 w-6 h-6 border-t-3 border-l-3 border-blue-300 rounded-tl-lg"></div>
+                        <div className="absolute top-2 right-2 w-6 h-6 border-t-3 border-r-3 border-purple-300 rounded-tr-lg"></div>
+                        <div className="absolute bottom-2 left-2 w-6 h-6 border-b-3 border-l-3 border-green-300 rounded-bl-lg"></div>
+                        <div className="absolute bottom-2 right-2 w-6 h-6 border-b-3 border-r-3 border-orange-300 rounded-br-lg"></div>
+                        
+                        {/* Side accent lines */}
+                        <div className="absolute top-1/4 left-0 w-1 h-16 bg-gradient-to-b from-blue-400 to-blue-600 rounded-r-full"></div>
+                        <div className="absolute top-1/4 right-0 w-1 h-16 bg-gradient-to-b from-purple-400 to-purple-600 rounded-l-full"></div>
+                        <div className="absolute bottom-1/4 left-0 w-1 h-16 bg-gradient-to-b from-green-400 to-green-600 rounded-r-full"></div>
+                        <div className="absolute bottom-1/4 right-0 w-1 h-16 bg-gradient-to-b from-orange-400 to-orange-600 rounded-l-full"></div>
+                        
+                        {/* Top and bottom accent lines */}
+                        <div className="absolute top-0 left-1/4 h-1 w-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-b-full"></div>
+                        <div className="absolute top-0 right-1/4 h-1 w-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-b-full"></div>
+                        <div className="absolute bottom-0 left-1/4 h-1 w-16 bg-gradient-to-r from-green-400 to-blue-400 rounded-t-full"></div>
+                        <div className="absolute bottom-0 right-1/4 h-1 w-16 bg-gradient-to-r from-orange-400 to-red-400 rounded-t-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Multiple outer glow effects */}
+                  <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl sm:rounded-4xl opacity-15 blur-xl -z-20"></div>
+                  <div className="absolute -inset-4 bg-gradient-to-br from-blue-300 via-purple-300 to-orange-300 rounded-4xl opacity-10 blur-2xl -z-30"></div>
+                  
+                  {/* Animated border pulse */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-3xl sm:rounded-4xl opacity-30 blur-sm animate-pulse -z-10"></div>
+                </div>
                 
                 {/* Floating UI elements - Mobile optimized */}
                 <div className="absolute top-2 sm:top-4 lg:top-6 left-2 sm:left-4 lg:left-6 bg-green-500 text-white px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-semibold shadow-lg">
                   <div className="flex items-center">
                     <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white rounded-full mr-1 sm:mr-2"></div>
-                    <span className="hidden sm:inline">✅ Live Dashboard</span>
-                    <span className="sm:hidden">✅ Live</span>
+                    <span className="hidden sm:inline">🎥 Live Demo</span>
+                    <span className="sm:hidden">🎥 Demo</span>
                   </div>
                 </div>
                 <div className="absolute top-2 sm:top-4 lg:top-6 right-2 sm:right-4 lg:right-6 bg-white text-gray-800 px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-semibold shadow-lg border border-gray-200">
@@ -176,11 +238,14 @@ export default function Home() {
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-8 sm:p-12 lg:p-20 text-center ring-1 ring-gray-200">
                 <div className="w-20 sm:w-24 lg:w-28 h-20 sm:h-24 lg:h-28 bg-blue-100 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8">
                   <svg className="w-10 sm:w-12 lg:w-14 h-10 sm:h-12 lg:h-14 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 sm:mb-6">Powerful Dashboard</h3>
-                <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-lg mx-auto">Experience the power of streamlined billing with our intuitive and feature-rich interface</p>
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 sm:mb-6">Demo Animation</h3>
+                <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-lg mx-auto mb-6">Watch our comprehensive demo to see GST Bill Maker in action and discover all its powerful features</p>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+                  <p><strong>Demo animation not available.</strong> The GIF file could not be loaded. Please check if the file exists in the correct location.</p>
+                </div>
               </div>
             )}
           </div>
