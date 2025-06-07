@@ -42,6 +42,7 @@ interface Bill {
 
 export default function BillsPage() {
   const [bills, setBills] = useState<Bill[]>([]);
+  const [totalBillsCount, setTotalBillsCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -88,6 +89,22 @@ export default function BillsPage() {
 
       setBills(sortedBills);
       setSelectedBills([]);
+
+      // Fetch total count if no filters are applied
+      if (!startDate && !endDate && !customerName && !billNumberSearch) {
+        setTotalBillsCount(sortedBills.length);
+      } else if (totalBillsCount === 0) {
+        // If we haven't fetched total count yet, fetch it
+        try {
+          const totalRes = await fetch("/api/bills");
+          if (totalRes.ok) {
+            const totalData = await totalRes.json();
+            setTotalBillsCount(totalData.length);
+          }
+        } catch (error) {
+          console.error("Error fetching total bills count:", error);
+        }
+      }
     } catch (error) {
       console.error("Error fetching bills:", error);
       setError(error instanceof Error ? error.message : "Failed to load bills. Please try again.");
@@ -536,7 +553,7 @@ export default function BillsPage() {
   const filteredBills = bills;
 
   if (loading) {
-    return (
+  return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <LoadingSpinner text="Loading bills..." />
       </div>
@@ -562,19 +579,19 @@ export default function BillsPage() {
         description="Manage and track all your billing records"
         icon={
           <svg className="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
         }
       >
-        <Link
-          href="/dashboard/bills/new"
+            <Link
+              href="/dashboard/bills/new"
           className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md transition-all duration-200"
-        >
+            >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
+                </svg>
           Create Bill
-        </Link>
+            </Link>
       </PageHeader>
 
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
@@ -586,8 +603,8 @@ export default function BillsPage() {
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
+                </svg>
+              </div>
                 <p className="ml-3 text-sm font-medium text-emerald-800">{deleteSuccess}</p>
               </div>
               <button
@@ -614,7 +631,7 @@ export default function BillsPage() {
                 {actionMessage.type === 'success' ? (
                   <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                </svg>
                 ) : (
                   <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -622,8 +639,8 @@ export default function BillsPage() {
                 )}
               </div>
               <p className="ml-3 text-sm font-medium">{actionMessage.text}</p>
+              </div>
             </div>
-          </div>
         )}
 
         {/* Stats Grid */}
@@ -634,7 +651,7 @@ export default function BillsPage() {
             icon={
               <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+                </svg>
             }
             iconBgColor="bg-blue-100"
           />
@@ -645,7 +662,7 @@ export default function BillsPage() {
             icon={
               <svg className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
+                </svg>
             }
             iconBgColor="bg-emerald-100"
           />
@@ -664,10 +681,10 @@ export default function BillsPage() {
           <StatsCard
             title="This Month"
             value={bills.filter(bill => {
-              const billDate = new Date(bill.billDate);
-              const now = new Date();
-              return billDate.getMonth() === now.getMonth() && billDate.getFullYear() === now.getFullYear();
-            }).length}
+                    const billDate = new Date(bill.billDate);
+                    const now = new Date();
+                    return billDate.getMonth() === now.getMonth() && billDate.getFullYear() === now.getFullYear();
+                  }).length}
             icon={
               <svg className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -675,15 +692,15 @@ export default function BillsPage() {
             }
             iconBgColor="bg-purple-100"
           />
-        </div>
+              </div>
 
         {/* Quick Actions */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-4 sm:mb-6">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900">Quick Actions</h2>
             <p className="text-xs sm:text-sm text-gray-500">Manage bills efficiently</p>
-          </div>
-          
+        </div>
+
           <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <QuickActionCard
               title="Create New Bill"
@@ -712,7 +729,7 @@ export default function BillsPage() {
             <div
               onClick={handleExportTop10Bills}
               className="group relative bg-white p-4 sm:p-6 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 cursor-pointer"
-            >
+              >
               <div className="flex items-center">
                 <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center group-hover:bg-opacity-80 transition-colors bg-purple-50">
                   <svg className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -732,58 +749,70 @@ export default function BillsPage() {
                 </svg>
               </div>
             </div>
-          </div>
         </div>
+      </div>
 
-        {/* Search and Filter Section */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <div className="relative max-w-md sm:max-w-lg">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+        {/* Search */}
+        <Card className="mb-6">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                      </svg>
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder="Search bills by number or customer name..."
+                    value={billNumberSearch || customerName}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d/.test(value)) {
+                        setBillNumberSearch(value);
+                        setCustomerName("");
+                      } else {
+                        setCustomerName(value);
+                        setBillNumberSearch("");
+                      }
+                    }}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  />
+                  {(billNumberSearch || customerName) && (
+                    <button
+                      onClick={() => {
+                        setBillNumberSearch("");
+                        setCustomerName("");
+                      }}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="font-medium">{filteredBills.length} bills</span>
+                </div>
+                {(billNumberSearch || customerName) && (
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+                    </svg>
+                    <span>Filtered</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <input
-              type="text"
-              placeholder="Search bills by number or customer name..."
-              value={billNumberSearch || customerName}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d/.test(value)) {
-                  setBillNumberSearch(value);
-                  setCustomerName("");
-                } else {
-                  setCustomerName(value);
-                  setBillNumberSearch("");
-                }
-              }}
-              className="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm"
-            />
-            {(billNumberSearch || customerName) && (
-              <button
-                onClick={() => {
-                  setBillNumberSearch("");
-                  setCustomerName("");
-                }}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-          {(billNumberSearch || customerName) && (
-            <div className="mt-2 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-xs sm:text-sm text-blue-700">
-                <span className="font-medium">{filteredBills.length}</span> bill{filteredBills.length !== 1 ? 's' : ''} found
-                <span className="hidden sm:inline"> matching "{billNumberSearch || customerName}"</span>
-              </p>
-            </div>
-          )}
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Advanced Filters */}
+            {/* Advanced Filters */}
         <Card className="mb-6">
           <CardContent className="p-4 sm:p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -816,7 +845,7 @@ export default function BillsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   Clear Filters
-                </button>
+                                </button>
               </div>
             </div>
           </CardContent>
@@ -826,44 +855,44 @@ export default function BillsPage() {
         {selectedBills.length > 0 && (
           <Card className="mb-6 bg-blue-50 border-blue-200">
             <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleSelectAll}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSelectAll}
                     className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                    disabled={loading || filteredBills.length === 0}
-                  >
-                    {selectedBills.length === filteredBills.length && filteredBills.length > 0 ? "Deselect All" : "Select All"}
-                  </button>
-                  <p className="text-sm text-gray-700">Selected: {selectedBills.length} / {filteredBills.length}</p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <button
-                      onClick={handleCreatePDF}
-                      disabled={creatingPDF || loading || selectedBills.length === 0}
-                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                      {creatingPDF ? (
-                          <LoadingSpinner className="w-4 h-4 mr-2" />
-                      ) : (
-                          <DownloadIcon className="w-4 h-4 mr-2" />
-                      )}
-                      Export to PDF ({selectedBills.length})
-                  </button>
-                  <button
-                      onClick={handleExportExcel}
-                      disabled={exporting || loading || selectedBills.length === 0}
-                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                      {exporting ? (
-                          <LoadingSpinner className="w-4 h-4 mr-2" />
-                      ) : (
-                          <TableIcon className="w-4 h-4 mr-2" />
-                      )}
-                      Export to Excel ({selectedBills.length})
-                  </button>
-                </div>
+                  disabled={loading || filteredBills.length === 0}
+                >
+                  {selectedBills.length === filteredBills.length && filteredBills.length > 0 ? "Deselect All" : "Select All"}
+                </button>
+                <p className="text-sm text-gray-700">Selected: {selectedBills.length} / {filteredBills.length}</p>
               </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                    onClick={handleCreatePDF}
+                    disabled={creatingPDF || loading || selectedBills.length === 0}
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {creatingPDF ? (
+                          <LoadingSpinner className="w-4 h-4 mr-2" />
+                    ) : (
+                          <DownloadIcon className="w-4 h-4 mr-2" />
+                    )}
+                    Export to PDF ({selectedBills.length})
+                </button>
+                <button
+                    onClick={handleExportExcel}
+                    disabled={exporting || loading || selectedBills.length === 0}
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {exporting ? (
+                          <LoadingSpinner className="w-4 h-4 mr-2" />
+                    ) : (
+                          <TableIcon className="w-4 h-4 mr-2" />
+                    )}
+                    Export to Excel ({selectedBills.length})
+                </button>
+              </div>
+            </div>
             </CardContent>
           </Card>
         )}
@@ -875,7 +904,7 @@ export default function BillsPage() {
                 <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-              </div>
+            </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Bills</h3>
               <p className="text-gray-600 mb-4">{error}</p>
               <button
@@ -915,11 +944,11 @@ export default function BillsPage() {
                     Bills Directory
                   </h3>
                 </div>
-                <div className="overflow-x-auto">
+              <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
-                      <tr>
-                        <th scope="col" className="p-4 text-left">
+                    <tr>
+                      <th scope="col" className="p-4 text-left">
                           <input
                             type="checkbox"
                             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
@@ -927,46 +956,46 @@ export default function BillsPage() {
                             onChange={handleSelectAll}
                             disabled={filteredBills.length === 0}
                           />
-                        </th>
+                      </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Bill Number
-                        </th>
+                      </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date
-                        </th>
+                      </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Customer
-                        </th>
+                      </th>
                         <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Amount
-                        </th>
+                      </th>
                         <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
-                        </th>
+                      </th>
                         <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Download
                         </th>
                         <th scope="col" className="relative px-6 py-3">
                           <span className="sr-only">Actions</span>
-                        </th>
-                      </tr>
-                    </thead>
+                      </th>
+                    </tr>
+                  </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredBills.map((bill) => (
+                  {filteredBills.map((bill) => (
                         <tr key={bill.id} className={`${selectedBills.includes(bill.id) ? 'bg-blue-50' : ''} hover:bg-gray-50 transition-colors`}>
                           <td className="p-4 whitespace-nowrap">
-                            <input
-                              type="checkbox"
+                        <input
+                          type="checkbox"
                               className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                              checked={selectedBills.includes(bill.id)}
-                              onChange={() => handleSelectBill(bill.id)}
-                            />
-                          </td>
+                          checked={selectedBills.includes(bill.id)}
+                          onChange={() => handleSelectBill(bill.id)}
+                        />
+                      </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             <Link href={`/dashboard/bills/${bill.id}`} className="text-blue-600 hover:text-blue-900 transition-colors">
-                              {bill.billNumber}
-                            </Link>
-                          </td>
+                          {bill.billNumber}
+                        </Link>
+                      </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {format(new Date(bill.billDate), "dd MMM yyyy")}
                           </td>
@@ -979,8 +1008,8 @@ export default function BillsPage() {
                           <td className="px-6 py-4 whitespace-nowrap text-center">
                             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                               Generated
-                            </span>
-                          </td>
+                        </span>
+                      </td>
                           <td className="px-6 py-4 whitespace-nowrap text-center">
                             <button
                               onClick={() => handleDownloadSingleBill(bill.id)}
@@ -1019,7 +1048,7 @@ export default function BillsPage() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                     View Bill
-                                  </Link>
+                          </Link>
                                   <button
                                     onClick={() => { openDeleteDialog(bill.id); setOpenMenuId(null); }}
                                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
@@ -1029,41 +1058,41 @@ export default function BillsPage() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                     Delete Bill
-                                  </button>
+                          </button>
+                            </div>
                                 </div>
-                              </div>
                             )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+              </Card>
+          </div>
 
             {/* Mobile Card List View */}
             <div className="block lg:hidden space-y-4">
-              {filteredBills.map((bill) => (
+                {filteredBills.map((bill) => (
                 <Card key={bill.id} className={selectedBills.includes(bill.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''}>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3 flex-grow min-w-0">
                         <input
-                          type="checkbox"
+                            type="checkbox"
                           className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                          checked={selectedBills.includes(bill.id)}
-                          onChange={() => handleSelectBill(bill.id)}
-                        />
+                            checked={selectedBills.includes(bill.id)}
+                            onChange={() => handleSelectBill(bill.id)}
+                          />
                         <div className="flex-grow min-w-0">
                           <Link href={`/dashboard/bills/${bill.id}`} className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors block truncate">
-                            Bill #{bill.billNumber}
-                          </Link>
+                          Bill #{bill.billNumber}
+                        </Link>
                           <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 mt-1">
                             Generated
-                          </span>
-                        </div>
-                      </div>
+                      </span>
+                    </div>
+                    </div>
                       <div className="relative flex-shrink-0 ml-2">
                         <button
                           onClick={() => setOpenMenuId(openMenuId === bill.id ? null : bill.id)}
@@ -1080,30 +1109,30 @@ export default function BillsPage() {
                             onMouseLeave={() => setOpenMenuId(null)}
                           >
                             <div className="py-1" role="none">
-                              <Link
-                                href={`/dashboard/bills/${bill.id}`}
+                      <Link 
+                        href={`/dashboard/bills/${bill.id}`} 
                                 className="flex items-center px-3 py-2.5 sm:py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors touch-manipulation"
                                 role="menuitem"
                                 onClick={() => setOpenMenuId(null)}
-                              >
+                      >
                                 <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                                 View
-                              </Link>
-                              <button
+                      </Link>
+                      <button 
                                 onClick={() => { openDeleteDialog(bill.id); setOpenMenuId(null); }}
                                 className="flex items-center w-full px-3 py-2.5 sm:py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors touch-manipulation"
                                 role="menuitem"
-                              >
+                      >
                                 <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                                 Delete
-                              </button>
-                            </div>
-                          </div>
+                      </button>
+                    </div>
+                  </div>
                         )}
                       </div>
                     </div>
@@ -1131,6 +1160,26 @@ export default function BillsPage() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+
+            {/* Results Summary */}
+            <div className="mt-4 sm:mt-6 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-full">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <p className="text-xs sm:text-sm font-medium text-gray-700">
+                  <span className="hidden sm:inline">Showing </span>
+                  <span className="font-bold text-blue-600">{filteredBills.length}</span>
+                  <span className="hidden sm:inline"> of </span>
+                  <span className="sm:hidden">/</span>
+                  <span className="font-bold">{totalBillsCount}</span>
+                  <span className="hidden sm:inline"> bills</span>
+                  {(billNumberSearch || customerName) && (
+                    <span className="ml-1 hidden sm:inline">
+                      matching "<span className="font-semibold text-blue-600">{billNumberSearch || customerName}</span>"
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
           </div>
         )}

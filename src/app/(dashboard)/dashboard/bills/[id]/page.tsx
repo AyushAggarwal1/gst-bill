@@ -313,7 +313,7 @@ export default function BillDetailPage({ params }: BillParams) {
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+                    </svg>
                 </div>
                 <div>
                   <h1 className="text-2xl font-semibold text-gray-900">{`Invoice #${bill.billNumber}`}</h1>
@@ -417,21 +417,21 @@ export default function BillDetailPage({ params }: BillParams) {
                 onClick={handlePrint}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm transition-colors border border-gray-300"
               >
-                <PrintIcon />
+                <PrintIcon /> 
                 <span className="ml-2">Print Invoice</span>
               </button>
               <button
                 onClick={handleDownloadPDF}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm transition-colors border border-gray-300"
               >
-                <DownloadIcon />
+                <DownloadIcon /> 
                 <span className="ml-2">Download PDF</span>
               </button>
               <button
                 onClick={openDeleteDialog}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-sm transition-colors border border-red-200"
               >
-                <DeleteIcon />
+                <DeleteIcon /> 
                 <span className="ml-2">Delete Bill</span>
               </button>
             </div>
@@ -450,48 +450,48 @@ export default function BillDetailPage({ params }: BillParams) {
                 <span><span className="font-semibold">Date:</span> {format(new Date(bill.billDate), "dd MMMM yyyy")}</span>
                 <span className="text-gray-400">|</span>
                 <span><span className="font-semibold">Tax Type:</span> {bill.isIGST ? "IGST" : "CGST/SGST"}</span>
-              </div>
+      </div>
             </div>
-          </div>
+        </div>
 
           <div className="p-6">
             {/* Billing Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div>
+          <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Billed By</h3>
-                {profile ? (
+            {profile ? (
                   <div className="space-y-2">
                     <p className="text-gray-900 font-semibold">{profile.firmName}</p>
-                    <p className="text-gray-600 text-sm whitespace-pre-line">{profile.address}</p>
+                <p className="text-gray-600 text-sm whitespace-pre-line">{profile.address}</p>
                     <p className="text-gray-600 text-sm"><span className="font-medium">GSTIN:</span> {profile.gstNo}</p>
                     {profile.phoneNo && <p className="text-gray-600 text-sm"><span className="font-medium">Phone:</span> {profile.phoneNo}</p>}
                   </div>
-                ) : (
+            ) : (
                   <div className="animate-pulse space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                     <div className="h-3 bg-gray-200 rounded w-full"></div>
                     <div className="h-3 bg-gray-200 rounded w-2/3"></div>
                   </div>
-                )}
-              </div>
+            )}
+          </div>
 
-              <div>
+          <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Billed To</h3>
                 <div className="space-y-2">
                   <p className="text-gray-900 font-semibold">{bill.customer.name}</p>
-                  <p className="text-gray-600 text-sm whitespace-pre-line">{bill.customer.address}</p>
+            <p className="text-gray-600 text-sm whitespace-pre-line">{bill.customer.address}</p>
                   <p className="text-gray-600 text-sm"><span className="font-medium">GSTIN:</span> {bill.customer.gstNo}</p>
                 </div>
-              </div>
-            </div>
+          </div>
+        </div>
 
             {/* Delivery Address */}
-            {bill.deliveryAddress && (
+        {bill.deliveryAddress && (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Delivery Address</h3>
-                <p className="text-gray-600 text-sm whitespace-pre-line">{bill.deliveryAddress}</p>
-              </div>
-            )}
+            <p className="text-gray-600 text-sm whitespace-pre-line">{bill.deliveryAddress}</p>
+          </div>
+        )}
 
             {/* Items Table */}
             <div className="mb-8">
@@ -499,7 +499,7 @@ export default function BillDetailPage({ params }: BillParams) {
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
-                    <tr>
+                <tr>
                       <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">S.No</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Item Description</th>
                       <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">HSN</th>
@@ -508,10 +508,10 @@ export default function BillDetailPage({ params }: BillParams) {
                       <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Amount (₹)</th>
                       <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Tax %</th>
                       <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Tax Amt (₹)</th>
-                    </tr>
-                  </thead>
+                </tr>
+              </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {bill.items.map((item, index) => (
+                {bill.items.map((item, index) => (
                       <tr key={item.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{item.item.name}</td>
@@ -529,13 +529,13 @@ export default function BillDetailPage({ params }: BillParams) {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right font-medium">₹{item.taxAmount.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
             {/* Summary Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
@@ -543,14 +543,14 @@ export default function BillDetailPage({ params }: BillParams) {
                   <h4 className="text-md font-semibold text-gray-900 mb-2">Amount in Words</h4>
                   <p className="text-sm text-gray-600 capitalize bg-gray-50 p-4 rounded-lg">{NumberToWords(bill.total)}</p>
                 </div>
-
+                
                 {profile && profile.bankDetails && (
                   <div>
                     <h4 className="text-md font-semibold text-gray-900 mb-2">Bank Details</h4>
                     <div className="text-sm text-gray-600 bg-gray-50 p-4 rounded-lg whitespace-pre-line">{profile.bankDetails}</div>
-                  </div>
+                </div>
                 )}
-              </div>
+            </div>
 
               <div className="bg-gray-50 rounded-xl p-6">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">Bill Summary</h4>
@@ -558,33 +558,33 @@ export default function BillDetailPage({ params }: BillParams) {
                   <div className="flex justify-between items-center py-2 border-b border-gray-200">
                     <span className="text-sm text-gray-600">Subtotal</span>
                     <span className="text-sm font-medium text-gray-900">₹{bill.subtotal.toFixed(2)}</span>
-                  </div>
+                </div>
                   
-                  {bill.isIGST ? (
+                {bill.isIGST ? (
                     <div className="flex justify-between items-center py-2 border-b border-gray-200">
                       <span className="text-sm text-gray-600">IGST ({bill.items.length > 0 ? bill.items[0].item.taxRate : 0}%)</span>
                       <span className="text-sm font-medium text-gray-900">₹{bill.igst.toFixed(2)}</span>
                     </div>
-                  ) : (
+                ) : (
                     <>
                       <div className="flex justify-between items-center py-2 border-b border-gray-200">
                         <span className="text-sm text-gray-600">CGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%)</span>
                         <span className="text-sm font-medium text-gray-900">₹{bill.cgst.toFixed(2)}</span>
-                      </div>
+                    </div>
                       <div className="flex justify-between items-center py-2 border-b border-gray-200">
                         <span className="text-sm text-gray-600">SGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%)</span>
                         <span className="text-sm font-medium text-gray-900">₹{bill.sgst.toFixed(2)}</span>
-                      </div>
+                    </div>
                     </>
-                  )}
+                )}
                   
                   <div className="flex justify-between items-center pt-3 border-t-2 border-gray-300">
                     <span className="text-lg font-bold text-gray-900">Grand Total</span>
                     <span className="text-lg font-bold text-blue-600">₹{bill.total.toFixed(2)}</span>
                   </div>
                 </div>
-              </div>
             </div>
+        </div>
 
             {/* Footer */}
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">

@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { ButtonSpinner } from './spinner';
+import { Spinner } from './spinner';
 import { cn } from '../../lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -55,7 +55,7 @@ export const Button = ({
       {...props}
     >
       {isLoading && (
-        <ButtonSpinner className="mr-2" />
+        <Spinner className="mr-2" />
       )}
       {children}
     </button>

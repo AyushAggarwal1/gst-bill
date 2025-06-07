@@ -3,7 +3,7 @@ export { Button } from './button';
 export { Input } from './input';
 export { Card, CardHeader, CardContent, CardFooter } from './card';
 export { Badge } from './badge';
-export { Spinner, ButtonSpinner } from './spinner';
+export { Spinner } from './spinner';
 export { ToastProvider } from './toast-provider';
 
 // Layout Components
