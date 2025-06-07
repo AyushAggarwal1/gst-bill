@@ -5,7 +5,9 @@ import Link from "next/link";
 import { format } from "date-fns";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Transition } from "@headlessui/react";
-import Spinner from "@/components/Spinner";
+import { LoadingSpinner } from "@/components/Spinner";
+import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader, StatsCard, QuickActionCard, EmptyState } from "@/components/ui";
 import { 
     SearchIcon, 
     ClearFilterIcon, 
@@ -54,6 +56,7 @@ export default function BillsPage() {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const customerNameInputRef = useRef<HTMLInputElement>(null);
   const billNumberInputRef = useRef<HTMLInputElement>(null);
@@ -118,6 +121,218 @@ export default function BillsPage() {
 
   const handleDismissSuccess = () => {
     setDeleteSuccess("");
+  };
+
+  const handleExportTop10Bills = async () => {
+    try {
+      // Get the top 10 most recent bills
+      const top10Bills = bills.slice(0, 10);
+      
+      if (top10Bills.length === 0) {
+        setActionMessage({ type: 'error', text: "No bills available to export." });
+        setTimeout(() => setActionMessage(null), 3000);
+        return;
+      }
+
+      setCreatingPDF(true);
+      setActionMessage(null);
+
+      const billIds = top10Bills.map(bill => bill.id);
+
+      // Fetch array of fully populated HTML strings for the top 10 bills
+      const htmlResponse = await fetch("/api/bills/bulk-htmls", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ billIds }),
+      });
+
+      if (!htmlResponse.ok) {
+        const errorData = await htmlResponse.json().catch(() => ({ error: "Failed to fetch bill HTMLs"}));
+        throw new Error(errorData.error || "Failed to fetch bill HTMLs");
+      }
+      const { htmls: billHtmlsArray, companyName: companyNameForTitle } = await htmlResponse.json();
+
+      if (!billHtmlsArray || billHtmlsArray.length === 0) {
+        throw new Error("No HTML content received for bills.");
+      }
+
+      // Fetch the base template to extract <head> content
+      let templateHeadContent = '';
+      try {
+        const templateResponse = await fetch('/templates/billFormat.html');
+        if (!templateResponse.ok) {
+          console.error('Failed to fetch bill template for head. Status:', templateResponse.status);
+        } else {
+          const templateFullHtml = await templateResponse.text();
+          const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);
+          if (headMatch && headMatch[1]) {
+            let rawHeadContent = headMatch[1];
+            templateHeadContent = rawHeadContent.replace(/<title>[\s\S]*?<\/title>/i, '');
+          }
+        }
+      } catch (templateError) {
+        console.error('Error fetching bill template for head:', templateError);
+      }
+      
+      // Construct the full HTML for the new window
+      let combinedBillsBodyContent = '';
+      const parser = new DOMParser();
+      billHtmlsArray.forEach((fullBillHtml: string) => {
+        const doc = parser.parseFromString(fullBillHtml, 'text/html');
+        const invoiceContainer = doc.querySelector('.invoice-container');
+        if (invoiceContainer) {
+            combinedBillsBodyContent += `<div class="bill-page">${invoiceContainer.outerHTML}</div>`;
+        } else {
+            const bodyContent = doc.body.innerHTML;
+            if (bodyContent) {
+                 combinedBillsBodyContent += `<div class="bill-page">${bodyContent}</div>`;
+            }
+        }
+      });
+
+      // Create the final HTML document
+      const finalHtml = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <title>Top 10 Bills - ${companyNameForTitle || 'Company'}</title>
+          ${templateHeadContent}
+          <style>
+            .bill-page {
+              page-break-after: always;
+            }
+            .bill-page:last-child {
+              page-break-after: auto;
+            }
+          </style>
+        </head>
+        <body>
+          ${combinedBillsBodyContent}
+        </body>
+        </html>
+      `;
+
+      // Open the new window and write the HTML
+      const newWindow = window.open('', '_blank');
+      if (newWindow) {
+        newWindow.document.write(finalHtml);
+        newWindow.document.close();
+        
+        // Wait for content to load, then trigger print
+        newWindow.onload = () => {
+          setTimeout(() => {
+            newWindow.print();
+          }, 500);
+        };
+        
+        setActionMessage({ type: 'success', text: `PDF generation initiated for top ${top10Bills.length} bills.` });
+        setTimeout(() => setActionMessage(null), 3000);
+      } else {
+        throw new Error("Failed to open new window. Please check your popup blocker settings.");
+      }
+    } catch (error) {
+      console.error("Error exporting top 10 bills:", error);
+      setActionMessage({ 
+        type: 'error', 
+        text: error instanceof Error ? error.message : "Failed to export bills. Please try again." 
+      });
+      setTimeout(() => setActionMessage(null), 3000);
+    } finally {
+      setCreatingPDF(false);
+    }
+  };
+
+  const handleDownloadSingleBill = async (billId: string) => {
+    try {
+      // Fetch the HTML for the single bill
+      const htmlResponse = await fetch("/api/bills/bulk-htmls", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ billIds: [billId] }),
+      });
+
+      if (!htmlResponse.ok) {
+        const errorData = await htmlResponse.json().catch(() => ({ error: "Failed to fetch bill HTML"}));
+        throw new Error(errorData.error || "Failed to fetch bill HTML");
+      }
+      
+      const { htmls: billHtmlsArray, companyName: companyNameForTitle } = await htmlResponse.json();
+
+      if (!billHtmlsArray || billHtmlsArray.length === 0) {
+        throw new Error("No HTML content received for the bill.");
+      }
+
+      // Get the bill HTML
+      const billHtml = billHtmlsArray[0];
+
+      // Fetch the base template to extract <head> content
+      let templateHeadContent = '';
+      try {
+        const templateResponse = await fetch('/templates/billFormat.html');
+        if (templateResponse.ok) {
+          const templateFullHtml = await templateResponse.text();
+          const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);
+          if (headMatch && headMatch[1]) {
+            let rawHeadContent = headMatch[1];
+            templateHeadContent = rawHeadContent.replace(/<title>[\s\S]*?<\/title>/i, '');
+          }
+        }
+      } catch (templateError) {
+        console.error('Error fetching bill template for head:', templateError);
+      }
+      
+      // Extract body content from the bill HTML
+      let billBodyContent = '';
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(billHtml, 'text/html');
+      const invoiceContainer = doc.querySelector('.invoice-container');
+      if (invoiceContainer) {
+        billBodyContent = invoiceContainer.outerHTML;
+      } else {
+        billBodyContent = doc.body.innerHTML;
+      }
+
+      // Create the final HTML document
+      const finalHtml = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <title>Bill - ${companyNameForTitle || 'Company'}</title>
+          ${templateHeadContent}
+        </head>
+        <body>
+          ${billBodyContent}
+        </body>
+        </html>
+      `;
+
+      // Open the new window and write the HTML
+      const newWindow = window.open('', '_blank');
+      if (newWindow) {
+        newWindow.document.write(finalHtml);
+        newWindow.document.close();
+        
+        // Wait for content to load, then trigger print
+        newWindow.onload = () => {
+          setTimeout(() => {
+            newWindow.print();
+          }, 500);
+        };
+      } else {
+        throw new Error("Failed to open new window. Please check your popup blocker settings.");
+      }
+    } catch (error) {
+      console.error("Error downloading bill:", error);
+      setActionMessage({ 
+        type: 'error', 
+        text: error instanceof Error ? error.message : "Failed to download bill. Please try again." 
+      });
+      setTimeout(() => setActionMessage(null), 3000);
+    }
   };
   
   const handleSelectAll = () => {
@@ -198,38 +413,19 @@ export default function BillsPage() {
         }
       });
 
+      // 4. Create the final HTML document
       const finalHtml = `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
+          <title>Bills - ${companyNameForTitle || 'Company'}</title>
           ${templateHeadContent}
-          <title>${companyNameForTitle || 'Invoices'}</title>
           <style>
-            body {
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            }
             .bill-page {
               page-break-after: always;
             }
             .bill-page:last-child {
               page-break-after: auto;
-            }
-            @media print {
-              body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-              }
-              .invoice-container {
-                width: 100%;
-                max-width: 100%;
-                padding: 0;
-                margin: 0;
-                border: none;
-              }
-               @page {
-                size: A4;
-                margin: 15mm;
-              }
             }
           </style>
         </head>
@@ -239,28 +435,30 @@ export default function BillsPage() {
         </html>
       `;
 
-      // 4. Open in new window and print
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.open();
-        printWindow.document.write(finalHtml);
-        printWindow.document.close();
+      // 5. Open the new window and write the HTML
+      const newWindow = window.open('', '_blank');
+      if (newWindow) {
+        newWindow.document.write(finalHtml);
+        newWindow.document.close();
         
-        printWindow.onload = function() {
-          printWindow.focus();
-          printWindow.print();
-          // printWindow.close(); // Optional: close after print
+        // Wait for content to load, then trigger print
+        newWindow.onload = () => {
+          setTimeout(() => {
+            newWindow.print();
+          }, 500);
         };
-        setActionMessage({ type: 'success', text: `Generated ${selectedBills.length} bill(s) for printing.` });
-        setTimeout(() => setActionMessage(null), 5000);
+        
+        setActionMessage({ type: 'success', text: `PDF generation initiated for ${selectedBills.length} bill(s).` });
+        setTimeout(() => setActionMessage(null), 3000);
       } else {
-        throw new Error('Failed to open print window. Check pop-up blocker.');
+        throw new Error("Failed to open new window. Please check your popup blocker settings.");
       }
-
     } catch (error) {
-      console.error("Error creating PDF for printing:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-      setActionMessage({ type: 'error', text: `Failed to create PDF: ${errorMessage}` });
+      console.error("Error creating PDF:", error);
+      setActionMessage({ 
+        type: 'error', 
+        text: error instanceof Error ? error.message : "Failed to create PDF. Please try again." 
+      });
       setTimeout(() => setActionMessage(null), 5000);
     } finally {
       setCreatingPDF(false);
@@ -269,12 +467,16 @@ export default function BillsPage() {
 
   const handleExportExcel = async () => {
     if (selectedBills.length === 0) {
-      alert("Please select at least one bill to export to Excel.");
+      setActionMessage({ type: 'error', text: "Please select at least one bill to export." });
+      setTimeout(() => setActionMessage(null), 3000);
       return;
     }
+
     setExporting(true);
+    setActionMessage(null);
+
     try {
-      const res = await fetch("/api/bills/export", {
+      const response = await fetch("/api/bills/export", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -282,24 +484,31 @@ export default function BillsPage() {
         body: JSON.stringify({ billIds: selectedBills }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: "Failed to export bills" }));
-        throw new Error(errorData.error || "Failed to export bills to Excel");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Export failed" }));
+        throw new Error(errorData.error || "Failed to export bills");
       }
 
-      const blob = await res.blob();
+      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
+      a.style.display = 'none';
       a.href = url;
-      a.download = "bills-export.xlsx";
+      a.download = `bills-export-${new Date().toISOString().split('T')[0]}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      setActionMessage({ type: "success", text: "Successfully exported selected bills to Excel." });
+
+      setActionMessage({ type: 'success', text: `Successfully exported ${selectedBills.length} bill(s) to Excel.` });
+      setTimeout(() => setActionMessage(null), 3000);
     } catch (error) {
-      console.error("Error exporting bills to Excel:", error);
-      setActionMessage({ type: "error", text: error instanceof Error ? error.message : "Failed to export bills to Excel. Please try again." });
+      console.error("Error exporting to Excel:", error);
+      setActionMessage({ 
+        type: 'error', 
+        text: error instanceof Error ? error.message : "Failed to export to Excel. Please try again." 
+      });
+      setTimeout(() => setActionMessage(null), 5000);
     } finally {
       setExporting(false);
     }
@@ -310,11 +519,8 @@ export default function BillsPage() {
     setEndDate("");
     setCustomerName("");
     setBillNumberSearch("");
-    if (billNumberInputRef.current) {
-      billNumberInputRef.current.focus();
-    } else if (customerNameInputRef.current) {
-      customerNameInputRef.current.focus();
-    }
+    if (customerNameInputRef.current) customerNameInputRef.current.value = "";
+    if (billNumberInputRef.current) billNumberInputRef.current.value = "";
   };
 
   const openDeleteDialog = (id: string) => {
@@ -329,8 +535,16 @@ export default function BillsPage() {
 
   const filteredBills = bills;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner text="Loading bills..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+    <div className="min-h-screen bg-gray-50">
       <ConfirmDialog
         isOpen={deleteDialogOpen}
         onClose={closeDeleteDialog}
@@ -343,599 +557,584 @@ export default function BillsPage() {
         confirmButtonColor="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       />
 
-      <header className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-white/20 print:hidden sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Bills Management</h1>
-                <p className="text-sm text-gray-600 mt-1">Manage and track all your billing records</p>
-              </div>
-            </div>
-            <Link
-              href="/dashboard/bills/new"
-              className="inline-flex items-center px-4 py-2.5 sm:px-6 sm:py-3 text-sm font-semibold rounded-2xl text-white bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-700 hover:via-indigo-800 hover:to-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-2 shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 group min-w-[140px] justify-center"
-            >
-              <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/30 group-hover:scale-110 group-hover:rotate-90 transition-all duration-300">
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <span className="hidden sm:inline group-hover:tracking-wide transition-all duration-300">Create New Bill</span>
-              <span className="sm:hidden group-hover:tracking-wide transition-all duration-300">Create Bill</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Bills"
+        description="Manage and track all your billing records"
+        icon={
+          <svg className="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        }
+      >
+        <Link
+          href="/dashboard/bills/new"
+          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md transition-all duration-200"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Create Bill
+        </Link>
+      </PageHeader>
 
-      <div className="max-w-7xl mx-auto py-6 px-3 sm:px-6 lg:px-8">
-        {/* Statistics Widgets */}
-        <div className="mb-6 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {/* Total Bills Widget */}
-          <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-indigo-200/50 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-indigo-600">Total Bills</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">{bills.length}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Total Revenue Widget */}
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-emerald-200/50 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-emerald-600">Total Revenue</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">
-                  ₹{bills.reduce((sum, bill) => sum + parseFloat(bill.total.toString()), 0).toLocaleString('en-IN')}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Average Bill Value Widget */}
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-amber-200/50 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-amber-600">Avg Bill Value</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">
-                  ₹{bills.length > 0 ? (bills.reduce((sum, bill) => sum + parseFloat(bill.total.toString()), 0) / bills.length).toLocaleString('en-IN', { maximumFractionDigits: 0 }) : '0'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Bills Widget */}
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 backdrop-blur-sm rounded-2xl p-4 sm:p-5 shadow-lg border border-purple-200/50 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-purple-600">This Month</p>
-                <p className="text-lg sm:text-2xl font-bold text-gray-900">
-                  {bills.filter(bill => {
-                    const billDate = new Date(bill.billDate);
-                    const now = new Date();
-                    return billDate.getMonth() === now.getMonth() && billDate.getFullYear() === now.getFullYear();
-                  }).length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Advanced Analytics Widgets */}
-        <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Tax Breakdown Widget */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">Tax Collection</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">CGST + SGST</span>
-                <span className="font-semibold text-gray-900">
-                  ₹{bills.reduce((sum, bill) => sum + parseFloat(bill.cgst.toString()) + parseFloat(bill.sgst.toString()), 0).toLocaleString('en-IN')}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">IGST</span>
-                <span className="font-semibold text-gray-900">
-                  ₹{bills.reduce((sum, bill) => sum + parseFloat(bill.igst.toString()), 0).toLocaleString('en-IN')}
-                </span>
-              </div>
-              <div className="pt-3 border-t border-gray-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold text-gray-900">Total Tax</span>
-                  <span className="font-bold text-rose-600">
-                    ₹{bills.reduce((sum, bill) => sum + parseFloat(bill.cgst.toString()) + parseFloat(bill.sgst.toString()) + parseFloat(bill.igst.toString()), 0).toLocaleString('en-IN')}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions Widget */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-            </div>
-            <div className="space-y-3">
-              <Link 
-                href="/dashboard/bills/new" 
-                className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-200 group"
-              >
-                <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
+        {/* Success Message */}
+        {deleteSuccess && (
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <span className="text-sm font-medium text-blue-700">Create New Bill</span>
-              </Link>
-              <button 
-                onClick={handleClearFilters}
-                className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-200 group w-full"
+                <p className="ml-3 text-sm font-medium text-emerald-800">{deleteSuccess}</p>
+              </div>
+              <button
+                onClick={handleDismissSuccess}
+                className="flex-shrink-0 ml-4 text-emerald-500 hover:text-emerald-700 transition-colors"
               >
-                <div className="w-6 h-6 bg-gray-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-gray-700">Reset Filters</span>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
           </div>
+        )}
 
-          {/* Performance Insights Widget */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">Insights</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Unique Customers</span>
-                <span className="font-semibold text-gray-900">
-                  {new Set(bills.map(bill => bill.customer.name)).size}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">IGST Bills</span>
-                <span className="font-semibold text-gray-900">
-                  {bills.filter(bill => bill.isIGST).length}
-                </span>
-              </div>
-              <div className="pt-3 border-t border-gray-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold text-gray-900">Selected</span>
-                  <span className="font-bold text-teal-600">{selectedBills.length} bills</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {actionMessage && (
-        <div 
-          className={`p-4 mb-4 rounded-md ${actionMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-          role="alert"
-        >
-          {actionMessage.text}
-        </div>
-      )}
-
-      {deleteSuccess && (
-        <div className="flex items-center justify-between p-4 mb-4 bg-gradient-to-r from-green-100 via-green-50 to-green-100 border-l-4 border-green-500 text-green-800 rounded-lg shadow-lg animate-fade-in relative">
-          <div className="flex items-center">
-            <SuccessIcon className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
-            <span className="font-medium text-green-900">{deleteSuccess}</span>
-          </div>
-          <button
-            className="absolute top-2 right-2 text-green-700 hover:text-green-900 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-green-400"
-            aria-label="Dismiss success message"
-            onClick={handleDismissSuccess}
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      )}
-
-        {/* Enhanced Search and Filter Section */}
-        <div className="mb-6">
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 print:hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <div className="flex-1">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <div className="w-5 h-5 bg-indigo-50 rounded-lg flex items-center justify-center">
-                      <svg className="w-3 h-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <input 
-                    type="text"
-                    placeholder="Search bills by number or customer name..."
-                    value={billNumberSearch || customerName}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (/^\d/.test(value)) {
-                        setBillNumberSearch(value);
-                        setCustomerName("");
-                      } else {
-                        setCustomerName(value);
-                        setBillNumberSearch("");
-                      }
-                    }}
-                    className="block w-full pl-12 pr-12 py-3 bg-gradient-to-r from-white to-indigo-50/30 border border-indigo-200/50 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-300 text-sm"
-                  />
-                  {(billNumberSearch || customerName) && (
-                    <button
-                      onClick={() => {
-                        setBillNumberSearch("");
-                        setCustomerName("");
-                      }}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
-                  <span>{filteredBills.length} bills found</span>
-                </div>
-                {(startDate || endDate) && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
-                    <span>Date filtered</span>
-                  </div>
+        {/* Action Message */}
+        {actionMessage && (
+          <div className={`mb-6 p-4 rounded-xl shadow-sm ${
+            actionMessage.type === 'success' 
+              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' 
+              : 'bg-red-50 border border-red-200 text-red-800'
+          }`}>
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                {actionMessage.type === 'success' ? (
+                  <svg className="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 )}
               </div>
+              <p className="ml-3 text-sm font-medium">{actionMessage.text}</p>
             </div>
+          </div>
+        )}
 
-            {/* Advanced Filters */}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
+          <StatsCard
+            title="Total Bills"
+            value={bills.length}
+            icon={
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            }
+            iconBgColor="bg-blue-100"
+          />
+
+          <StatsCard
+            title="Total Revenue"
+            value={`₹${bills.reduce((sum, bill) => sum + parseFloat(bill.total.toString()), 0).toLocaleString('en-IN')}`}
+            icon={
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+              </svg>
+            }
+            iconBgColor="bg-emerald-100"
+          />
+
+          <StatsCard
+            title="Average Bill Value"
+            value={bills.length > 0 ? `₹${(bills.reduce((sum, bill) => sum + parseFloat(bill.total.toString()), 0) / bills.length).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : '₹0'}
+            icon={
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            }
+            iconBgColor="bg-amber-100"
+          />
+
+          <StatsCard
+            title="This Month"
+            value={bills.filter(bill => {
+              const billDate = new Date(bill.billDate);
+              const now = new Date();
+              return billDate.getMonth() === now.getMonth() && billDate.getFullYear() === now.getFullYear();
+            }).length}
+            icon={
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+            iconBgColor="bg-purple-100"
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Quick Actions</h2>
+            <p className="text-xs sm:text-sm text-gray-500">Manage bills efficiently</p>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <QuickActionCard
+              title="Create New Bill"
+              description="Generate invoice for customers"
+              href="/dashboard/bills/new"
+              icon={
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+              }
+              iconBgColor="bg-blue-50"
+            />
+
+            <QuickActionCard
+              title="Add New Customer"
+              description="Register new customer details"
+              href="/dashboard/customers/new"
+              icon={
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+              }
+              iconBgColor="bg-green-50"
+            />
+
+            <div
+              onClick={handleExportTop10Bills}
+              className="group relative bg-white p-4 sm:p-6 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 cursor-pointer"
+            >
+              <div className="flex items-center">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center group-hover:bg-opacity-80 transition-colors bg-purple-50">
+                  <svg className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="ml-3 sm:ml-4 flex-1 min-w-0">
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-gray-700 truncate">
+                    Export Last 10 Bills
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    Download last 10 created bills in PDF
+                  </p>
+                </div>
+                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filter Section */}
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <div className="relative max-w-md sm:max-w-lg">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search bills by number or customer name..."
+              value={billNumberSearch || customerName}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d/.test(value)) {
+                  setBillNumberSearch(value);
+                  setCustomerName("");
+                } else {
+                  setCustomerName(value);
+                  setBillNumberSearch("");
+                }
+              }}
+              className="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm"
+            />
+            {(billNumberSearch || customerName) && (
+              <button
+                onClick={() => {
+                  setBillNumberSearch("");
+                  setCustomerName("");
+                }}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {(billNumberSearch || customerName) && (
+            <div className="mt-2 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs sm:text-sm text-blue-700">
+                <span className="font-medium">{filteredBills.length}</span> bill{filteredBills.length !== 1 ? 's' : ''} found
+                <span className="hidden sm:inline"> matching "{billNumberSearch || customerName}"</span>
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Advanced Filters */}
+        <Card className="mb-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label htmlFor="startDate" className="block text-sm font-semibold text-gray-700 mb-2">From Date</label>
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
                 <input 
                   type="date" 
                   id="startDate"
                   value={startDate} 
                   onChange={(e) => setStartDate(e.target.value)} 
-                  className="block w-full px-4 py-3 bg-gradient-to-r from-white to-gray-50/30 border border-gray-200/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-300 text-sm"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
                 />
               </div>
               <div>
-                <label htmlFor="endDate" className="block text-sm font-semibold text-gray-700 mb-2">To Date</label>
+                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
                 <input 
                   type="date" 
                   id="endDate"
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)} 
-                  className="block w-full px-4 py-3 bg-gradient-to-r from-white to-gray-50/30 border border-gray-200/50 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-300 text-sm"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
                 />
               </div>
               <div className="sm:col-span-2 lg:col-span-2 flex items-end justify-end">
                 <button 
                   onClick={handleClearFilters}
-                  className="inline-flex items-center px-6 py-3 text-sm font-semibold rounded-xl text-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:ring-offset-2 shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   Clear Filters
-                                </button>
+                </button>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* NEW Export Actions Bar - Appears when bills are selected */}
+        {/* Export Actions Bar - Appears when bills are selected */}
         {selectedBills.length > 0 && (
-          <div className="my-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg shadow-sm print:hidden">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleSelectAll}
-                  className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 disabled:opacity-50"
-                  disabled={loading || filteredBills.length === 0}
-                >
-                  {selectedBills.length === filteredBills.length && filteredBills.length > 0 ? "Deselect All" : "Select All"}
-                </button>
-                <p className="text-sm text-gray-700">Selected: {selectedBills.length} / {filteredBills.length}</p>
+          <Card className="mb-6 bg-blue-50 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleSelectAll}
+                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    disabled={loading || filteredBills.length === 0}
+                  >
+                    {selectedBills.length === filteredBills.length && filteredBills.length > 0 ? "Deselect All" : "Select All"}
+                  </button>
+                  <p className="text-sm text-gray-700">Selected: {selectedBills.length} / {filteredBills.length}</p>
+                </div>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <button
+                      onClick={handleCreatePDF}
+                      disabled={creatingPDF || loading || selectedBills.length === 0}
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      {creatingPDF ? (
+                          <LoadingSpinner className="w-4 h-4 mr-2" />
+                      ) : (
+                          <DownloadIcon className="w-4 h-4 mr-2" />
+                      )}
+                      Export to PDF ({selectedBills.length})
+                  </button>
+                  <button
+                      onClick={handleExportExcel}
+                      disabled={exporting || loading || selectedBills.length === 0}
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      {exporting ? (
+                          <LoadingSpinner className="w-4 h-4 mr-2" />
+                      ) : (
+                          <TableIcon className="w-4 h-4 mr-2" />
+                      )}
+                      Export to Excel ({selectedBills.length})
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <button
-                    onClick={handleCreatePDF}
-                    disabled={creatingPDF || loading || selectedBills.length === 0}
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {creatingPDF ? (
-                        <Spinner spinnerClassName="animate-spin h-5 w-5 text-white" className="-ml-1 mr-2" showText={false} />
-                    ) : (
-                        <DownloadIcon className="-ml-1 mr-2 h-5 w-5" />
-                    )}
-                    Export to PDF ({selectedBills.length})
-                </button>
-                <button
-                    onClick={handleExportExcel}
-                    disabled={exporting || loading || selectedBills.length === 0}
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {exporting ? (
-                        <Spinner spinnerClassName="animate-spin h-5 w-5 text-white" className="-ml-1 mr-2" showText={false} />
-                    ) : (
-                        <TableIcon className="-ml-1 mr-2 h-5 w-5" />
-                    )}
-                    Export to Excel ({selectedBills.length})
-                </button>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
 
-        {loading ? (
-          <div className="flex justify-center items-center py-20"><Spinner /></div>
-        ) : error ? (
-          <div className="text-center py-10 px-4 bg-red-50 text-red-700 rounded-lg"><p>{error}</p></div>
+        {error ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-red-600 mb-4">
+                <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Bills</h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button
+                onClick={fetchBills}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              >
+                Try Again
+              </button>
+            </CardContent>
+          </Card>
         ) : filteredBills.length === 0 ? (
-          <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-lg">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">No Bills Found</h3>
-            <p className="mt-1 text-sm text-gray-500">Adjust your filters or create a new bill.</p>
-            <div className="mt-6">
-              <Link href="/dashboard/bills/new" className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <AddIcon className="-ml-1 mr-2 h-5 w-5" />Create New Bill
-              </Link>
-            </div>
-          </div>
+          <EmptyState
+            title="No Bills Found"
+            description="Get started by creating your first bill or adjust your search filters."
+            action={{
+              label: "Create Bill",
+              onClick: () => window.location.href = "/dashboard/bills/new"
+            }}
+            icon={
+              <svg className="h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            }
+          />
         ) : (
           <div className="space-y-6">
-            {/* Enhanced Desktop Table View */}
-            <div className="hidden lg:block bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden print:shadow-none print:rounded-none">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200/50">
-                  <thead className="bg-gradient-to-r from-indigo-50 to-blue-50">
-                    <tr>
-                      <th scope="col" className="p-4 text-left">
-                        <div className="flex items-center">
+            {/* Desktop Table View */}
+            <div className="hidden lg:block">
+              <Card>
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <div className="w-5 h-5 bg-blue-100 rounded-md flex items-center justify-center">
+                      <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    Bills Directory
+                  </h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="p-4 text-left">
                           <input
                             type="checkbox"
-                            className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                            className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
                             checked={filteredBills.length > 0 && selectedBills.length === filteredBills.length}
                             onChange={handleSelectAll}
                             disabled={filteredBills.length === 0}
                           />
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-left">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 bg-indigo-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Bill #</span>
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-left">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Date</span>
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-left">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 bg-emerald-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                          </div>
-                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Customer</span>
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Amount</span>
-                          <div className="w-5 h-5 bg-rose-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                            </svg>
-                          </div>
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-center print:hidden">
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="w-5 h-5 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Status</span>
-                        </div>
-                      </th>
-                      <th scope="col" className="relative px-6 py-4 print:hidden">
-                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                <tbody className="bg-white divide-y divide-gray-200 print:divide-none">
-                  {filteredBills.map((bill) => (
-                    <tr key={bill.id} className={`${selectedBills.includes(bill.id) ? 'bg-indigo-50' : ''} hover:bg-gray-50 print:bg-transparent`}>
-                      <td className="p-3 sm:p-4 whitespace-nowrap">
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Bill Number
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Customer
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Download
+                        </th>
+                        <th scope="col" className="relative px-6 py-3">
+                          <span className="sr-only">Actions</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredBills.map((bill) => (
+                        <tr key={bill.id} className={`${selectedBills.includes(bill.id) ? 'bg-blue-50' : ''} hover:bg-gray-50 transition-colors`}>
+                          <td className="p-4 whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                              checked={selectedBills.includes(bill.id)}
+                              onChange={() => handleSelectBill(bill.id)}
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <Link href={`/dashboard/bills/${bill.id}`} className="text-blue-600 hover:text-blue-900 transition-colors">
+                              {bill.billNumber}
+                            </Link>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {format(new Date(bill.billDate), "dd MMM yyyy")}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {bill.customer.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                            ₹{parseFloat(bill.total.toString()).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                              Generated
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <button
+                              onClick={() => handleDownloadSingleBill(bill.id)}
+                              className="inline-flex items-center justify-center w-10 h-10 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                              title="Download Bill"
+                            >
+                              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
+                            <button
+                              onClick={() => setOpenMenuId(openMenuId === bill.id ? null : bill.id)}
+                              className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
+                            >
+                              <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                              </svg>
+                            </button>
+                            {openMenuId === bill.id && (
+                              <div
+                                className="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 border border-gray-100"
+                                role="menu"
+                                onMouseLeave={() => setOpenMenuId(null)}
+                              >
+                                <div className="py-1" role="none">
+                                  <Link
+                                    href={`/dashboard/bills/${bill.id}`}
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                    role="menuitem"
+                                    onClick={() => setOpenMenuId(null)}
+                                  >
+                                    <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    View Bill
+                                  </Link>
+                                  <button
+                                    onClick={() => { openDeleteDialog(bill.id); setOpenMenuId(null); }}
+                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                                    role="menuitem"
+                                  >
+                                    <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete Bill
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="block lg:hidden space-y-4">
+              {filteredBills.map((bill) => (
+                <Card key={bill.id} className={selectedBills.includes(bill.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3 flex-grow min-w-0">
                         <input
                           type="checkbox"
-                          className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                          className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
                           checked={selectedBills.includes(bill.id)}
                           onChange={() => handleSelectBill(bill.id)}
                         />
-                      </td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        <Link href={`/dashboard/bills/${bill.id}`} className="text-indigo-600 hover:text-indigo-900">
-                          {bill.billNumber}
-                        </Link>
-                      </td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{format(new Date(bill.billDate), "dd MMM yyyy")}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{bill.customer.name}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">₹{parseFloat(bill.total.toString()).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center print:hidden">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Generated {/* You might want a dynamic status here */}
-                        </span>
-                      </td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium print:hidden">
-                        <div className="flex items-center justify-end space-x-3">
-                           <Link href={`/dashboard/bills/${bill.id}`} className="text-indigo-600 hover:text-indigo-900" title="View Bill">
-                            <ViewIcon className="h-5 w-5"/>
+                        <div className="flex-grow min-w-0">
+                          <Link href={`/dashboard/bills/${bill.id}`} className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors block truncate">
+                            Bill #{bill.billNumber}
                           </Link>
-                          <button onClick={() => openDeleteDialog(bill.id)} className="text-red-600 hover:text-red-900" title="Delete Bill">
-                            <DeleteIcon className="h-5 w-5"/>
-                          </button>
-                          {/* Simple Kebab Menu for more actions if needed */}
-                          {/* <Menu as="div" className="relative inline-block text-left">
-                            <div>
-                              <Menu.Button className="text-gray-400 hover:text-gray-600">
-                                <KebabMenuIcon className="h-5 w-5" />
-                              </Menu.Button>
-                            </div>
-                            <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
-                              <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                                <div className="py-1">
-                                  <Menu.Item>
-                                    {({ active }) => (
-                                      <a href="#" className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm`}>
-                                        Download PDF
-                                      </a>
-                                    )}
-                                  </Menu.Item>
-                                  <Menu.Item>
-                                    {({ active }) => (
-                                      <a href="#" className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm`}>
-                                        View Details
-                                      </a>
-                                    )}
-                                  </Menu.Item>
-                                </div>
-                              </Menu.Items>
-                            </Transition>
-                          </Menu> */}
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 mt-1">
+                            Generated
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-            {/* Enhanced Mobile Card List View */}
-            <div className="block lg:hidden"> {/* Show on small/medium screens, hide on lg and up */}
-              <div className="space-y-4 px-2 py-2 sm:px-3"> {/* Adjusted padding */}
-                {filteredBills.map((bill) => (
-                  <div key={bill.id} className="bg-white shadow rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-3"> {/* items-start for better baseline align with checkbox, mb-3 */}
-                      <div className="flex items-center"> {/* Group checkbox and Bill # */}
-                        <input
-                            type="checkbox"
-                            className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded mr-3" // Added mr-3
-                            checked={selectedBills.includes(bill.id)}
-                            onChange={() => handleSelectBill(bill.id)}
-                          />
-                        <Link href={`/dashboard/bills/${bill.id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-800 truncate">
-                          Bill #{bill.billNumber}
-                        </Link>
                       </div>
-                       <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 whitespace-nowrap"> {/* Added py-0.5 and whitespace-nowrap */}
-                        Generated {/* Dynamic status */}
-                      </span>
+                      <div className="relative flex-shrink-0 ml-2">
+                        <button
+                          onClick={() => setOpenMenuId(openMenuId === bill.id ? null : bill.id)}
+                          className="p-2.5 sm:p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors touch-manipulation"
+                        >
+                          <svg className="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          </svg>
+                        </button>
+                        {openMenuId === bill.id && (
+                          <div
+                            className="origin-top-right absolute right-0 mt-2 w-40 sm:w-44 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 border border-gray-100"
+                            role="menu"
+                            onMouseLeave={() => setOpenMenuId(null)}
+                          >
+                            <div className="py-1" role="none">
+                              <Link
+                                href={`/dashboard/bills/${bill.id}`}
+                                className="flex items-center px-3 py-2.5 sm:py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors touch-manipulation"
+                                role="menuitem"
+                                onClick={() => setOpenMenuId(null)}
+                              >
+                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View
+                              </Link>
+                              <button
+                                onClick={() => { openDeleteDialog(bill.id); setOpenMenuId(null); }}
+                                className="flex items-center w-full px-3 py-2.5 sm:py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors touch-manipulation"
+                                role="menuitem"
+                              >
+                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="mb-1">
+                    <div className="mb-3 space-y-1">
                       <p className="text-sm text-gray-500">Date: {format(new Date(bill.billDate), "dd MMM yyyy")}</p>
-                      <p className="text-sm text-gray-800 font-medium truncate">To: {bill.customer.name}</p>
+                      <p className="text-sm text-gray-800 font-medium">Customer: {bill.customer.name}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-lg font-semibold text-gray-900">
+                          Amount: ₹{parseFloat(bill.total.toString()).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                        <button
+                          onClick={() => handleDownloadSingleBill(bill.id)}
+                          className="inline-flex items-center justify-center w-10 h-10 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                          title="Download Bill"
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                     
-                    <p className="text-md font-semibold text-gray-900 mb-3">
-                      Amount: ₹{parseFloat(bill.total.toString()).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    
-                    <div className="flex justify-end items-center space-x-2 border-t pt-3 mt-3"> {/* Reduced space-x, added mt-3 */}
-                      <Link 
-                        href={`/dashboard/bills/${bill.id}`} 
-                        className="flex items-center text-indigo-600 hover:text-indigo-900 p-2 rounded-md hover:bg-indigo-50 transition-colors duration-150" 
-                        title="View Bill"
-                      >
-                        <ViewIcon className="h-5 w-5"/>
-                        <span className="ml-1.5 text-xs font-medium">View</span>
-                      </Link>
-                      <button 
-                        onClick={() => openDeleteDialog(bill.id)} 
-                        className="flex items-center text-red-600 hover:text-red-900 p-2 rounded-md hover:bg-red-50 transition-colors duration-150" 
-                        title="Delete Bill"
-                      >
-                        <DeleteIcon className="h-5 w-5"/> 
-                        <span className="ml-1.5 text-xs font-medium">Delete</span>
-                      </button>
-                       {/* Add other actions like Download PDF as needed */}
-                    </div>
-                  </div>
-                ))}
-              </div>
+
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         )}
-        </main>
       </div>
-    // </div>
+    </div>
   );
 } 
