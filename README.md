@@ -13,7 +13,7 @@ A modern, user-friendly application for creating and managing GST bills. Built w
   Password - ayush1@ayush.com
 ```
 
-![Dashboard Screenshot](public/images/dashboard.png)
+![Demo](public/images/gst_bill_demo.gif)
 
 ## Features
 
