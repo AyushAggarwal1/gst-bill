@@ -79,6 +79,46 @@ export default function ItemsPage() {
     setDeleteSuccess("");
   };
 
+  const exportTop10ItemsToCSV = () => {
+    // Get top 10 items (sorted by creation date, most recent first)
+    const top10Items = items
+      .sort((b, a) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10);
+
+    if (top10Items.length === 0) {
+      alert("No items available to export.");
+      return;
+    }
+
+    // CSV headers
+    const headers = ["S.No", "Item Name", "HSN Code", "Tax Rate (%)", "Created Date"];
+    
+    // Convert items to CSV rows
+    const csvRows = top10Items.map((item, index) => [
+      index + 1,
+      `"${item.name.replace(/"/g, '""')}"`, // Escape quotes in names
+      item.hsnCode || "Not Provided",
+      item.taxRate,
+      new Date(item.createdAt).toLocaleDateString()
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [headers, ...csvRows]
+      .map(row => row.join(","))
+      .join("\n");
+
+    // Create and download the CSV file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `top-10-items-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredItems = items.filter(item => 
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (item.hsnCode && item.hsnCode.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -207,9 +247,9 @@ export default function ItemsPage() {
             />
 
             <QuickActionCard
-              title="Export Item Data"
-              description="Download item information"
-              href="#"
+              title="Export Top 10 Items"
+              description="Download CSV of recent items"
+              onClick={exportTop10ItemsToCSV}
               icon={
                 <svg className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
