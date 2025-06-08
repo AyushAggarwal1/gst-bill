@@ -160,7 +160,7 @@ export default function GSTSearchPage() {
       />
 
       {/* CTA Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-6">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-6">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
           <div className="px-6 py-8 sm:px-8 sm:py-10">
             <div className="flex flex-col lg:flex-row items-center justify-between">
@@ -219,7 +219,7 @@ export default function GSTSearchPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">

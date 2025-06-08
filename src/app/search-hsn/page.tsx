@@ -116,7 +116,7 @@ export default function HSNSearchPage() {
                 </svg>
                 Home
               </a>
-              <a
+              {/* <a
                 href="/search-gst"
                 className="flex items-center px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium ml-2"
               >
@@ -124,7 +124,7 @@ export default function HSNSearchPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 GST No. Search
-              </a>
+              </a> */}
             </div>
             <div className="flex items-center space-x-3">
               <a
@@ -155,7 +155,7 @@ export default function HSNSearchPage() {
       />
 
       {/* CTA Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-6">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-6">
         <div className="bg-gradient-to-r from-green-600 to-teal-700 rounded-2xl shadow-xl overflow-hidden">
           <div className="px-6 py-8 sm:px-8 sm:py-10">
             <div className="flex flex-col lg:flex-row items-center justify-between">
@@ -209,7 +209,7 @@ export default function HSNSearchPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">

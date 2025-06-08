@@ -66,7 +66,7 @@ export default function NewCustomerPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/gst/verify", {
+      const response = await fetch("/api/gst/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
