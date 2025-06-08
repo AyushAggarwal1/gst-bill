@@ -6,7 +6,7 @@ export default async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   
   // Define public paths that don't require authentication
-  const publicPaths = ['/', '/privacy-policy', '/terms-of-service', '/search-gst']
+  const publicPaths = ['/', '/privacy-policy', '/terms-of-service', '/search-gst', '/search-hsn']
   
   // Define auth-only paths that logged-in users shouldn't access
   const authOnlyPaths = ['/login', '/register']
