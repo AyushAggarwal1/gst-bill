@@ -6,8 +6,13 @@ export default async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   
   // Define public paths that don't require authentication
-  const publicPaths = ['/', '/privacy-policy', '/terms-of-service', '/login', '/register', '/accept-invitation', '/search-gst']
+  const publicPaths = ['/', '/privacy-policy', '/terms-of-service', '/search-gst']
+  
+  // Define auth-only paths that logged-in users shouldn't access
+  const authOnlyPaths = ['/login', '/register']
+  
   const isPublicPath = publicPaths.includes(path)
+  const isAuthOnlyPath = authOnlyPaths.includes(path)
   
   // Get the JWT token
   const token = await getToken({
@@ -16,13 +21,13 @@ export default async function middleware(request: NextRequest) {
   })
 
   // Redirect logic based on authentication state and requested path
-  if (isPublicPath && token) {
+  if (isAuthOnlyPath && token) {
     // If user is logged in and tries to access login/register page,
     // redirect to dashboard
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  if (!isPublicPath && !token && !path.startsWith('/api')) {
+  if (!isPublicPath && !isAuthOnlyPath && !token && !path.startsWith('/api') && !path.startsWith('/accept-invitation')) {
     // If user is not logged in and tries to access a protected page,
     // redirect to login
     return NextResponse.redirect(new URL('/login', request.url))
