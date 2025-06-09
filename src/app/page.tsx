@@ -10,6 +10,16 @@ export default function Home() {
   const router = useRouter();
   const [videoError, setVideoError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Detect mobile device
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+    };
+    setIsMobile(checkMobile());
+  }, []);
 
   if (status === "loading") {
     return (
@@ -189,7 +199,7 @@ export default function Home() {
                         <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
                         <div className="absolute inset-0 w-20 h-20 border-2 border-purple-400 border-b-transparent rounded-full animate-spin mx-auto" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
                       </div>
-                      <p className="text-gray-800 text-base font-semibold mb-2">Loading demo animation...</p>
+                      <p className="text-gray-800 text-base font-semibold mb-2">Loading demo video...</p>
                       <p className="text-gray-600 text-sm">Large file - please wait</p>
                       <div className="mt-4 flex justify-center space-x-1">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
@@ -204,20 +214,59 @@ export default function Home() {
                   <div className="relative p-3 bg-gradient-to-r from-blue-100/50 to-purple-100/50 rounded-2xl sm:rounded-3xl border border-blue-200/70 shadow-lg">
                     <div className="relative p-2 bg-white/80 rounded-xl sm:rounded-2xl border-2 border-gradient-to-r from-blue-300 to-purple-300 shadow-md">
                       <div className="relative overflow-hidden rounded-lg sm:rounded-xl ring-4 ring-blue-200/60 shadow-xl border-2 border-white/90">
-                        <img
-                          src="/images/gst_bill_demo.gif"
-                          alt="GST Bill Maker Demo - See the application in action"
+                        <video
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload={isMobile ? "none" : "metadata"}
                           className="w-full h-auto"
-                          onError={() => {
-                            console.error('Failed to load GIF');
-                            setVideoError(true);
+                          webkit-playsinline="true"
+                          onError={(e) => {
+                            console.error('Failed to load video, falling back to GIF');
+                            // Try to fallback to GIF if video fails
+                            const videoElement = e.target as HTMLVideoElement;
+                            const imgElement = document.createElement('img');
+                            imgElement.src = '/images/gst_bill_demo.gif';
+                            imgElement.alt = 'GST Bill Maker Demo - See the application in action';
+                            imgElement.className = 'w-full h-auto';
+                            imgElement.onload = () => setImageLoading(false);
+                            imgElement.onerror = () => {
+                              setVideoError(true);
+                              setImageLoading(false);
+                            };
+                            videoElement.parentNode?.replaceChild(imgElement, videoElement);
+                          }}
+                          onLoadedData={() => {
+                            console.log('Video loaded successfully');
                             setImageLoading(false);
                           }}
-                          onLoad={() => {
-                            console.log('GIF loaded successfully');
+                          onCanPlay={(e) => {
+                            console.log('Video can start playing');
                             setImageLoading(false);
+                            // Ensure video plays on mobile devices
+                            const video = e.target as HTMLVideoElement;
+                            if (isMobile) {
+                              video.play().catch((error) => {
+                                console.log('Autoplay failed on mobile, this is normal:', error);
+                              });
+                            }
                           }}
-                        />
+                          ref={(video) => {
+                            if (video && isMobile) {
+                              // Additional mobile-specific setup
+                              video.addEventListener('loadedmetadata', () => {
+                                video.play().catch((error) => {
+                                  console.log('Mobile autoplay prevented:', error);
+                                });
+                              });
+                            }
+                          }}
+                        >
+                          <source src="/images/gst_bill_demo.mov" type="video/quicktime" />
+                          {/* Fallback for browsers that don't support video */}
+                          Your browser does not support the video tag.
+                        </video>
                         
                         {/* Enhanced decorative corner elements */}
                         <div className="absolute top-0 left-0 w-12 h-12 border-t-6 border-l-6 border-blue-500 rounded-tl-2xl opacity-80"></div>
