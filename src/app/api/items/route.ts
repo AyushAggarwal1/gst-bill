@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, hsnCode, taxRate } = await req.json();
+    const { name, description, hsnCode, taxRate } = await req.json();
 
     // Validate input
     if (!name || !hsnCode || taxRate === undefined) {
@@ -66,6 +66,7 @@ export async function POST(req: Request) {
     const item = await prisma.item.create({
       data: {
         name,
+        description: description || null,
         hsnCode,
         taxRate,
         userId: currentUser.id,

@@ -8819,6 +8819,7 @@ export namespace Prisma {
   export type ItemMinAggregateOutputType = {
     id: string | null
     name: string | null
+    description: string | null
     hsnCode: string | null
     taxRate: number | null
     userId: string | null
@@ -8830,6 +8831,7 @@ export namespace Prisma {
   export type ItemMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    description: string | null
     hsnCode: string | null
     taxRate: number | null
     userId: string | null
@@ -8841,6 +8843,7 @@ export namespace Prisma {
   export type ItemCountAggregateOutputType = {
     id: number
     name: number
+    description: number
     hsnCode: number
     taxRate: number
     userId: number
@@ -8862,6 +8865,7 @@ export namespace Prisma {
   export type ItemMinAggregateInputType = {
     id?: true
     name?: true
+    description?: true
     hsnCode?: true
     taxRate?: true
     userId?: true
@@ -8873,6 +8877,7 @@ export namespace Prisma {
   export type ItemMaxAggregateInputType = {
     id?: true
     name?: true
+    description?: true
     hsnCode?: true
     taxRate?: true
     userId?: true
@@ -8884,6 +8889,7 @@ export namespace Prisma {
   export type ItemCountAggregateInputType = {
     id?: true
     name?: true
+    description?: true
     hsnCode?: true
     taxRate?: true
     userId?: true
@@ -8982,6 +8988,7 @@ export namespace Prisma {
   export type ItemGroupByOutputType = {
     id: string
     name: string
+    description: string | null
     hsnCode: string
     taxRate: number
     userId: string
@@ -9012,6 +9019,7 @@ export namespace Prisma {
   export type ItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    description?: boolean
     hsnCode?: boolean
     taxRate?: boolean
     userId?: boolean
@@ -9027,6 +9035,7 @@ export namespace Prisma {
   export type ItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    description?: boolean
     hsnCode?: boolean
     taxRate?: boolean
     userId?: boolean
@@ -9040,6 +9049,7 @@ export namespace Prisma {
   export type ItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    description?: boolean
     hsnCode?: boolean
     taxRate?: boolean
     userId?: boolean
@@ -9053,6 +9063,7 @@ export namespace Prisma {
   export type ItemSelectScalar = {
     id?: boolean
     name?: boolean
+    description?: boolean
     hsnCode?: boolean
     taxRate?: boolean
     userId?: boolean
@@ -9061,7 +9072,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "hsnCode" | "taxRate" | "userId" | "tenantId" | "createdAt" | "updatedAt", ExtArgs["result"]["item"]>
+  export type ItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "hsnCode" | "taxRate" | "userId" | "tenantId" | "createdAt" | "updatedAt", ExtArgs["result"]["item"]>
   export type ItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     billItems?: boolean | Item$billItemsArgs<ExtArgs>
@@ -9087,6 +9098,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      description: string | null
       hsnCode: string
       taxRate: number
       userId: string
@@ -9521,6 +9533,7 @@ export namespace Prisma {
   interface ItemFieldRefs {
     readonly id: FieldRef<"Item", 'String'>
     readonly name: FieldRef<"Item", 'String'>
+    readonly description: FieldRef<"Item", 'String'>
     readonly hsnCode: FieldRef<"Item", 'String'>
     readonly taxRate: FieldRef<"Item", 'Float'>
     readonly userId: FieldRef<"Item", 'String'>
@@ -12486,6 +12499,7 @@ export namespace Prisma {
   export const ItemScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    description: 'description',
     hsnCode: 'hsnCode',
     taxRate: 'taxRate',
     userId: 'userId',
@@ -13118,6 +13132,7 @@ export namespace Prisma {
     NOT?: ItemWhereInput | ItemWhereInput[]
     id?: StringFilter<"Item"> | string
     name?: StringFilter<"Item"> | string
+    description?: StringNullableFilter<"Item"> | string | null
     hsnCode?: StringFilter<"Item"> | string
     taxRate?: FloatFilter<"Item"> | number
     userId?: StringFilter<"Item"> | string
@@ -13132,6 +13147,7 @@ export namespace Prisma {
   export type ItemOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
     hsnCode?: SortOrder
     taxRate?: SortOrder
     userId?: SortOrder
@@ -13149,6 +13165,7 @@ export namespace Prisma {
     OR?: ItemWhereInput[]
     NOT?: ItemWhereInput | ItemWhereInput[]
     name?: StringFilter<"Item"> | string
+    description?: StringNullableFilter<"Item"> | string | null
     hsnCode?: StringFilter<"Item"> | string
     taxRate?: FloatFilter<"Item"> | number
     userId?: StringFilter<"Item"> | string
@@ -13163,6 +13180,7 @@ export namespace Prisma {
   export type ItemOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
     hsnCode?: SortOrder
     taxRate?: SortOrder
     userId?: SortOrder
@@ -13182,6 +13200,7 @@ export namespace Prisma {
     NOT?: ItemScalarWhereWithAggregatesInput | ItemScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Item"> | string
     name?: StringWithAggregatesFilter<"Item"> | string
+    description?: StringNullableWithAggregatesFilter<"Item"> | string | null
     hsnCode?: StringWithAggregatesFilter<"Item"> | string
     taxRate?: FloatWithAggregatesFilter<"Item"> | number
     userId?: StringWithAggregatesFilter<"Item"> | string
@@ -13872,6 +13891,7 @@ export namespace Prisma {
   export type ItemCreateInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     createdAt?: Date | string
@@ -13884,6 +13904,7 @@ export namespace Prisma {
   export type ItemUncheckedCreateInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     userId: string
@@ -13896,6 +13917,7 @@ export namespace Prisma {
   export type ItemUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13908,6 +13930,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -13920,6 +13943,7 @@ export namespace Prisma {
   export type ItemCreateManyInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     userId: string
@@ -13931,6 +13955,7 @@ export namespace Prisma {
   export type ItemUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13940,6 +13965,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -14589,6 +14615,7 @@ export namespace Prisma {
   export type ItemCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     hsnCode?: SortOrder
     taxRate?: SortOrder
     userId?: SortOrder
@@ -14604,6 +14631,7 @@ export namespace Prisma {
   export type ItemMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     hsnCode?: SortOrder
     taxRate?: SortOrder
     userId?: SortOrder
@@ -14615,6 +14643,7 @@ export namespace Prisma {
   export type ItemMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     hsnCode?: SortOrder
     taxRate?: SortOrder
     userId?: SortOrder
@@ -15943,6 +15972,7 @@ export namespace Prisma {
   export type ItemCreateWithoutTenantInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     createdAt?: Date | string
@@ -15954,6 +15984,7 @@ export namespace Prisma {
   export type ItemUncheckedCreateWithoutTenantInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     userId: string
@@ -16139,6 +16170,7 @@ export namespace Prisma {
     NOT?: ItemScalarWhereInput | ItemScalarWhereInput[]
     id?: StringFilter<"Item"> | string
     name?: StringFilter<"Item"> | string
+    description?: StringNullableFilter<"Item"> | string | null
     hsnCode?: StringFilter<"Item"> | string
     taxRate?: FloatFilter<"Item"> | number
     userId?: StringFilter<"Item"> | string
@@ -16399,6 +16431,7 @@ export namespace Prisma {
   export type ItemCreateWithoutUserInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     createdAt?: Date | string
@@ -16410,6 +16443,7 @@ export namespace Prisma {
   export type ItemUncheckedCreateWithoutUserInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     tenantId: string
@@ -17769,6 +17803,7 @@ export namespace Prisma {
   export type ItemCreateWithoutBillItemsInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     createdAt?: Date | string
@@ -17780,6 +17815,7 @@ export namespace Prisma {
   export type ItemUncheckedCreateWithoutBillItemsInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     userId: string
@@ -17854,6 +17890,7 @@ export namespace Prisma {
   export type ItemUpdateWithoutBillItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17865,6 +17902,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateWithoutBillItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -17897,6 +17935,7 @@ export namespace Prisma {
   export type ItemCreateManyTenantInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     userId: string
@@ -18017,6 +18056,7 @@ export namespace Prisma {
   export type ItemUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18028,6 +18068,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -18039,6 +18080,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateManyWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -18186,6 +18228,7 @@ export namespace Prisma {
   export type ItemCreateManyUserInput = {
     id?: string
     name: string
+    description?: string | null
     hsnCode: string
     taxRate: number
     tenantId: string
@@ -18334,6 +18377,7 @@ export namespace Prisma {
   export type ItemUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18345,6 +18389,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     tenantId?: StringFieldUpdateOperationsInput | string
@@ -18356,6 +18401,7 @@ export namespace Prisma {
   export type ItemUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     hsnCode?: StringFieldUpdateOperationsInput | string
     taxRate?: FloatFieldUpdateOperationsInput | number
     tenantId?: StringFieldUpdateOperationsInput | string
