@@ -8,18 +8,7 @@ import Link from "next/link";
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [videoError, setVideoError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    // Detect mobile device
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-      return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-    };
-    setIsMobile(checkMobile());
-  }, []);
 
   if (status === "loading") {
     return (
@@ -173,180 +162,150 @@ export default function Home() {
         </div>
       </div>
 
-      {/* App Screenshot Section */}
-      <div className="py-12 sm:py-16 lg:py-20 xl:py-32">
+      {/* Demo Section */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 mb-6 sm:mb-8 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-full border border-gray-200 shadow-sm">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 sm:mr-3"></div>
-              <span className="font-semibold">LIVE PREVIEW</span>
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 mb-6 sm:mb-8 text-xs sm:text-sm bg-blue-100 text-blue-800 rounded-full border border-blue-200 shadow-sm">
+              <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-blue-500 rounded-full mr-2 sm:mr-3"></div>
+              <span className="font-semibold">SEE IT IN ACTION</span>
             </div>
+            
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 sm:mb-6 px-4 sm:px-0">
-              Watch it in <span className="text-blue-600">action</span>
+              Watch how <span className="text-blue-600">easy</span> it is to create GST bills
             </h2>
-            <p className="max-w-2xl mx-auto text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed px-4 sm:px-0">
-              See our GST Bill Maker in action with this comprehensive demo video. Discover how easy it is to create professional bills and manage your business.
+            
+            <p className="max-w-3xl mx-auto text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed px-4 sm:px-0">
+              See our intuitive interface in action. Create professional GST-compliant invoices 
+              in just a few clicks with our streamlined workflow.
             </p>
           </div>
-          
-          <div className="relative">
-            {!videoError ? (
-              <div className="relative">
-                {imageLoading && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl sm:rounded-4xl shadow-2xl border-2 border-white/60 flex items-center justify-center">
-                    <div className="text-center bg-white/90 backdrop-blur-md rounded-2xl p-10 shadow-2xl border-2 border-blue-200/50 ring-4 ring-white/30">
-                      <div className="relative">
-                        <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-                        <div className="absolute inset-0 w-20 h-20 border-2 border-purple-400 border-b-transparent rounded-full animate-spin mx-auto" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
-                      </div>
-                      <p className="text-gray-800 text-base font-semibold mb-2">Loading demo video...</p>
-                      <p className="text-gray-600 text-sm">Large file - please wait</p>
-                      <div className="mt-4 flex justify-center space-x-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                        <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                      </div>
-                    </div>
+
+          {/* Demo GIF Container */}
+          <div className="max-w-5xl mx-auto px-2 sm:px-0">
+            <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-3 sm:p-6 lg:p-8 border border-blue-200">
+              {/* Browser-like header */}
+              <div className="flex items-center space-x-2 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-200">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <div className="flex-1 mx-4">
+                  <div className="bg-gray-100 rounded-full px-3 py-1.5 text-xs sm:text-sm text-gray-600 text-center">
+                    GST Bill Maker - Create Invoice
                   </div>
-                )}
-                <div className="relative p-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl sm:rounded-4xl shadow-2xl border-2 border-white/60">
-                  {/* Multiple border layers */}
-                  <div className="relative p-3 bg-gradient-to-r from-blue-100/50 to-purple-100/50 rounded-2xl sm:rounded-3xl border border-blue-200/70 shadow-lg">
-                    <div className="relative p-2 bg-white/80 rounded-xl sm:rounded-2xl border-2 border-gradient-to-r from-blue-300 to-purple-300 shadow-md">
-                      <div className="relative overflow-hidden rounded-lg sm:rounded-xl ring-4 ring-blue-200/60 shadow-xl border-2 border-white/90">
-                        <video
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          preload={isMobile ? "none" : "metadata"}
-                          className="w-full h-auto"
-                          webkit-playsinline="true"
-                          onError={(e) => {
-                            console.error('Failed to load video, falling back to GIF');
-                            // Try to fallback to GIF if video fails
-                            const videoElement = e.target as HTMLVideoElement;
-                            const imgElement = document.createElement('img');
-                            imgElement.src = '/images/gst_bill_demo.gif';
-                            imgElement.alt = 'GST Bill Maker Demo - See the application in action';
-                            imgElement.className = 'w-full h-auto';
-                            imgElement.onload = () => setImageLoading(false);
-                            imgElement.onerror = () => {
-                              setVideoError(true);
-                              setImageLoading(false);
-                            };
-                            videoElement.parentNode?.replaceChild(imgElement, videoElement);
-                          }}
-                          onLoadedData={() => {
-                            console.log('Video loaded successfully');
-                            setImageLoading(false);
-                          }}
-                          onCanPlay={(e) => {
-                            console.log('Video can start playing');
-                            setImageLoading(false);
-                            // Ensure video plays on mobile devices
-                            const video = e.target as HTMLVideoElement;
-                            if (isMobile) {
-                              video.play().catch((error) => {
-                                console.log('Autoplay failed on mobile, this is normal:', error);
-                              });
-                            }
-                          }}
-                          ref={(video) => {
-                            if (video && isMobile) {
-                              // Additional mobile-specific setup
-                              video.addEventListener('loadedmetadata', () => {
-                                video.play().catch((error) => {
-                                  console.log('Mobile autoplay prevented:', error);
-                                });
-                              });
-                            }
-                          }}
-                        >
-                          <source src="/images/gst_bill_demo.mov" type="video/quicktime" />
-                          {/* Fallback for browsers that don't support video */}
-                          Your browser does not support the video tag.
-                        </video>
-                        
-                        {/* Enhanced decorative corner elements */}
-                        <div className="absolute top-0 left-0 w-12 h-12 border-t-6 border-l-6 border-blue-500 rounded-tl-2xl opacity-80"></div>
-                        <div className="absolute top-0 right-0 w-12 h-12 border-t-6 border-r-6 border-purple-500 rounded-tr-2xl opacity-80"></div>
-                        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-6 border-l-6 border-green-500 rounded-bl-2xl opacity-80"></div>
-                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-6 border-r-6 border-orange-500 rounded-br-2xl opacity-80"></div>
-                        
-                        {/* Additional corner accents */}
-                        <div className="absolute top-2 left-2 w-6 h-6 border-t-3 border-l-3 border-blue-300 rounded-tl-lg"></div>
-                        <div className="absolute top-2 right-2 w-6 h-6 border-t-3 border-r-3 border-purple-300 rounded-tr-lg"></div>
-                        <div className="absolute bottom-2 left-2 w-6 h-6 border-b-3 border-l-3 border-green-300 rounded-bl-lg"></div>
-                        <div className="absolute bottom-2 right-2 w-6 h-6 border-b-3 border-r-3 border-orange-300 rounded-br-lg"></div>
-                        
-                        {/* Side accent lines */}
-                        <div className="absolute top-1/4 left-0 w-1 h-16 bg-gradient-to-b from-blue-400 to-blue-600 rounded-r-full"></div>
-                        <div className="absolute top-1/4 right-0 w-1 h-16 bg-gradient-to-b from-purple-400 to-purple-600 rounded-l-full"></div>
-                        <div className="absolute bottom-1/4 left-0 w-1 h-16 bg-gradient-to-b from-green-400 to-green-600 rounded-r-full"></div>
-                        <div className="absolute bottom-1/4 right-0 w-1 h-16 bg-gradient-to-b from-orange-400 to-orange-600 rounded-l-full"></div>
-                        
-                        {/* Top and bottom accent lines */}
-                        <div className="absolute top-0 left-1/4 h-1 w-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-b-full"></div>
-                        <div className="absolute top-0 right-1/4 h-1 w-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-b-full"></div>
-                        <div className="absolute bottom-0 left-1/4 h-1 w-16 bg-gradient-to-r from-green-400 to-blue-400 rounded-t-full"></div>
-                        <div className="absolute bottom-0 right-1/4 h-1 w-16 bg-gradient-to-r from-orange-400 to-red-400 rounded-t-full"></div>
-                      </div>
-                    </div>
+                </div>
+              </div>
+              
+              {/* Demo Video with GIF Fallback */}
+              <div className="relative overflow-hidden rounded-xl bg-gray-100">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-auto object-contain max-w-full block mx-auto"
+                  style={{
+                    minHeight: '200px',
+                    maxHeight: '600px',
+                    maxWidth: '100%'
+                  }}
+                  poster="/images/gst_bill_demo.gif"
+                >
+                  <source src="/images/gst_bill_demo.mp4" type="video/mp4" />
+                  {/* Fallback to GIF for browsers that don't support video */}
+                  Your browser does not support the video tag.
+                </video>
+                
+                {/* GIF fallback for browsers without video support */}
+                <noscript>
+                  <img
+                    src="/images/gst_bill_demo.gif"
+                    alt="GST Bill Maker Demo - Creating professional GST invoices"
+                    className="w-full h-auto object-contain max-w-full block mx-auto"
+                    style={{
+                      minHeight: '200px',
+                      maxHeight: '600px',
+                      maxWidth: '100%'
+                    }}
+                  />
+                </noscript>
+                
+                {/* Play indicator overlay */}
+                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1 flex items-center space-x-1 sm:space-x-2">
+                  <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-white text-xs font-medium">LIVE DEMO</span>
+                </div>
+              </div>
+              
+              {/* Demo highlights */}
+              <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
                   </div>
-                  
-                  {/* Multiple outer glow effects */}
-                  <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl sm:rounded-4xl opacity-15 blur-xl -z-20"></div>
-                  <div className="absolute -inset-4 bg-gradient-to-br from-blue-300 via-purple-300 to-orange-300 rounded-4xl opacity-10 blur-2xl -z-30"></div>
-                  
-                  {/* Animated border pulse */}
-                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-3xl sm:rounded-4xl opacity-30 blur-sm animate-pulse -z-10"></div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Quick Setup</h4>
+                  <p className="text-xs sm:text-sm text-gray-600">Add customers and products in seconds</p>
                 </div>
                 
-                {/* Floating UI elements - Mobile optimized */}
-                <div className="absolute top-2 sm:top-4 lg:top-6 left-2 sm:left-4 lg:left-6 bg-green-500 text-white px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-semibold shadow-lg">
-                  <div className="flex items-center">
-                    <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white rounded-full mr-1 sm:mr-2"></div>
-                    <span className="hidden sm:inline">🎥 Live Demo</span>
-                    <span className="sm:hidden">🎥 Demo</span>
+                <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
                   </div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Auto Calculations</h4>
+                  <p className="text-xs sm:text-sm text-gray-600">GST, totals calculated automatically</p>
                 </div>
-                <div className="absolute top-2 sm:top-4 lg:top-6 right-2 sm:right-4 lg:right-6 bg-white text-gray-800 px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-semibold shadow-lg border border-gray-200">
-                  <div className="flex items-center">
-                    <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-blue-500 rounded-full mr-1 sm:mr-2"></div>
-                    <span className="hidden sm:inline">🔄 Real-time Updates</span>
-                    <span className="sm:hidden">🔄 Updates</span>
+                
+                <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-100">
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                   </div>
-                </div>
-                <div className="absolute bottom-2 sm:bottom-4 lg:bottom-6 left-2 sm:left-4 lg:left-6 bg-blue-600 text-white px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-semibold shadow-lg">
-                  <div className="flex items-center">
-                    <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white rounded-full mr-1 sm:mr-2"></div>
-                    <span className="hidden sm:inline">📊 Analytics Ready</span>
-                    <span className="sm:hidden">📊 Analytics</span>
-                  </div>
-                </div>
-                <div className="absolute bottom-2 sm:bottom-4 lg:bottom-6 right-2 sm:right-4 lg:right-6 bg-yellow-500 text-white px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-semibold shadow-lg">
-                  <div className="flex items-center">
-                    <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white rounded-full mr-1 sm:mr-2"></div>
-                    <span className="hidden sm:inline">🚀 Fast & Secure</span>
-                    <span className="sm:hidden">🚀 Secure</span>
-                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Export & Share</h4>
+                  <p className="text-xs sm:text-sm text-gray-600">Download PDF or share instantly</p>
                 </div>
               </div>
-            ) : (
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-8 sm:p-12 lg:p-20 text-center ring-1 ring-gray-200">
-                <div className="w-20 sm:w-24 lg:w-28 h-20 sm:h-24 lg:h-28 bg-blue-100 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8">
-                  <svg className="w-10 sm:w-12 lg:w-14 h-10 sm:h-12 lg:h-14 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 sm:mb-6">Demo Animation</h3>
-                <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-lg mx-auto mb-6">Watch our comprehensive demo to see GST Bill Maker in action and discover all its powerful features</p>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
-                  <p><strong>Demo animation not available.</strong> The GIF file could not be loaded. Please check if the file exists in the correct location.</p>
-                </div>
-              </div>
-            )}
+            </div>
+          </div>
+
+          {/* Call to action below demo */}
+          <div className="text-center mt-8 sm:mt-12">
+            <p className="text-gray-600 mb-6 text-sm sm:text-base">
+              Ready to streamline your billing process?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+              {status === "authenticated" ? (
+                <Link
+                  href="/dashboard"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                >
+                  <span className="flex items-center justify-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    Go to Dashboard
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  href="/register"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                >
+                  <span className="flex items-center justify-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Try It Now - Free
+                  </span>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
