@@ -241,7 +241,7 @@ export default function GSTSearchPage() {
                         onChange={(e) => setGstin(e.target.value.toUpperCase())}
                         onKeyPress={handleKeyPress}
                         placeholder="e.g., 23ACQPA5175N1ZA"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900"
                         maxLength={15}
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3">

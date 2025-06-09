@@ -300,7 +300,7 @@ export default function NewCustomerPage() {
                           value={customer.gstNo}
                           onChange={handleChange}
                           placeholder="22AAAAA0000A1Z5"
-                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder-gray-500 transition-colors tracking-wider"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder-gray-500 transition-colors tracking-wider text-gray-900"
                         />
                       </div>
                       {!manualEntry && customer.gstNo && customer.gstNo.length === 15 && (
@@ -411,7 +411,7 @@ export default function NewCustomerPage() {
                         onChange={handleChange}
                         disabled={isFormDisabled}
                         placeholder="Enter customer name or business name"
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
                     </div>
                     {customer.name && !isFormDisabled && (
@@ -461,7 +461,7 @@ export default function NewCustomerPage() {
                         onChange={handleChange}
                         disabled={isFormDisabled}
                         placeholder="Enter complete business address including street, city, state, and pincode"
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
                     </div>
                     {customer.address && !isFormDisabled && (
@@ -508,7 +508,7 @@ export default function NewCustomerPage() {
                         onChange={handleChange}
                         disabled={isFormDisabled}
                         placeholder="Enter delivery address if different from business address"
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
                     </div>
                   </div>

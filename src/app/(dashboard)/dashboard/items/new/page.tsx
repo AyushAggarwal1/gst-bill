@@ -324,7 +324,7 @@ export default function NewItemPage() {
                           value={item.hsnCode}
                           onChange={handleChange}
                           placeholder="Search HSN/SAC-8471, Name"
-                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder-gray-500 transition-colors tracking-wider"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder-gray-500 transition-colors tracking-wider text-gray-900"
                         />
                       </div>
                                              {!manualEntry && item.hsnCode && item.hsnCode.trim().length >= 3 && (
@@ -479,7 +479,7 @@ export default function NewItemPage() {
                         onChange={handleChange}
                         disabled={isFormDisabled}
                         placeholder="Enter descriptive item name (e.g., Premium Laptop, Steel Chair)"
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
                     </div>
                     {item.name && !isFormDisabled && (
@@ -511,7 +511,7 @@ export default function NewItemPage() {
                         onChange={handleChange}
                         disabled={isFormDisabled}
                         placeholder="Enter detailed description of the item (optional)"
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
                     </div>
                     <div className="flex items-center text-xs text-gray-500">
@@ -560,7 +560,7 @@ export default function NewItemPage() {
                         onChange={handleChange}
                         disabled={isFormDisabled}
                         placeholder="18"
-                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
                     </div>
                     <div className="flex items-center justify-between text-xs">

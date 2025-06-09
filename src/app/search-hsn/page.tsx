@@ -231,7 +231,7 @@ export default function HSNSearchPage() {
                         onChange={(e) => setKeyword(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Enter HSN code (e.g., 6815) or item name (e.g., bricks)"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                        className="text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                         disabled={isLoading}
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3">

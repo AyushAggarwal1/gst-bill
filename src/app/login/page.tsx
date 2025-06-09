@@ -101,7 +101,7 @@ export default function LoginPage() {
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
                   placeholder="Your Organization"
-                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pl-9 sm:pl-10 pr-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                  className="pl-9 sm:pl-10 pr-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                 />
                 <button
                   type="button"

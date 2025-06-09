@@ -823,7 +823,7 @@ export default function BillsPage() {
                   id="startDate"
                   value={startDate} 
                   onChange={(e) => setStartDate(e.target.value)} 
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors text-gray-900"
                 />
               </div>
               <div>
@@ -833,7 +833,7 @@ export default function BillsPage() {
                   id="endDate"
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)} 
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors text-gray-900"
                 />
               </div>
               <div className="sm:col-span-2 lg:col-span-2 flex items-end justify-end">

@@ -200,7 +200,7 @@ function RegisterForm() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your full name"
-                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                 />
               </div>
             </div>
@@ -224,7 +224,7 @@ function RegisterForm() {
                     value={organizationName}
                     onChange={(e) => setOrganizationName(e.target.value)}
                     placeholder="Your organization name"
-                    className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                    className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                   />
                 </div>
               </div>
@@ -250,7 +250,7 @@ function RegisterForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                 />
               </div>
             </div>
@@ -274,7 +274,7 @@ function RegisterForm() {
                   value={password}
                   onChange={handlePasswordChange}
                   placeholder="Create a strong password"
-                  className="pl-9 sm:pl-10 pr-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white"
+                  className="pl-9 sm:pl-10 pr-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
                 />
                 <button
                   type="button"

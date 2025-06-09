@@ -478,7 +478,7 @@ export default function UserManagementPage() {
           placeholder="Search users by name or email..."
           value={userSearchTerm}
           onChange={(e) => setUserSearchTerm(e.target.value)}
-          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
+          className="text-gray-900 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
         />
       </div>
 
@@ -650,7 +650,7 @@ export default function UserManagementPage() {
           placeholder="Search invitations by email..."
           value={invitationSearchTerm}
           onChange={(e) => setInvitationSearchTerm(e.target.value)}
-          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
+          className="text-gray-900 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
         />
       </div>
 
@@ -849,7 +849,7 @@ export default function UserManagementPage() {
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
             required
-            className="mt-1 block w-full px-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
+            className="text-gray-900 mt-1 block w-full px-3 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
             placeholder="user@example.com"
           />
         </div>
@@ -862,7 +862,7 @@ export default function UserManagementPage() {
             id="inviteRole"
             value={inviteSelectedRole}
             onChange={(e) => setInviteSelectedRole(e.target.value as Role)}
-            className="mt-1 block w-full px-3 py-3 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
+            className="text-gray-900 mt-1 block w-full px-3 py-3 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition-all duration-200"
           >
             {allRolesList.map((role) => (
               <option key={role} value={role}>
@@ -884,7 +884,7 @@ export default function UserManagementPage() {
                   type="checkbox"
                   checked={inviteSelectedPermissions.includes(permission)}
                   onChange={() => handleInvitePermissionChange(permission)}
-                  className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  className="text-gray-900 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                 />
                 <label htmlFor={`invite-permission-${permission}`} className="ml-2 text-sm text-gray-700">
                   {permission.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join(' ')}
@@ -902,7 +902,7 @@ export default function UserManagementPage() {
               type="checkbox"
               checked={inviteSelectedPermissions.length === allPermissionsList.length}
               onChange={(e) => handleInviteSelectAllPermissions(e.target.checked)}
-              className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              className="text-gray-900 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
             />
             <label htmlFor="invite-select-all-permissions" className="ml-2 text-sm font-medium text-gray-700">
               Select All Permissions

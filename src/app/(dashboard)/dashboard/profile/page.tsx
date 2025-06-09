@@ -188,7 +188,7 @@ export default function ProfilePage() {
                         onChange={handleChange}
                         required
                         placeholder="Enter your company or business name"
-                        className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                        className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white text-gray-900"
                       />
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                         onChange={handleChange}
                         required
                         placeholder="Enter your complete business address"
-                        className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white resize-none"
+                        className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white resize-none text-gray-900"
                       />
                     </div>
                   </div>
@@ -245,7 +245,7 @@ export default function ProfilePage() {
                           placeholder="22AAAAA0000A1Z5"
                           pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
                           title="Please enter a valid GST Number (e.g., 22AAAAA0000A1Z5)"
-                          className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                          className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white text-gray-900"
                         />
                       </div>
                       <p className="mt-2 text-xs text-gray-500 flex items-center">
@@ -276,7 +276,7 @@ export default function ProfilePage() {
                           value={profile.phoneNo}
                           onChange={handleChange}
                           placeholder="Enter your business phone number"
-                          className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                          className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white text-gray-900"
                         />
                       </div>
                       <p className="mt-2 text-xs text-gray-500 flex items-center">
@@ -308,7 +308,7 @@ export default function ProfilePage() {
                         value={profile.bankDetails}
                         onChange={handleChange}
                         placeholder="Account Number, IFSC Code, Bank Name, Branch"
-                        className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white resize-none"
+                        className="pl-10 block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-3 transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white resize-none text-gray-900"
                       />
                     </div>
                     <p className="mt-2 text-xs text-gray-500 flex items-center">

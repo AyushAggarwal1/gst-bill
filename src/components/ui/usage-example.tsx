@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from './button';
 import { showToast } from './toast-provider';
-import { FullPageSpinner } from './spinner';
+import { LoadingSpinner } from './loading-spinner';
 
 export const UsageExample = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ export const UsageExample = () => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
-      {isPageLoading && <FullPageSpinner />}
+      {isPageLoading && <LoadingSpinner />}
       
       <h2 className="text-xl font-semibold mb-4">UI/UX Improvements Demo</h2>
       

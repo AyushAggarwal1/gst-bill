@@ -514,7 +514,7 @@ export default function NewBillPage() {
                           value={billData.billNumber}
                           onChange={handleBillDataChange}
                           placeholder="Auto-generated"
-                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors text-gray-900"
                         />
                       </div>
                     </div>
@@ -537,7 +537,7 @@ export default function NewBillPage() {
                           required
                           value={billData.billDate}
                           onChange={handleBillDataChange}
-                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors text-gray-900"
                         />
                       </div>
                     </div>
@@ -596,7 +596,7 @@ export default function NewBillPage() {
                           required
                           value={billData.customerId}
                           onChange={handleBillDataChange}
-                          className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors appearance-none"
+                          className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors appearance-none text-gray-900"
                         >
                           <option value="">Select a customer</option>
                           {customers.map(customer => (
@@ -632,7 +632,7 @@ export default function NewBillPage() {
                           value={billData.deliveryAddress}
                           onChange={handleBillDataChange}
                           placeholder="Enter delivery address if different from billing address"
-                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors text-gray-900"
                         />
                       </div>
                     </div>
@@ -670,7 +670,7 @@ export default function NewBillPage() {
                             name="itemId"
                             value={newItem.itemId}
                             onChange={handleNewItemChange}
-                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors appearance-none"
+                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors appearance-none text-gray-900"
                           >
                             <option value="">Select an item</option>
                             {items.map(item => (
@@ -706,7 +706,7 @@ export default function NewBillPage() {
                             value={newItem.quantity || ''}
                             onChange={handleNewItemChange}
                             placeholder="0"
-                            className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors"
+                            className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors text-gray-900"
                           />
                         </div>
                       </div>
@@ -731,7 +731,7 @@ export default function NewBillPage() {
                             value={newItem.price || ''}
                             onChange={handleNewItemChange}
                             placeholder="0.00"
-                            className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors"
+                            className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors text-gray-900"
                           />
                         </div>
                       </div>
