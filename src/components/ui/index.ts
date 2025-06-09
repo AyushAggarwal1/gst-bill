@@ -5,6 +5,12 @@ export { Card, CardHeader, CardContent, CardFooter } from './card';
 export { Badge } from './badge';
 export { Spinner } from './spinner';
 export { ToastProvider } from './toast-provider';
+export { Modal } from './modal';
+export { FormField } from './form-field';
+export { FormSection } from './form-section';
+export { Toggle } from './toggle';
+export { Select, Option } from './select';
+export { Checkbox } from './checkbox';
 
 // Layout Components
 export { StatsCard } from './stats-card';
