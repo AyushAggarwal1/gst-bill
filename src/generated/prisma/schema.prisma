@@ -105,17 +105,18 @@ model Customer {
 }
 
 model Item {
-  id        String     @id @default(uuid())
-  name      String
-  hsnCode   String
-  taxRate   Float
-  userId    String
-  tenantId  String // Every item belongs to a tenant
-  tenant    Tenant     @relation(fields: [tenantId], references: [id])
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  billItems BillItem[]
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String     @id @default(uuid())
+  name        String
+  description String? // Optional description field
+  hsnCode     String
+  taxRate     Float
+  userId      String
+  tenantId    String // Every item belongs to a tenant
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  billItems   BillItem[]
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
 }

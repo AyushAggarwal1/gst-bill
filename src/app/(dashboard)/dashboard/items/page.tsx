@@ -10,6 +10,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 interface Item {
   id: string;
   name: string;
+  description?: string;
   hsnCode: string;
   taxRate: number;
   createdAt: string;

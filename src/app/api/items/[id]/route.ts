@@ -49,7 +49,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, hsnCode, taxRate } = await req.json();
+    const { name, description, hsnCode, taxRate } = await req.json();
 
     // Validate input
     if (!name || !hsnCode || taxRate === undefined) {
@@ -86,6 +86,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       },
       data: {
         name,
+        description: description || null,
         hsnCode,
         taxRate,
       },

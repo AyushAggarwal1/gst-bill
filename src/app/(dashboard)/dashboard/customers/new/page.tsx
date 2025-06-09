@@ -236,6 +236,27 @@ export default function NewCustomerPage() {
           </div>
         </div>
 
+        {/* Form Progress Indicator */}
+        <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Form Progress</h3>
+            <span className="text-sm text-gray-600">
+              {Math.round(((customer.name ? 1 : 0) + (customer.address ? 1 : 0) + (customer.gstNo && customer.gstNo.length === 15 ? 1 : 0)) / 3 * 100)}% Complete
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((customer.name ? 1 : 0) + (customer.address ? 1 : 0) + (customer.gstNo && customer.gstNo.length === 15 ? 1 : 0)) / 3 * 100}%` }}
+            ></div>
+          </div>
+          <div className="flex justify-between mt-2 text-xs text-gray-500">
+            <span className={customer.name ? 'text-green-600 font-medium' : ''}>Customer Name</span>
+            <span className={customer.address ? 'text-green-600 font-medium' : ''}>Business Address</span>
+            <span className={customer.gstNo && customer.gstNo.length === 15 ? 'text-green-600 font-medium' : ''}>GST Number</span>
+          </div>
+        </div>
+
         {/* Form */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -531,19 +552,7 @@ export default function NewCustomerPage() {
                 </button>
               </div>
               
-              {/* Form Progress Indicator */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                  <span>Form Completion</span>
-                  <span>{Math.round(((customer.name ? 1 : 0) + (customer.address ? 1 : 0) + (customer.gstNo && customer.gstNo.length === 15 ? 1 : 0)) / 3 * 100)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${((customer.name ? 1 : 0) + (customer.address ? 1 : 0) + (customer.gstNo && customer.gstNo.length === 15 ? 1 : 0)) / 3 * 100}%` }}
-                  />
-                </div>
-              </div>
+
               </div>
             </form>
         </div>
