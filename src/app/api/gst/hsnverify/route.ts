@@ -18,6 +18,45 @@ interface HSNAPIResponse {
   error?: string;
 }
 
+interface CleartaxHSNItem {
+  hsn_code: string;
+  description: string;
+  gst_rate: number;
+  type: string;
+}
+
+interface CleartaxAPIResponse {
+  results: Array<{
+    hits: CleartaxHSNItem[];
+  }>;
+}
+
+async function searchCleartaxHSN(keyword: string): Promise<CleartaxHSNItem[]> {
+  const response = await fetch('https://cleartax.in/f/content_search/algolia/algolia-search/', {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json, text/plain, */*',
+      'content-type': 'application/json',
+      'origin': 'https://cleartax.in',
+      'referer': 'https://cleartax.in/s/gst-hsn-lookup',
+      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+    },
+    body: JSON.stringify({
+      requests: [{
+        indexName: "HSN_SAC_2021",
+        params: `query=${encodeURIComponent(keyword)}&optionalWords=${encodeURIComponent(keyword)}&highlightPreTag=<strong>&highlightPostTag=</strong>&typoTolerance=false`
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Cleartax API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data: CleartaxAPIResponse = await response.json();
+  return data.results[0]?.hits || [];
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -61,38 +100,58 @@ export async function POST(request: NextRequest) {
 
     const apiData: HSNAPIResponse = await response.json();
 
-    if (!apiData.success || !apiData.data || apiData.data.length === 0) {
-      return NextResponse.json(
-        { 
-          error: 'No HSN codes found for the given keyword',
-          keyword: cleanKeyword,
-          success: false
-        },
-        { status: 404 }
-      );
-    }
+    let transformedData;
+    let source = 'MastersIndia HSN Code Search';
 
-    // Transform the response to include additional computed fields
-    const transformedData = apiData.data.map(item => ({
-      hsnCode: item.hsn_code,
-      description: item.description,
-      type: item.type === 'G' ? 'Goods' : 'Services',
-      gstRate: parseFloat(item.gst),
-      integratedTax: parseFloat(item.irt),
-      centralTax: parseFloat(item.crt),
-      stateTax: parseFloat(item.srt),
-      cess: item.cess || 'N/A',
-      notificationNumber: item.nn,
-      // Raw data for reference
-      rawData: item
-    }));
+    if (!apiData.success || !apiData.data || apiData.data.length === 0) {
+      // Try Cleartax API as fallback
+      const cleartaxResults = await searchCleartaxHSN(cleanKeyword);
+      
+      if (cleartaxResults.length === 0) {
+        return NextResponse.json(
+          { 
+            error: 'No HSN codes found for the given keyword',
+            keyword: cleanKeyword,
+            success: false
+          },
+          { status: 404 }
+        );
+      }
+
+      source = 'Cleartax HSN Code Search';
+      transformedData = cleartaxResults.map(item => ({
+        hsnCode: item.hsn_code,
+        description: item.description,
+        type: item.type,
+        gstRate: item.gst_rate,
+        integratedTax: item.gst_rate,
+        centralTax: item.gst_rate / 2,
+        stateTax: item.gst_rate / 2,
+        cess: 'N/A',
+        notificationNumber: 0,
+        rawData: item
+      }));
+    } else {
+      transformedData = apiData.data.map(item => ({
+        hsnCode: item.hsn_code,
+        description: item.description,
+        type: item.type === 'G' ? 'Goods' : 'Services',
+        gstRate: parseFloat(item.gst),
+        integratedTax: parseFloat(item.irt),
+        centralTax: parseFloat(item.crt),
+        stateTax: parseFloat(item.srt),
+        cess: item.cess || 'N/A',
+        notificationNumber: item.nn,
+        rawData: item
+      }));
+    }
 
     return NextResponse.json({
       success: true,
       keyword: cleanKeyword,
       totalResults: transformedData.length,
       data: transformedData,
-      source: 'HSN Code Search Service',
+      source,
       retrievedAt: new Date().toISOString()
     });
 

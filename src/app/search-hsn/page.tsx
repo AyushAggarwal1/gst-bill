@@ -13,6 +13,38 @@ interface HSNItem {
   stateTax: number;
   cess: string;
   notificationNumber: number;
+  rawData?: any;
+}
+
+interface CleartaxHSNItem {
+  type: string;
+  centralTax: number | null;
+  stateTax: number | null;
+  cess: string;
+  notificationNumber: number;
+  rawData: {
+    chapter_index: string;
+    chapter_name: string;
+    chapter: string;
+    product_hsn_code: string;
+    hsn_code_length: string;
+    type: string;
+    product_rate: string;
+    product_description: string;
+    product_cess: string;
+    product_effective_date: string;
+    product_rate_revision: string;
+    Keywords: string;
+    objectID: string;
+    _highlightResult: {
+      [key: string]: {
+        value: string;
+        matchLevel: string;
+        matchedWords: string[];
+        fullyHighlighted?: boolean;
+      };
+    };
+  };
 }
 
 interface APIResponse {
@@ -52,13 +84,37 @@ export default function HSNSearchPage() {
       });
 
       const data: APIResponse = await response.json();
+      console.log('API Response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || 'Failed to search HSN codes');
       }
 
+      // Transform the data if needed based on the source
+      if (data.source === 'Cleartax HSN Code Search' && data.data) {
+        data.data = data.data.map(item => {
+          const cleartaxItem = item as unknown as CleartaxHSNItem;
+          const gstRate = parseInt(cleartaxItem.rawData.product_rate) || 0;
+          
+          return {
+            hsnCode: cleartaxItem.rawData.product_hsn_code || '',
+            description: cleartaxItem.rawData.product_description || 'No description available',
+            type: cleartaxItem.rawData.type || 'Goods',
+            gstRate: gstRate,
+            integratedTax: gstRate,
+            centralTax: gstRate / 2,
+            stateTax: gstRate / 2,
+            cess: cleartaxItem.rawData.product_cess || 'N/A',
+            notificationNumber: 0,
+            rawData: cleartaxItem.rawData
+          };
+        });
+      }
+
+      console.log('Transformed Data:', data);
       setResult(data);
     } catch (err) {
+      console.error('Search Error:', err);
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
     } finally {
@@ -90,12 +146,13 @@ export default function HSNSearchPage() {
     setExpandedDescriptions(newExpanded);
   };
 
-  const formatDescription = (description: string, index: number) => {
-    const isLongDescription = description.length > 300;
+  const formatDescription = (description: string | undefined, index: number) => {
+    const safeDescription = description || 'No description available';
+    const isLongDescription = safeDescription.length > 300;
     const isExpanded = expandedDescriptions.has(index);
     const displayText = isLongDescription && !isExpanded 
-      ? description.substring(0, 300) + '...' 
-      : description;
+      ? safeDescription.substring(0, 300) + '...' 
+      : safeDescription;
 
     return { displayText, isLongDescription, isExpanded };
   };
@@ -309,7 +366,7 @@ export default function HSNSearchPage() {
         </div>
 
         {/* Results Section */}
-        {result && result.success && (
+        {result && result.success && result.data && result.data.length > 0 && (
           <div className="space-y-6">
             {/* Results Header Card */}
             <Card>
@@ -344,162 +401,165 @@ export default function HSNSearchPage() {
 
             {/* HSN Results */}
             <div className="grid gap-6">
-              {result.data?.map((item, index) => (
-                <Card key={index} className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow duration-200">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-                      {/* HSN Code and Description */}
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-4">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            HSN: {item.hsnCode}
-                          </span>
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                            item.type === 'Goods' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
-                          }`}>
-                            {item.type}
-                          </span>
-                        </div>
-                        
-                        {/* Enhanced Description Display */}
-                        <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                              Description
-                            </h4>
-                            {item.description.length > 200 && (
-                              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                {item.description.split(' ').length} words
-                              </span>
-                            )}
-                          </div>
-                          
-                          <div className="text-gray-900 leading-relaxed">
-                            {(() => {
-                              const { displayText, isLongDescription, isExpanded } = formatDescription(item.description, index);
-                              
-                              if (displayText.includes('\n') || displayText.includes(';') || displayText.includes('(')) {
-                                // Format descriptions with line breaks, semicolons, or parentheses
-                                return (
-                                  <div className="space-y-2">
-                                    {displayText
-                                      .split(/[;\n]/)
-                                      .filter(part => part.trim())
-                                      .map((part, idx) => (
-                                        <div key={idx} className="flex items-start">
-                                          {displayText.includes(';') && (
-                                            <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                          )}
-                                          <span className="text-gray-800 leading-relaxed">
-                                            {part.trim()}
-                                          </span>
-                                        </div>
-                                      ))}
-                                    
-                                    {/* Expand/Collapse button for long descriptions */}
-                                    {isLongDescription && (
-                                      <button
-                                        onClick={() => toggleDescription(index)}
-                                        className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center transition-colors duration-200"
-                                      >
-                                        {isExpanded ? (
-                                          <>
-                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
-                                            </svg>
-                                            Show Less
-                                          </>
-                                        ) : (
-                                          <>
-                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                            Show More
-                                          </>
-                                        )}
-                                      </button>
-                                    )}
-                                  </div>
-                                );
-                              } else {
-                                // Simple description without special formatting
-                                return (
-                                  <div>
-                                    <p className="text-gray-800 text-base leading-relaxed whitespace-pre-line">
-                                      {displayText}
-                                    </p>
-                                    
-                                    {/* Expand/Collapse button for long descriptions */}
-                                    {isLongDescription && (
-                                      <button
-                                        onClick={() => toggleDescription(index)}
-                                        className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center transition-colors duration-200"
-                                      >
-                                        {isExpanded ? (
-                                          <>
-                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
-                                            </svg>
-                                            Show Less
-                                          </>
-                                        ) : (
-                                          <>
-                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                            Show More
-                                          </>
-                                        )}
-                                      </button>
-                                    )}
-                                  </div>
-                                );
-                              }
-                            })()}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Tax Details */}
-                      <div className="lg:w-80 bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-semibold text-gray-900 mb-3">Tax Details</h4>
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">GST Rate:</span>
-                            <span className={`px-3 py-1 rounded-full text-sm font-bold ${getGSTRateColor(item.gstRate)}`}>
-                              {item.gstRate}%
+              {result.data.map((item, index) => {
+                console.log('Rendering item:', item); // Debug log
+                return (
+                  <Card key={index} className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow duration-200">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                        {/* HSN Code and Description */}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                              HSN: {item.hsnCode}
+                            </span>
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                              item.type === 'Goods' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
+                            }`}>
+                              {item.type}
                             </span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">IGST:</span>
-                            <span className="font-medium text-gray-900">{item.integratedTax}%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">CGST:</span>
-                            <span className="font-medium text-gray-900">{item.centralTax}%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">SGST:</span>
-                            <span className="font-medium text-gray-900">{item.stateTax}%</span>
-                          </div>
-                          {item.cess !== 'N/A' && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Cess:</span>
-                              <span className="font-medium text-gray-900">{item.cess}</span>
+                          
+                          {/* Enhanced Description Display */}
+                          <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
+                            <div className="flex items-center justify-between mb-3">
+                              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                                Description
+                              </h4>
+                              {item.description && item.description.length > 200 && (
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                  {item.description.split(' ').length} words
+                                </span>
+                              )}
                             </div>
-                          )}
-                          {item.notificationNumber > 0 && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Notification No:</span>
-                              <span className="font-medium text-gray-900">{item.notificationNumber}</span>
+                            
+                            <div className="text-gray-900 leading-relaxed">
+                              {(() => {
+                                const { displayText, isLongDescription, isExpanded } = formatDescription(item.description, index);
+                                
+                                if (displayText.includes('\n') || displayText.includes(';') || displayText.includes('(')) {
+                                  // Format descriptions with line breaks, semicolons, or parentheses
+                                  return (
+                                    <div className="space-y-2">
+                                      {displayText
+                                        .split(/[;\n]/)
+                                        .filter(part => part.trim())
+                                        .map((part, idx) => (
+                                          <div key={idx} className="flex items-start">
+                                            {displayText.includes(';') && (
+                                              <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                            )}
+                                            <span className="text-gray-800 leading-relaxed">
+                                              {part.trim()}
+                                            </span>
+                                          </div>
+                                        ))}
+                                      
+                                      {/* Expand/Collapse button for long descriptions */}
+                                      {isLongDescription && (
+                                        <button
+                                          onClick={() => toggleDescription(index)}
+                                          className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center transition-colors duration-200"
+                                        >
+                                          {isExpanded ? (
+                                            <>
+                                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+                                              </svg>
+                                              Show Less
+                                            </>
+                                          ) : (
+                                            <>
+                                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                              </svg>
+                                              Show More
+                                            </>
+                                          )}
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                } else {
+                                  // Simple description without special formatting
+                                  return (
+                                    <div>
+                                      <p className="text-gray-800 text-base leading-relaxed whitespace-pre-line">
+                                        {displayText}
+                                      </p>
+                                      
+                                      {/* Expand/Collapse button for long descriptions */}
+                                      {isLongDescription && (
+                                        <button
+                                          onClick={() => toggleDescription(index)}
+                                          className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center transition-colors duration-200"
+                                        >
+                                          {isExpanded ? (
+                                            <>
+                                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+                                              </svg>
+                                              Show Less
+                                            </>
+                                          ) : (
+                                            <>
+                                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                              </svg>
+                                              Show More
+                                            </>
+                                          )}
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                }
+                              })()}
                             </div>
-                          )}
+                          </div>
+                        </div>
+
+                        {/* Tax Details */}
+                        <div className="lg:w-80 bg-gray-50 rounded-lg p-4">
+                          <h4 className="font-semibold text-gray-900 mb-3">Tax Details</h4>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">GST Rate:</span>
+                              <span className={`px-3 py-1 rounded-full text-sm font-bold ${getGSTRateColor(item.gstRate)}`}>
+                                {item.gstRate}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">IGST:</span>
+                              <span className="font-medium text-gray-900">{item.integratedTax}%</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">CGST:</span>
+                              <span className="font-medium text-gray-900">{item.centralTax}%</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">SGST:</span>
+                              <span className="font-medium text-gray-900">{item.stateTax}%</span>
+                            </div>
+                            {item.cess !== 'N/A' && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">Cess:</span>
+                                <span className="font-medium text-gray-900">{item.cess}</span>
+                              </div>
+                            )}
+                            {item.notificationNumber > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">Notification No:</span>
+                                <span className="font-medium text-gray-900">{item.notificationNumber}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}
