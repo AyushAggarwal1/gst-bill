@@ -2,9 +2,9 @@
 
 A modern, user-friendly application for creating and managing GST bills. Built with Next.js, Prisma, and PostgreSQL.
 
-🌐 **Hosted on  Netlify**: [https://gstbillmaker.netlify.app](https://gstbillmaker.netlify.app) 
+🌐 **Hosted on  Netlify**: [gstbillmaker.app](https://gstbillmaker.netlify.app) 
 
-🎬 **To Start Self Demo**: [https://demogstbillmaker.netlify.app](https://demogstbillmaker.netlify.app/) 
+🎬 **To Start Self Demo**: [demogstbillmaker.app](https://demogstbillmaker.netlify.app/) 
 
 ```
   Creds for Demo Env
@@ -66,8 +66,8 @@ A modern, user-friendly application for creating and managing GST bills. Built w
 - 📋 **Bulk Actions**: Efficient management of multiple bills
 
 
-## API Routes [Complete API Guide](API_Docs.md)
-
+### API Routes [Complete API Guide](API_Docs.md)
+<!--
 - **Authentication & Authorization**
   - POST `/api/auth/register`: User registration with tenant assignment
   - POST `/api/auth/login`: User login with role validation
@@ -102,7 +102,7 @@ A modern, user-friendly application for creating and managing GST bills. Built w
   - DELETE `/api/bills/[id]`: Delete bill
   - POST `/api/bills/bulk-htmls`: Generate bulk PDFs
   - POST `/api/bills/export`: Export bills to Excel
-
+-->
 ## Data Model
 
 ### Key Entities
