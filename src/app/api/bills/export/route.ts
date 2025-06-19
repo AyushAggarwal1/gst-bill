@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/auth";
 import { prisma } from "@/lib/prisma";
 // Import XLSX dynamically to avoid build issues
 // import * as XLSX from 'xlsx';
@@ -13,16 +14,19 @@ export async function POST(req: Request) {
     // Dynamically import xlsx to avoid build issues
     const XLSX = await import('xlsx');
     
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
-    if (!session || !session.user?.email) {
+    if (!session || !session.user?.email || !(session.user as any).tenantId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by email
+    // Find the user by email and tenantId (compound unique key)
     const user = await prisma.user.findUnique({
       where: {
-        email: session.user.email,
+        email_tenantId: {
+          email: session.user.email,
+          tenantId: (session.user as any).tenantId,
+        },
       },
     });
 
