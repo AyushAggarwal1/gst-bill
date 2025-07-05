@@ -23,8 +23,8 @@ git config user.email "action@github.com"
 git config user.name "DB Backup Github Bot"
 
 git add *_export.json
-git commit -m "Update generated file [skip ci]"
-git push origin $BRANCH
+git commit -m "Update generated file"
+git push origin main
 
 # Cleanup
 cd ..
