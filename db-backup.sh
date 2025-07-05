@@ -12,6 +12,10 @@ fi
 REPO_URL="https://x-access-token:${GIT_TOKEN}@github.com/AyushAggarwal1/gst-bill-db-backup"
 BRANCH="main"  # Branch to push the backup files to
 
+# Get current date for folder name
+CURRENT_DATE=$(date +%Y-%m-%d)
+BACKUP_FOLDER="db_backup_${CURRENT_DATE}"
+
 # Clone the database backup repo (shallow clone to save time)
 git clone --depth=1 --branch=$BRANCH $REPO_URL db-repo
 
@@ -19,22 +23,24 @@ git clone --depth=1 --branch=$BRANCH $REPO_URL db-repo
 pip install -r ./usefulScripts/exportSupabaseDbPy/requirements.txt
 
 # Run data exporter script 
-python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # *_export.json is generated
+python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # db_backup_YYYY-MM-DD folder is generated
 
-# Copy db backup file to database backup repo
-cp *_export.json ./db-repo/
+# Create the date folder in the cloned repo
+mkdir -p ./db-repo/${BACKUP_FOLDER}
+
+# Copy current date JSON files to the database backup repo
+cp ./${BACKUP_FOLDER}/*.json ./db-repo/${BACKUP_FOLDER}/
 
 cd db-repo
-# Commit and push db backup file to database backup repo
+# Commit and push db backup files to database backup repo
 git config user.email "action@github.com"
 git config user.name "DB Backup Github Bot"
 
-git add *_export.json
-git commit -m "Update generated file"
+git add ${BACKUP_FOLDER}/*.json
+git commit -m "Add database backup for ${CURRENT_DATE}"
 git push origin main
 
 # Cleanup
 cd ..
 rm -rf db-repo
-cd ..
-rm -rf gst-bill
+rm -rf ${BACKUP_FOLDER}
