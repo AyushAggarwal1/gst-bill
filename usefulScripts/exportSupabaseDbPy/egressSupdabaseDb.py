@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy import create_engine, text
 
-# Add your DATABASE_URL here or use environment variable
+# Database URL from environment variable
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 # Connect to the database
@@ -12,7 +12,7 @@ engine = create_engine(DATABASE_URL)
 
 # Tables to export (case-sensitive with quotes for PascalCase tables)
 tables_to_export = [
-    'Customer',  # Example based on your provided JSON
+    'Customer', 
     'User',
     'Bill',
     'BillItem',

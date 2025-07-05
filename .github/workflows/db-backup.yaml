@@ -5,7 +5,7 @@ on:
     branches:
       - dev
   schedule:
-    - cron: '0 12 * * *'  # Runs every hour, adjust as needed
+    - cron: '0 12 * * *'  # Runs every day at 12:00 AM
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          
       - name: Make backup script executable
         run: chmod +x db-backup.sh
 

@@ -8,22 +8,24 @@ if [[ -z "$GIT_TOKEN" ]]; then
   exit 1
 fi
 
-# Config variables
+# Database Backup Repo URL
 REPO_URL="https://x-access-token:${GIT_TOKEN}@github.com/AyushAggarwal1/gst-bill-db-backup"
-BRANCH="main"  # or a separate branch for generated files
+BRANCH="main"  # Branch to push the backup files to
 
-# Clone the repo (shallow clone to save time)
+# Clone the database backup repo (shallow clone to save time)
 git clone --depth=1 --branch=$BRANCH $REPO_URL db-repo
 
-# Run your file generation script
+# Install dependencies for data exporter script
 pip install -r ./usefulScripts/exportSupabaseDbPy/requirements.txt
-python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # Generates output.json for example
 
-# Copy generated file
+# Run data exporter script 
+python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # *_export.json is generated
+
+# Copy db backup file to database backup repo
 cp *_export.json ./db-repo/
 
 cd db-repo
-# Commit and push
+# Commit and push db backup file to database backup repo
 git config user.email "action@github.com"
 git config user.name "DB Backup Github Bot"
 
@@ -34,3 +36,5 @@ git push origin main
 # Cleanup
 cd ..
 rm -rf db-repo
+cd ..
+rm -rf gst-bill
