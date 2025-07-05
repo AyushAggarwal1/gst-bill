@@ -22,7 +22,7 @@ cd db-repo
 git config user.email "action@github.com"
 git config user.name "DB Backup Github Bot"
 
-git add output.json
+git add *_export.json
 git commit -m "Update generated file [skip ci]"
 git push origin $BRANCH
 
