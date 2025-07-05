@@ -2,6 +2,11 @@
 
 # Exit on error
 set -e
+# Verify token is present
+if [[ -z "$GIT_TOKEN" ]]; then
+  echo "Error: GIT_TOKEN is not set"
+  exit 1
+fi
 
 # Config variables
 REPO_URL="https://x-access-token:${GIT_TOKEN}@github.com/AyushAggarwal1/gst-bill-db-backup"
