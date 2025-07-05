@@ -15,11 +15,7 @@ pip install -r ./usefulScripts/exportSupabaseDbPy/requirements.txt
 python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # Generates output.json for example
 
 # Copy generated file
-cd usefulScripts/exportSupabaseDbPy
-ls -la
-cp *.json ../db-repo
-cd ../db-repo
-ls -la
+cp ./usefulScripts/exportSupabaseDbPy/*.json ./db-repo/
 
 cd db-repo
 # Commit and push
