@@ -27,4 +27,4 @@ jobs:
         env:
           GIT_TOKEN: ${{ secrets.GIT_TOKEN_CUSTOM }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          run: ./db-backup.sh
+        run: ./db-backup.sh
