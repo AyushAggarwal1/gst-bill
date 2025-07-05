@@ -4,7 +4,7 @@
 set -e
 
 # Config variables
-REPO_URL="https://${GITHUB_TOKEN}@github.com/AyushAggarwal1/gst-bill-db-backup"
+REPO_URL="https://${GIT_TOKEN}@github.com/AyushAggarwal1/gst-bill-db-backup"
 BRANCH="main"  # or a separate branch for generated files
 
 # Clone the repo (shallow clone to save time)
