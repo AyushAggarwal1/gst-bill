@@ -1,0 +1,32 @@
+name: SupraBase DB Backup
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Runs every hour, adjust as needed
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Development Server
+        run: npm run dev
+
+      - name: Run Database Backup script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_CUSTOM }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          run: |
+          chmod +x db-backup.sh   
+          ./db-backup.sh
