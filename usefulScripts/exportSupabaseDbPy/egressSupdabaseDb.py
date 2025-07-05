@@ -62,7 +62,7 @@ def export_all_data():
                     rows.append(row_dict)
 
                 # Export to JSON file in the date folder
-                file_path = os.path.join(export_folder, f"{table.lower()}_export.json")
+                file_path = os.path.join(export_folder, f"Table_{table.lower()}.json")
                 with open(file_path, 'w', encoding='utf-8') as f:
                     json.dump(rows, f, indent=2, ensure_ascii=False)
 
