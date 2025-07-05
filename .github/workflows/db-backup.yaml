@@ -1,4 +1,4 @@
-name: SupraBase DB Backup
+name: Supabase DB Backup
 
 on:
   schedule:
@@ -11,17 +11,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run Development Server
-        run: npm run dev
 
       - name: Run Database Backup script
         env:
