@@ -28,8 +28,8 @@ python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # db_backup_YYY
 # Create the date folder in the cloned repo
 mkdir -p ./db-repo/${BACKUP_FOLDER}
 
-# Copy current date JSON files to the database backup repo
-cp ./${BACKUP_FOLDER}/*.json ./db-repo/${BACKUP_FOLDER}/
+# move exported current date db backup JSON files to the database backup repo
+mv ./${BACKUP_FOLDER}/*.json ./db-repo/${BACKUP_FOLDER}/
 
 cd db-repo
 # Commit and push db backup files to database backup repo
