@@ -1,9 +1,9 @@
 name: Supabase DB Backup
 
 on:
-  push:
-    branches:
-      - dev
+  # push:
+  #   branches:
+  #     - dev
   schedule:
     - cron: '0 12 * * *'  # Runs every day at 12:00 AM
   workflow_dispatch:  # Allows manual trigger

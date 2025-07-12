@@ -9,7 +9,7 @@ export default async function middleware(request: NextRequest) {
   const publicPaths = ['/', '/privacy-policy', '/terms-of-service', '/search-gst', '/search-hsn']
   
   // Define auth-only paths that logged-in users shouldn't access
-  const authOnlyPaths = ['/login', '/register']
+  const authOnlyPaths = ['/login', '/register', '/']
   
   const isPublicPath = publicPaths.includes(path)
   const isAuthOnlyPath = authOnlyPaths.includes(path)

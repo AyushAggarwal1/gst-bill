@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment, useCallback } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -59,12 +59,54 @@ export default function BillsPage() {
   const [deleteSuccess, setDeleteSuccess] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
+  // New state for debounced search
+  const [searchCustomerName, setSearchCustomerName] = useState("");
+  const [searchBillNumber, setSearchBillNumber] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchDebounceTimeout, setSearchDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
+
   const customerNameInputRef = useRef<HTMLInputElement>(null);
   const billNumberInputRef = useRef<HTMLInputElement>(null);
 
+  // Debounced search function
+  const debouncedSearch = useCallback((customerNameValue: string, billNumberValue: string) => {
+    // Clear existing timeout
+    if (searchDebounceTimeout) {
+      clearTimeout(searchDebounceTimeout);
+    }
+
+    // Only search if we have at least 3 characters
+    const hasValidSearch = (customerNameValue.length >= 3 || billNumberValue.length >= 3);
+    
+    if (hasValidSearch) {
+      setIsSearching(true);
+      const timeout = setTimeout(() => {
+        setSearchCustomerName(customerNameValue);
+        setSearchBillNumber(billNumberValue);
+        setIsSearching(false);
+      }, 1000); // 1000ms debounce delay
+      
+      setSearchDebounceTimeout(timeout);
+    } else {
+      // Clear search if less than 4 characters
+      setSearchCustomerName("");
+      setSearchBillNumber("");
+      setIsSearching(false);
+    }
+  }, [searchDebounceTimeout]);
+
   useEffect(() => {
     fetchBills();
-  }, [startDate, endDate, customerName, billNumberSearch]);
+  }, [startDate, endDate, searchCustomerName, searchBillNumber]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchDebounceTimeout) {
+        clearTimeout(searchDebounceTimeout);
+      }
+    };
+  }, [searchDebounceTimeout]);
 
   const fetchBills = async () => {
     try {
@@ -74,8 +116,8 @@ export default function BillsPage() {
       const params = new URLSearchParams();
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
-      if (customerName) params.append("customerName", customerName);
-      if (billNumberSearch) params.append("billNumber", billNumberSearch);
+      if (searchCustomerName) params.append("customerName", searchCustomerName);
+      if (searchBillNumber) params.append("billNumber", searchBillNumber);
       if (params.toString()) { url += `?${params.toString()}`; }
       const res = await fetch(url);
       if (!res.ok) { throw new Error("Failed to fetch bills"); }
@@ -91,7 +133,7 @@ export default function BillsPage() {
       setSelectedBills([]);
 
       // Fetch total count if no filters are applied
-      if (!startDate && !endDate && !customerName && !billNumberSearch) {
+      if (!startDate && !endDate && !searchCustomerName && !searchBillNumber) {
         setTotalBillsCount(sortedBills.length);
       } else if (totalBillsCount === 0) {
         // If we haven't fetched total count yet, fetch it
@@ -536,6 +578,12 @@ export default function BillsPage() {
     setEndDate("");
     setCustomerName("");
     setBillNumberSearch("");
+    setSearchCustomerName("");
+    setSearchBillNumber("");
+    setIsSearching(false);
+    if (searchDebounceTimeout) {
+      clearTimeout(searchDebounceTimeout);
+    }
     if (customerNameInputRef.current) customerNameInputRef.current.value = "";
     if (billNumberInputRef.current) billNumberInputRef.current.value = "";
   };
@@ -765,16 +813,18 @@ export default function BillsPage() {
                   </div>
                   <input 
                     type="text"
-                    placeholder="Search bills by number or customer name..."
+                    placeholder="Search bills by number or customer name... (min 3 characters)"
                     value={billNumberSearch || customerName}
                     onChange={(e) => {
                       const value = e.target.value;
                       if (/^\d/.test(value)) {
                         setBillNumberSearch(value);
                         setCustomerName("");
+                        debouncedSearch("", value);
                       } else {
                         setCustomerName(value);
                         setBillNumberSearch("");
+                        debouncedSearch(value, "");
                       }
                     }}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
@@ -784,6 +834,12 @@ export default function BillsPage() {
                       onClick={() => {
                         setBillNumberSearch("");
                         setCustomerName("");
+                        setSearchCustomerName("");
+                        setSearchBillNumber("");
+                        setIsSearching(false);
+                        if (searchDebounceTimeout) {
+                          clearTimeout(searchDebounceTimeout);
+                        }
                       }}
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                     >
@@ -799,12 +855,26 @@ export default function BillsPage() {
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span className="font-medium">{filteredBills.length} bills</span>
                 </div>
-                {(billNumberSearch || customerName) && (
+                {isSearching && (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                    <span>Searching...</span>
+                  </div>
+                )}
+                {(searchCustomerName || searchBillNumber) && !isSearching && (
                   <div className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
                     </svg>
                     <span>Filtered</span>
+                  </div>
+                )}
+                {(billNumberSearch || customerName) && (billNumberSearch.length < 4 && customerName.length < 4) && (
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <span>Type at least 3 characters</span>
                   </div>
                 )}
               </div>
