@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:current-alpine3.22 AS base
 
 # Set working directory
 WORKDIR /app
@@ -29,18 +29,17 @@ ENV NODE_ENV production
 # Uncomment the following line to disable telemetry at runtime
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create system user and group, set up directories and permissions
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    mkdir .next && \
+    chown nextjs:nodejs .next
 
 COPY --from=builder /app/public ./public
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
 # Automatically leverage output traces to reduce image size
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder nextjs:nodejs /app/.next/static ./.next/static
 
 # Generate Prisma client
 COPY --from=builder /app/prisma ./prisma
@@ -54,5 +53,9 @@ EXPOSE 3000
 ENV PORT 3000
 # set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
+
+# Health check to verify the application is running
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))" || exit 1
 
 CMD ["node", "server.js"] 
