@@ -31,7 +31,7 @@
     "puppeteer": "^24.9.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",
