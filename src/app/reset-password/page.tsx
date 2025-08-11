@@ -1,9 +1,9 @@
 "use client";
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
-export default function ResetPasswordPage() {
+function ResetPasswordPageInner() {
   const params = useSearchParams();
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -185,6 +185,14 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}> 
+      <ResetPasswordPageInner />
+    </Suspense>
   );
 }
 
