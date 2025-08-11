@@ -15,7 +15,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
-  output: 'standalone',
   experimental: {
     serverComponentsExternalPackages: ['xlsx']
   },

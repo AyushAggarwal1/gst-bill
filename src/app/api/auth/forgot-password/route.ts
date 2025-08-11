@@ -4,6 +4,8 @@ import { generateNumericOtp } from '@/lib/utils';
 import { hash } from 'bcrypt';
 import { sendPasswordOtpMail } from '@/lib/mailer';
 
+export const runtime = 'nodejs';
+
 const OTP_TTL_MINUTES = 10;
 
 export async function POST(request: Request) {

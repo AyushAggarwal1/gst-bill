@@ -1,3 +1,12 @@
+## Netlify deployment notes
+
+- This app uses Prisma, NextAuth, and Node.js server runtime. On Netlify, ensure these settings:
+  - Set env `DISABLE_MIDDLEWARE=true` if Netlify Edge Functions cause issues with Next middleware.
+  - Prefer Node.js functions runtime for API routes and auth:
+    - Add `export const runtime = 'nodejs'` to API routes and root layout (already done).
+  - Configure environment variables in Netlify UI: `DATABASE_URL`, `DIRECT_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, SMTP settings.
+  - If you still see `functions is not a function`, switch site to use Netlify Node functions (not Edge Runtime) or deploy on Vercel.
+
 # GST Bill Maker
 
 A modern, user-friendly application for creating and managing GST bills. Built with Next.js, Prisma, and PostgreSQL.

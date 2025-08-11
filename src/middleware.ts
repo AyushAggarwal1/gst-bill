@@ -3,6 +3,9 @@ import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
 export default async function middleware(request: NextRequest) {
+  if (process.env.DISABLE_MIDDLEWARE === 'true') {
+    return NextResponse.next();
+  }
   const path = request.nextUrl.pathname
   
   // Define public paths that don't require authentication
@@ -39,14 +42,6 @@ export default async function middleware(request: NextRequest) {
 // Configure which paths the middleware should run on
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.svg, favicon-16x16.svg (favicon files)
-     * - images (public images folder)
-     * - api routes
-     */
     '/((?!_next/static|_next/image|favicon.*\\.svg|images|api).*)',
   ],
-} 
+}

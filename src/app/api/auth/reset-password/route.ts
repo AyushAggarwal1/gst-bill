@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { compare } from 'bcrypt';
 import { hashPassword } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     const { email, organizationName, otp, newPassword } = await request.json();
