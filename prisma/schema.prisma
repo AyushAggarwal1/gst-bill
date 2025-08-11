@@ -19,6 +19,7 @@ model Tenant {
   items       Item[]
   bills       Bill[]
   invitations Invitation[]
+  passwordResetRequests PasswordResetRequest[]
 }
 
 model User {
@@ -38,6 +39,7 @@ model User {
   items              Item[]
   profile            Profile?
   roles              UserRole[]
+  passwordResetRequests PasswordResetRequest[]
 
   @@unique([email, tenantId]) // Email must be unique within a tenant
   @@index([tenantId])
@@ -156,6 +158,23 @@ model BillItem {
   amount    Float
   bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
   item      Item   @relation(fields: [itemId], references: [id])
+}
+
+model PasswordResetRequest {
+  id         String   @id @default(uuid())
+  email      String
+  tenantId   String
+  userId     String
+  otpHash    String
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([email, tenantId])
+  @@index([userId])
 }
 
 enum Role {
