@@ -34,4 +34,16 @@ export async function sendPasswordOtpMail(to: string, otp: string) {
   return info.messageId;
 }
 
+export async function sendSignupOtpMail(to: string, otp: string) {
+  const transporter = getTransporter();
+  const info = await transporter.sendMail({
+    from: mailFrom,
+    to,
+    subject: 'Verify your email to complete signup',
+    text: `Use this code to verify your email: ${otp}. It expires in 10 minutes.`,
+    html: `<p>Use this code to verify your email:</p><p style="font-size:20px;font-weight:bold;letter-spacing:3px">${otp}</p><p>This code expires in 10 minutes.</p>`,
+  });
+  return info.messageId;
+}
+
 

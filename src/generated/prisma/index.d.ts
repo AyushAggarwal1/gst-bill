@@ -63,6 +63,11 @@ export type BillItem = $Result.DefaultSelection<Prisma.$BillItemPayload>
  * 
  */
 export type PasswordResetRequest = $Result.DefaultSelection<Prisma.$PasswordResetRequestPayload>
+/**
+ * Model SignupVerification
+ * 
+ */
+export type SignupVerification = $Result.DefaultSelection<Prisma.$SignupVerificationPayload>
 
 /**
  * Enums
@@ -328,6 +333,16 @@ export class PrismaClient<
     * ```
     */
   get passwordResetRequest(): Prisma.PasswordResetRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.signupVerification`: Exposes CRUD operations for the **SignupVerification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SignupVerifications
+    * const signupVerifications = await prisma.signupVerification.findMany()
+    * ```
+    */
+  get signupVerification(): Prisma.SignupVerificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -777,7 +792,8 @@ export namespace Prisma {
     Item: 'Item',
     Bill: 'Bill',
     BillItem: 'BillItem',
-    PasswordResetRequest: 'PasswordResetRequest'
+    PasswordResetRequest: 'PasswordResetRequest',
+    SignupVerification: 'SignupVerification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -796,7 +812,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "userRole" | "invitation" | "profile" | "customer" | "item" | "bill" | "billItem" | "passwordResetRequest"
+      modelProps: "tenant" | "user" | "userRole" | "invitation" | "profile" | "customer" | "item" | "bill" | "billItem" | "passwordResetRequest" | "signupVerification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1540,6 +1556,80 @@ export namespace Prisma {
           }
         }
       }
+      SignupVerification: {
+        payload: Prisma.$SignupVerificationPayload<ExtArgs>
+        fields: Prisma.SignupVerificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SignupVerificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SignupVerificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+          }
+          findFirst: {
+            args: Prisma.SignupVerificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SignupVerificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+          }
+          findMany: {
+            args: Prisma.SignupVerificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>[]
+          }
+          create: {
+            args: Prisma.SignupVerificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+          }
+          createMany: {
+            args: Prisma.SignupVerificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SignupVerificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>[]
+          }
+          delete: {
+            args: Prisma.SignupVerificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+          }
+          update: {
+            args: Prisma.SignupVerificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.SignupVerificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SignupVerificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SignupVerificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.SignupVerificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+          }
+          aggregate: {
+            args: Prisma.SignupVerificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSignupVerification>
+          }
+          groupBy: {
+            args: Prisma.SignupVerificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SignupVerificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SignupVerificationCountArgs<ExtArgs>
+            result: $Utils.Optional<SignupVerificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1642,6 +1732,7 @@ export namespace Prisma {
     bill?: BillOmit
     billItem?: BillItemOmit
     passwordResetRequest?: PasswordResetRequestOmit
+    signupVerification?: SignupVerificationOmit
   }
 
   /* Types for Logging */
@@ -13684,6 +13775,1066 @@ export namespace Prisma {
 
 
   /**
+   * Model SignupVerification
+   */
+
+  export type AggregateSignupVerification = {
+    _count: SignupVerificationCountAggregateOutputType | null
+    _min: SignupVerificationMinAggregateOutputType | null
+    _max: SignupVerificationMaxAggregateOutputType | null
+  }
+
+  export type SignupVerificationMinAggregateOutputType = {
+    id: string | null
+    email: string | null
+    name: string | null
+    hashedPassword: string | null
+    organizationName: string | null
+    invitationToken: string | null
+    otpHash: string | null
+    expiresAt: Date | null
+    usedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type SignupVerificationMaxAggregateOutputType = {
+    id: string | null
+    email: string | null
+    name: string | null
+    hashedPassword: string | null
+    organizationName: string | null
+    invitationToken: string | null
+    otpHash: string | null
+    expiresAt: Date | null
+    usedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type SignupVerificationCountAggregateOutputType = {
+    id: number
+    email: number
+    name: number
+    hashedPassword: number
+    organizationName: number
+    invitationToken: number
+    otpHash: number
+    expiresAt: number
+    usedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SignupVerificationMinAggregateInputType = {
+    id?: true
+    email?: true
+    name?: true
+    hashedPassword?: true
+    organizationName?: true
+    invitationToken?: true
+    otpHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+  }
+
+  export type SignupVerificationMaxAggregateInputType = {
+    id?: true
+    email?: true
+    name?: true
+    hashedPassword?: true
+    organizationName?: true
+    invitationToken?: true
+    otpHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+  }
+
+  export type SignupVerificationCountAggregateInputType = {
+    id?: true
+    email?: true
+    name?: true
+    hashedPassword?: true
+    organizationName?: true
+    invitationToken?: true
+    otpHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SignupVerificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SignupVerification to aggregate.
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SignupVerifications to fetch.
+     */
+    orderBy?: SignupVerificationOrderByWithRelationInput | SignupVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SignupVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SignupVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SignupVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SignupVerifications
+    **/
+    _count?: true | SignupVerificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SignupVerificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SignupVerificationMaxAggregateInputType
+  }
+
+  export type GetSignupVerificationAggregateType<T extends SignupVerificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateSignupVerification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSignupVerification[P]>
+      : GetScalarType<T[P], AggregateSignupVerification[P]>
+  }
+
+
+
+
+  export type SignupVerificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SignupVerificationWhereInput
+    orderBy?: SignupVerificationOrderByWithAggregationInput | SignupVerificationOrderByWithAggregationInput[]
+    by: SignupVerificationScalarFieldEnum[] | SignupVerificationScalarFieldEnum
+    having?: SignupVerificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SignupVerificationCountAggregateInputType | true
+    _min?: SignupVerificationMinAggregateInputType
+    _max?: SignupVerificationMaxAggregateInputType
+  }
+
+  export type SignupVerificationGroupByOutputType = {
+    id: string
+    email: string
+    name: string
+    hashedPassword: string
+    organizationName: string | null
+    invitationToken: string | null
+    otpHash: string
+    expiresAt: Date
+    usedAt: Date | null
+    createdAt: Date
+    _count: SignupVerificationCountAggregateOutputType | null
+    _min: SignupVerificationMinAggregateOutputType | null
+    _max: SignupVerificationMaxAggregateOutputType | null
+  }
+
+  type GetSignupVerificationGroupByPayload<T extends SignupVerificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SignupVerificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SignupVerificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SignupVerificationGroupByOutputType[P]>
+            : GetScalarType<T[P], SignupVerificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SignupVerificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    name?: boolean
+    hashedPassword?: boolean
+    organizationName?: boolean
+    invitationToken?: boolean
+    otpHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["signupVerification"]>
+
+  export type SignupVerificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    name?: boolean
+    hashedPassword?: boolean
+    organizationName?: boolean
+    invitationToken?: boolean
+    otpHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["signupVerification"]>
+
+  export type SignupVerificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    name?: boolean
+    hashedPassword?: boolean
+    organizationName?: boolean
+    invitationToken?: boolean
+    otpHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["signupVerification"]>
+
+  export type SignupVerificationSelectScalar = {
+    id?: boolean
+    email?: boolean
+    name?: boolean
+    hashedPassword?: boolean
+    organizationName?: boolean
+    invitationToken?: boolean
+    otpHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type SignupVerificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "hashedPassword" | "organizationName" | "invitationToken" | "otpHash" | "expiresAt" | "usedAt" | "createdAt", ExtArgs["result"]["signupVerification"]>
+
+  export type $SignupVerificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SignupVerification"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      email: string
+      name: string
+      hashedPassword: string
+      organizationName: string | null
+      invitationToken: string | null
+      otpHash: string
+      expiresAt: Date
+      usedAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["signupVerification"]>
+    composites: {}
+  }
+
+  type SignupVerificationGetPayload<S extends boolean | null | undefined | SignupVerificationDefaultArgs> = $Result.GetResult<Prisma.$SignupVerificationPayload, S>
+
+  type SignupVerificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SignupVerificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SignupVerificationCountAggregateInputType | true
+    }
+
+  export interface SignupVerificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SignupVerification'], meta: { name: 'SignupVerification' } }
+    /**
+     * Find zero or one SignupVerification that matches the filter.
+     * @param {SignupVerificationFindUniqueArgs} args - Arguments to find a SignupVerification
+     * @example
+     * // Get one SignupVerification
+     * const signupVerification = await prisma.signupVerification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SignupVerificationFindUniqueArgs>(args: SelectSubset<T, SignupVerificationFindUniqueArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SignupVerification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SignupVerificationFindUniqueOrThrowArgs} args - Arguments to find a SignupVerification
+     * @example
+     * // Get one SignupVerification
+     * const signupVerification = await prisma.signupVerification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SignupVerificationFindUniqueOrThrowArgs>(args: SelectSubset<T, SignupVerificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SignupVerification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationFindFirstArgs} args - Arguments to find a SignupVerification
+     * @example
+     * // Get one SignupVerification
+     * const signupVerification = await prisma.signupVerification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SignupVerificationFindFirstArgs>(args?: SelectSubset<T, SignupVerificationFindFirstArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SignupVerification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationFindFirstOrThrowArgs} args - Arguments to find a SignupVerification
+     * @example
+     * // Get one SignupVerification
+     * const signupVerification = await prisma.signupVerification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SignupVerificationFindFirstOrThrowArgs>(args?: SelectSubset<T, SignupVerificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SignupVerifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SignupVerifications
+     * const signupVerifications = await prisma.signupVerification.findMany()
+     * 
+     * // Get first 10 SignupVerifications
+     * const signupVerifications = await prisma.signupVerification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const signupVerificationWithIdOnly = await prisma.signupVerification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SignupVerificationFindManyArgs>(args?: SelectSubset<T, SignupVerificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SignupVerification.
+     * @param {SignupVerificationCreateArgs} args - Arguments to create a SignupVerification.
+     * @example
+     * // Create one SignupVerification
+     * const SignupVerification = await prisma.signupVerification.create({
+     *   data: {
+     *     // ... data to create a SignupVerification
+     *   }
+     * })
+     * 
+     */
+    create<T extends SignupVerificationCreateArgs>(args: SelectSubset<T, SignupVerificationCreateArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SignupVerifications.
+     * @param {SignupVerificationCreateManyArgs} args - Arguments to create many SignupVerifications.
+     * @example
+     * // Create many SignupVerifications
+     * const signupVerification = await prisma.signupVerification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SignupVerificationCreateManyArgs>(args?: SelectSubset<T, SignupVerificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SignupVerifications and returns the data saved in the database.
+     * @param {SignupVerificationCreateManyAndReturnArgs} args - Arguments to create many SignupVerifications.
+     * @example
+     * // Create many SignupVerifications
+     * const signupVerification = await prisma.signupVerification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SignupVerifications and only return the `id`
+     * const signupVerificationWithIdOnly = await prisma.signupVerification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SignupVerificationCreateManyAndReturnArgs>(args?: SelectSubset<T, SignupVerificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SignupVerification.
+     * @param {SignupVerificationDeleteArgs} args - Arguments to delete one SignupVerification.
+     * @example
+     * // Delete one SignupVerification
+     * const SignupVerification = await prisma.signupVerification.delete({
+     *   where: {
+     *     // ... filter to delete one SignupVerification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SignupVerificationDeleteArgs>(args: SelectSubset<T, SignupVerificationDeleteArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SignupVerification.
+     * @param {SignupVerificationUpdateArgs} args - Arguments to update one SignupVerification.
+     * @example
+     * // Update one SignupVerification
+     * const signupVerification = await prisma.signupVerification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SignupVerificationUpdateArgs>(args: SelectSubset<T, SignupVerificationUpdateArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SignupVerifications.
+     * @param {SignupVerificationDeleteManyArgs} args - Arguments to filter SignupVerifications to delete.
+     * @example
+     * // Delete a few SignupVerifications
+     * const { count } = await prisma.signupVerification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SignupVerificationDeleteManyArgs>(args?: SelectSubset<T, SignupVerificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SignupVerifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SignupVerifications
+     * const signupVerification = await prisma.signupVerification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SignupVerificationUpdateManyArgs>(args: SelectSubset<T, SignupVerificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SignupVerifications and returns the data updated in the database.
+     * @param {SignupVerificationUpdateManyAndReturnArgs} args - Arguments to update many SignupVerifications.
+     * @example
+     * // Update many SignupVerifications
+     * const signupVerification = await prisma.signupVerification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SignupVerifications and only return the `id`
+     * const signupVerificationWithIdOnly = await prisma.signupVerification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SignupVerificationUpdateManyAndReturnArgs>(args: SelectSubset<T, SignupVerificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SignupVerification.
+     * @param {SignupVerificationUpsertArgs} args - Arguments to update or create a SignupVerification.
+     * @example
+     * // Update or create a SignupVerification
+     * const signupVerification = await prisma.signupVerification.upsert({
+     *   create: {
+     *     // ... data to create a SignupVerification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SignupVerification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SignupVerificationUpsertArgs>(args: SelectSubset<T, SignupVerificationUpsertArgs<ExtArgs>>): Prisma__SignupVerificationClient<$Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SignupVerifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationCountArgs} args - Arguments to filter SignupVerifications to count.
+     * @example
+     * // Count the number of SignupVerifications
+     * const count = await prisma.signupVerification.count({
+     *   where: {
+     *     // ... the filter for the SignupVerifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends SignupVerificationCountArgs>(
+      args?: Subset<T, SignupVerificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SignupVerificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SignupVerification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SignupVerificationAggregateArgs>(args: Subset<T, SignupVerificationAggregateArgs>): Prisma.PrismaPromise<GetSignupVerificationAggregateType<T>>
+
+    /**
+     * Group by SignupVerification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SignupVerificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SignupVerificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SignupVerificationGroupByArgs['orderBy'] }
+        : { orderBy?: SignupVerificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SignupVerificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSignupVerificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SignupVerification model
+   */
+  readonly fields: SignupVerificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SignupVerification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SignupVerificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SignupVerification model
+   */
+  interface SignupVerificationFieldRefs {
+    readonly id: FieldRef<"SignupVerification", 'String'>
+    readonly email: FieldRef<"SignupVerification", 'String'>
+    readonly name: FieldRef<"SignupVerification", 'String'>
+    readonly hashedPassword: FieldRef<"SignupVerification", 'String'>
+    readonly organizationName: FieldRef<"SignupVerification", 'String'>
+    readonly invitationToken: FieldRef<"SignupVerification", 'String'>
+    readonly otpHash: FieldRef<"SignupVerification", 'String'>
+    readonly expiresAt: FieldRef<"SignupVerification", 'DateTime'>
+    readonly usedAt: FieldRef<"SignupVerification", 'DateTime'>
+    readonly createdAt: FieldRef<"SignupVerification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SignupVerification findUnique
+   */
+  export type SignupVerificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * Filter, which SignupVerification to fetch.
+     */
+    where: SignupVerificationWhereUniqueInput
+  }
+
+  /**
+   * SignupVerification findUniqueOrThrow
+   */
+  export type SignupVerificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * Filter, which SignupVerification to fetch.
+     */
+    where: SignupVerificationWhereUniqueInput
+  }
+
+  /**
+   * SignupVerification findFirst
+   */
+  export type SignupVerificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * Filter, which SignupVerification to fetch.
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SignupVerifications to fetch.
+     */
+    orderBy?: SignupVerificationOrderByWithRelationInput | SignupVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SignupVerifications.
+     */
+    cursor?: SignupVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SignupVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SignupVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SignupVerifications.
+     */
+    distinct?: SignupVerificationScalarFieldEnum | SignupVerificationScalarFieldEnum[]
+  }
+
+  /**
+   * SignupVerification findFirstOrThrow
+   */
+  export type SignupVerificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * Filter, which SignupVerification to fetch.
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SignupVerifications to fetch.
+     */
+    orderBy?: SignupVerificationOrderByWithRelationInput | SignupVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SignupVerifications.
+     */
+    cursor?: SignupVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SignupVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SignupVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SignupVerifications.
+     */
+    distinct?: SignupVerificationScalarFieldEnum | SignupVerificationScalarFieldEnum[]
+  }
+
+  /**
+   * SignupVerification findMany
+   */
+  export type SignupVerificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * Filter, which SignupVerifications to fetch.
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SignupVerifications to fetch.
+     */
+    orderBy?: SignupVerificationOrderByWithRelationInput | SignupVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SignupVerifications.
+     */
+    cursor?: SignupVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SignupVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SignupVerifications.
+     */
+    skip?: number
+    distinct?: SignupVerificationScalarFieldEnum | SignupVerificationScalarFieldEnum[]
+  }
+
+  /**
+   * SignupVerification create
+   */
+  export type SignupVerificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SignupVerification.
+     */
+    data: XOR<SignupVerificationCreateInput, SignupVerificationUncheckedCreateInput>
+  }
+
+  /**
+   * SignupVerification createMany
+   */
+  export type SignupVerificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SignupVerifications.
+     */
+    data: SignupVerificationCreateManyInput | SignupVerificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SignupVerification createManyAndReturn
+   */
+  export type SignupVerificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many SignupVerifications.
+     */
+    data: SignupVerificationCreateManyInput | SignupVerificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SignupVerification update
+   */
+  export type SignupVerificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SignupVerification.
+     */
+    data: XOR<SignupVerificationUpdateInput, SignupVerificationUncheckedUpdateInput>
+    /**
+     * Choose, which SignupVerification to update.
+     */
+    where: SignupVerificationWhereUniqueInput
+  }
+
+  /**
+   * SignupVerification updateMany
+   */
+  export type SignupVerificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SignupVerifications.
+     */
+    data: XOR<SignupVerificationUpdateManyMutationInput, SignupVerificationUncheckedUpdateManyInput>
+    /**
+     * Filter which SignupVerifications to update
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * Limit how many SignupVerifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SignupVerification updateManyAndReturn
+   */
+  export type SignupVerificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * The data used to update SignupVerifications.
+     */
+    data: XOR<SignupVerificationUpdateManyMutationInput, SignupVerificationUncheckedUpdateManyInput>
+    /**
+     * Filter which SignupVerifications to update
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * Limit how many SignupVerifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SignupVerification upsert
+   */
+  export type SignupVerificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SignupVerification to update in case it exists.
+     */
+    where: SignupVerificationWhereUniqueInput
+    /**
+     * In case the SignupVerification found by the `where` argument doesn't exist, create a new SignupVerification with this data.
+     */
+    create: XOR<SignupVerificationCreateInput, SignupVerificationUncheckedCreateInput>
+    /**
+     * In case the SignupVerification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SignupVerificationUpdateInput, SignupVerificationUncheckedUpdateInput>
+  }
+
+  /**
+   * SignupVerification delete
+   */
+  export type SignupVerificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+    /**
+     * Filter which SignupVerification to delete.
+     */
+    where: SignupVerificationWhereUniqueInput
+  }
+
+  /**
+   * SignupVerification deleteMany
+   */
+  export type SignupVerificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SignupVerifications to delete
+     */
+    where?: SignupVerificationWhereInput
+    /**
+     * Limit how many SignupVerifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SignupVerification without action
+   */
+  export type SignupVerificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignupVerification
+     */
+    select?: SignupVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SignupVerification
+     */
+    omit?: SignupVerificationOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13840,6 +14991,22 @@ export namespace Prisma {
   };
 
   export type PasswordResetRequestScalarFieldEnum = (typeof PasswordResetRequestScalarFieldEnum)[keyof typeof PasswordResetRequestScalarFieldEnum]
+
+
+  export const SignupVerificationScalarFieldEnum: {
+    id: 'id',
+    email: 'email',
+    name: 'name',
+    hashedPassword: 'hashedPassword',
+    organizationName: 'organizationName',
+    invitationToken: 'invitationToken',
+    otpHash: 'otpHash',
+    expiresAt: 'expiresAt',
+    usedAt: 'usedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type SignupVerificationScalarFieldEnum = (typeof SignupVerificationScalarFieldEnum)[keyof typeof SignupVerificationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -14772,6 +15939,83 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PasswordResetRequest"> | Date | string
   }
 
+  export type SignupVerificationWhereInput = {
+    AND?: SignupVerificationWhereInput | SignupVerificationWhereInput[]
+    OR?: SignupVerificationWhereInput[]
+    NOT?: SignupVerificationWhereInput | SignupVerificationWhereInput[]
+    id?: StringFilter<"SignupVerification"> | string
+    email?: StringFilter<"SignupVerification"> | string
+    name?: StringFilter<"SignupVerification"> | string
+    hashedPassword?: StringFilter<"SignupVerification"> | string
+    organizationName?: StringNullableFilter<"SignupVerification"> | string | null
+    invitationToken?: StringNullableFilter<"SignupVerification"> | string | null
+    otpHash?: StringFilter<"SignupVerification"> | string
+    expiresAt?: DateTimeFilter<"SignupVerification"> | Date | string
+    usedAt?: DateTimeNullableFilter<"SignupVerification"> | Date | string | null
+    createdAt?: DateTimeFilter<"SignupVerification"> | Date | string
+  }
+
+  export type SignupVerificationOrderByWithRelationInput = {
+    id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    hashedPassword?: SortOrder
+    organizationName?: SortOrderInput | SortOrder
+    invitationToken?: SortOrderInput | SortOrder
+    otpHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SignupVerificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    email?: string
+    AND?: SignupVerificationWhereInput | SignupVerificationWhereInput[]
+    OR?: SignupVerificationWhereInput[]
+    NOT?: SignupVerificationWhereInput | SignupVerificationWhereInput[]
+    name?: StringFilter<"SignupVerification"> | string
+    hashedPassword?: StringFilter<"SignupVerification"> | string
+    organizationName?: StringNullableFilter<"SignupVerification"> | string | null
+    invitationToken?: StringNullableFilter<"SignupVerification"> | string | null
+    otpHash?: StringFilter<"SignupVerification"> | string
+    expiresAt?: DateTimeFilter<"SignupVerification"> | Date | string
+    usedAt?: DateTimeNullableFilter<"SignupVerification"> | Date | string | null
+    createdAt?: DateTimeFilter<"SignupVerification"> | Date | string
+  }, "id" | "email">
+
+  export type SignupVerificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    hashedPassword?: SortOrder
+    organizationName?: SortOrderInput | SortOrder
+    invitationToken?: SortOrderInput | SortOrder
+    otpHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: SignupVerificationCountOrderByAggregateInput
+    _max?: SignupVerificationMaxOrderByAggregateInput
+    _min?: SignupVerificationMinOrderByAggregateInput
+  }
+
+  export type SignupVerificationScalarWhereWithAggregatesInput = {
+    AND?: SignupVerificationScalarWhereWithAggregatesInput | SignupVerificationScalarWhereWithAggregatesInput[]
+    OR?: SignupVerificationScalarWhereWithAggregatesInput[]
+    NOT?: SignupVerificationScalarWhereWithAggregatesInput | SignupVerificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SignupVerification"> | string
+    email?: StringWithAggregatesFilter<"SignupVerification"> | string
+    name?: StringWithAggregatesFilter<"SignupVerification"> | string
+    hashedPassword?: StringWithAggregatesFilter<"SignupVerification"> | string
+    organizationName?: StringNullableWithAggregatesFilter<"SignupVerification"> | string | null
+    invitationToken?: StringNullableWithAggregatesFilter<"SignupVerification"> | string | null
+    otpHash?: StringWithAggregatesFilter<"SignupVerification"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"SignupVerification"> | Date | string
+    usedAt?: DateTimeNullableWithAggregatesFilter<"SignupVerification"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SignupVerification"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -15628,6 +16872,97 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SignupVerificationCreateInput = {
+    id?: string
+    email: string
+    name: string
+    hashedPassword: string
+    organizationName?: string | null
+    invitationToken?: string | null
+    otpHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type SignupVerificationUncheckedCreateInput = {
+    id?: string
+    email: string
+    name: string
+    hashedPassword: string
+    organizationName?: string | null
+    invitationToken?: string | null
+    otpHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type SignupVerificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    hashedPassword?: StringFieldUpdateOperationsInput | string
+    organizationName?: NullableStringFieldUpdateOperationsInput | string | null
+    invitationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    otpHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SignupVerificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    hashedPassword?: StringFieldUpdateOperationsInput | string
+    organizationName?: NullableStringFieldUpdateOperationsInput | string | null
+    invitationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    otpHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SignupVerificationCreateManyInput = {
+    id?: string
+    email: string
+    name: string
+    hashedPassword: string
+    organizationName?: string | null
+    invitationToken?: string | null
+    otpHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type SignupVerificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    hashedPassword?: StringFieldUpdateOperationsInput | string
+    organizationName?: NullableStringFieldUpdateOperationsInput | string | null
+    invitationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    otpHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SignupVerificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    hashedPassword?: StringFieldUpdateOperationsInput | string
+    organizationName?: NullableStringFieldUpdateOperationsInput | string | null
+    invitationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    otpHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16358,6 +17693,45 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type SignupVerificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    hashedPassword?: SortOrder
+    organizationName?: SortOrder
+    invitationToken?: SortOrder
+    otpHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SignupVerificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    hashedPassword?: SortOrder
+    organizationName?: SortOrder
+    invitationToken?: SortOrder
+    otpHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SignupVerificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    hashedPassword?: SortOrder
+    organizationName?: SortOrder
+    invitationToken?: SortOrder
+    otpHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type UserCreateNestedManyWithoutTenantInput = {
