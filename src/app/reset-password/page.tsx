@@ -27,10 +27,17 @@ function ResetPasswordPageInner() {
     setIsLoading(true);
     setMessage('');
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedOrg = organizationName.trim();
+      if (!normalizedEmail || !normalizedOrg) {
+        setMessage('Organization and Email are required');
+        return;
+      }
+
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, organizationName, otp, newPassword }),
+        body: JSON.stringify({ email: normalizedEmail, organizationName: normalizedOrg, otp, newPassword }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -75,9 +82,10 @@ function ResetPasswordPageInner() {
                   </svg>
                 </div>
                 <input
-                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
+                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-gray-100 text-gray-900 cursor-not-allowed"
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
+                  readOnly
                   required
                   placeholder="Your Organization"
                 />
@@ -95,9 +103,10 @@ function ResetPasswordPageInner() {
                 </div>
                 <input
                   type="email"
-                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-white hover:border-gray-400 focus:bg-white text-gray-900"
+                  className="pl-9 sm:pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm py-2.5 sm:py-3 transition-all duration-200 bg-gray-100 text-gray-900 cursor-not-allowed"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  readOnly
                   required
                   placeholder="you@example.com"
                 />
