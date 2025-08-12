@@ -13,15 +13,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'email and organizationName are required' }, { status: 400 });
     }
 
-    const tenant = await prisma.tenant.findFirst({ where: { name: organizationName } });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const normalizedOrgName = String(organizationName).trim();
+
+    const tenant = await prisma.tenant.findFirst({ where: { name: normalizedOrgName } });
     if (!tenant) {
       return NextResponse.json({ message: 'Organization not found' }, { status: 404 });
     }
 
-    const user = await prisma.user.findFirst({ where: { email, tenantId: tenant.id } });
+    const user = await prisma.user.findFirst({ where: { email: normalizedEmail, tenantId: tenant.id } });
     if (!user || !user.password) {
-      // Do not reveal whether user exists. Return 200 for safety.
-      return NextResponse.json({ message: 'If the account exists, an email has been sent.' });
+      return NextResponse.json({ message: 'Email not found for this organization' }, { status: 404 });
     }
 
     const otp = generateNumericOtp(6);
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
 
     await prisma.passwordResetRequest.create({
       data: {
-        email,
+        email: normalizedEmail,
         tenantId: tenant.id,
         userId: user.id,
         otpHash,
@@ -38,7 +40,7 @@ export async function POST(request: Request) {
       },
     });
 
-    await sendPasswordOtpMail(email, otp);
+    await sendPasswordOtpMail(normalizedEmail, otp);
 
     return NextResponse.json({ message: 'If the account exists, an email has been sent.' });
   } catch (error) {

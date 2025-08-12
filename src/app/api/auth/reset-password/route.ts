@@ -13,15 +13,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Password must be at least 8 characters' }, { status: 400 });
     }
 
-    const tenant = await prisma.tenant.findFirst({ where: { name: organizationName } });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const normalizedOrgName = String(organizationName).trim();
+
+    const tenant = await prisma.tenant.findFirst({ where: { name: normalizedOrgName } });
     if (!tenant) {
       return NextResponse.json({ message: 'Invalid organization' }, { status: 400 });
     }
 
-    const user = await prisma.user.findFirst({ where: { email, tenantId: tenant.id } });
+    const user = await prisma.user.findFirst({ where: { email: normalizedEmail, tenantId: tenant.id } });
     if (!user) {
-      // Do not reveal existence
-      return NextResponse.json({ message: 'Invalid OTP or expired' }, { status: 400 });
+      return NextResponse.json({ message: 'Invalid email for this organization' }, { status: 400 });
     }
 
     const recentRequest = await prisma.passwordResetRequest.findFirst({

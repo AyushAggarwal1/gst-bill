@@ -15,14 +15,21 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
     setMessage('');
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedOrg = organizationName.trim();
+      if (!normalizedEmail || !normalizedOrg) {
+        setMessage('Organization and Email are required');
+        return;
+      }
+
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, organizationName }),
+        body: JSON.stringify({ email: normalizedEmail, organizationName: normalizedOrg }),
       });
       if (res.ok) {
         setMessage('If the account exists, an email has been sent with a code.');
-        router.push(`/reset-password?email=${encodeURIComponent(email)}&organizationName=${encodeURIComponent(organizationName)}`);
+        router.push(`/reset-password?email=${encodeURIComponent(normalizedEmail)}&organizationName=${encodeURIComponent(normalizedOrg)}`);
       } else {
         const data = await res.json();
         setMessage(data.message || 'Something went wrong');
