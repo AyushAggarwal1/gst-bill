@@ -177,6 +177,21 @@ model PasswordResetRequest {
   @@index([userId])
 }
 
+model SignupVerification {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  name             String
+  hashedPassword   String
+  organizationName String?
+  invitationToken  String?
+  otpHash          String
+  expiresAt        DateTime
+  usedAt           DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([email])
+}
+
 enum Role {
   ADMIN
   USER
