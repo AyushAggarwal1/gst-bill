@@ -4,14 +4,6 @@ A modern, user-friendly application for creating and managing GST bills. Built w
 
 🌐 **Hosted on  Netlify**: [gstbillmaker.app](https://gstbillmaker.netlify.app) 
 
-🎬 **To Start Self Demo**: [demogstbillmaker.app](https://demogstbillmaker.netlify.app/) 
-
-```
-  Creds for Demo Env
-  Organization Name - ayush1
-  Email - ayush1@ayush.com
-  Password - ayush1@ayush.com
-```
 
 ![Demo](public/images/gst_bill_demo.gif)
 
