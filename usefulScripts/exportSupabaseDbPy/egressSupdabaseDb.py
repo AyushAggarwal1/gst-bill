@@ -19,7 +19,10 @@ tables_to_export = [
     'Invitation',
     'Item',
     'Profile',
-    'UserRole'
+    'UserRole',
+    'Tenant',
+    'PasswordResetRequest',
+    'SignupVerification'
 ]
 
 # Helper function to convert complex types for JSON
