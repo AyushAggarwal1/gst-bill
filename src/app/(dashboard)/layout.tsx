@@ -436,6 +436,17 @@ export default function DashboardLayout({
                       Edit Profile
                     </Link>
                     <Link
+                      href="/dashboard/change-password"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <svg className="h-4 w-4 mr-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10V7a4 4 0 118 0v3" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 10h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+                      </svg>
+                      Change Password
+                    </Link>
+                    <Link
                       href="/api/auth/signout"
                       className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
                       onClick={() => setMenuOpen(false)}
@@ -573,6 +584,18 @@ export default function DashboardLayout({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span className="text-sm">Profile</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/change-password"
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                  >
+                    <svg className="h-4 w-4 text-gray-400 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10V7a4 4 0 118 0v3" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 10h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+                    </svg>
+                    <span className="text-sm">Change Password</span>
                   </Link>
                   
                   <Link
