@@ -38,6 +38,19 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-16x16.svg?v=2" type="image/svg+xml" sizes="16x16" />
         <link rel="shortcut icon" href="/favicon.svg?v=2" />
         <link rel="apple-touch-icon" href="/favicon.svg?v=2" />
+        
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-D74FVBFXP5"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-D74FVBFXP5');
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.className} h-full`}>
         <Providers>{children}</Providers>
