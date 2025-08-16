@@ -1,0 +1,59 @@
+User-agent: *
+Allow: /
+
+# Allow access to main pages
+Allow: /login
+Allow: /register
+Allow: /forgot-password
+Allow: /reset-password
+Allow: /accept-invitation
+Allow: /search-gst
+Allow: /search-hsn
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /health
+Allow: /ui-demo
+
+# Allow access to sitemap
+Allow: /sitemap.xml
+
+# Disallow access to private/dashboard areas (these require authentication)
+Disallow: /dashboard/
+Disallow: /api/
+
+# Disallow access to admin and system files
+Disallow: /_next/
+Disallow: /.next/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.env
+Disallow: /env.example
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /tsconfig.json
+Disallow: /next.config.js
+Disallow: /tailwind.config.js
+Disallow: /postcss.config.js
+Disallow: /.eslintrc.json
+Disallow: /.gitignore
+Disallow: /.dockerignore
+Disallow: /Dockerfile
+Disallow: /docker-compose.yml
+
+# Disallow access to development and build files
+Disallow: /src/
+Disallow: /prisma/
+Disallow: /usefulScripts/
+Disallow: /.github/
+
+# Disallow access to documentation files
+Disallow: /API_Docs.md
+Disallow: /GST_API_README.md
+Disallow: /README.md
+Disallow: /gst-bill-postman-collection.json
+
+# Crawl delay (optional - helps prevent overwhelming your server)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://gstbillmaker.netlify.app/sitemap.xml
