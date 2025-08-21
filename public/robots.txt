@@ -12,7 +12,6 @@ Allow: /search-hsn
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /health
-Allow: /ui-demo
 
 # Allow access to sitemap
 Allow: /sitemap.xml
