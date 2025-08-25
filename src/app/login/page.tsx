@@ -1,19 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [organizationName, setOrganizationName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  // Check for success message and redirect to profile flag
+  const successMessage = searchParams?.get('success');
+  const redirectToProfile = searchParams?.get('redirectToProfile') === 'true';
+  
+  if (successMessage && !isSuccess) {
+    setIsSuccess(true);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +41,19 @@ export default function LoginPage() {
       if (res?.error) {
         setError("Invalid credentials or organization name");
       } else {
-        router.push("/dashboard");
+        // Check if user has a profile
+        const profileCheck = await fetch("/api/auth/check-profile");
+        if (profileCheck.ok) {
+          const { hasProfile } = await profileCheck.json();
+          if (hasProfile) {
+            router.push("/dashboard");
+          } else {
+            router.push("/dashboard/profile");
+          }
+        } else {
+          // Fallback to dashboard if profile check fails
+          router.push("/dashboard");
+        }
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
@@ -77,6 +99,23 @@ export default function LoginPage() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-red-800">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isSuccess && (
+            <div className="mb-6 rounded-xl bg-green-50 p-4 border border-green-200">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-800">
+                    {successMessage || "Success! Please sign in to continue."}
+                  </p>
                 </div>
               </div>
             </div>
@@ -239,5 +278,24 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <svg className="w-8 h-8 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 } 

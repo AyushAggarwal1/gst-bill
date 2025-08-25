@@ -120,7 +120,7 @@ function RegisterForm() {
         }
         setIsSuccess(true);
         setTimeout(() => {
-          router.push("/login?success=Account created successfully");
+          router.push("/login?success=Account created successfully&redirectToProfile=true");
         }, 1500);
       }
     } catch (error) {

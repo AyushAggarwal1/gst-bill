@@ -71,7 +71,12 @@ export default function ProfilePage() {
         throw new Error(data.message || "Failed to save profile");
       }
 
-      setSuccess("Profile saved successfully!");
+      setSuccess("Profile saved successfully! Redirecting to dashboard...");
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 2000);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to save profile");
     } finally {
@@ -100,6 +105,24 @@ export default function ProfilePage() {
 
       <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
+          {/* Welcome Message for New Users */}
+          {!profile.firmName && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-red-800">Welcome!</h3>
+                  <p className="text-sm text-red-700 mt-1">
+                    Please complete your business profile to get started with creating bills and managing your business.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Account Information Card */}
           <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl border border-white/20">
             <div className="px-6 py-6 sm:p-8">
@@ -142,10 +165,10 @@ export default function ProfilePage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m-2 0h2M7 7h10M7 11h6m0 4h-6" />
                     </svg>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900">Business Information</h3>
-                    <p className="text-sm text-gray-600">Details that appear on your invoices and bills</p>
-                  </div>
+                                  <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Business Information</h3>
+                  <p className="text-sm text-gray-600">Details that appear on your invoices and bills</p>
+                </div>
                 </div>
 
                 {success && (
