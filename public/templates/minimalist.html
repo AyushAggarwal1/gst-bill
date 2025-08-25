@@ -39,11 +39,10 @@
     }
     
     .invoice-title {
-      font-size: 28px;
-      font-weight: 300;
-      color: #1a1a1a;
-      margin-bottom: 20px;
-      letter-spacing: -0.5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
     
     .invoice-meta {
@@ -267,6 +266,15 @@
         margin: 0;
       }
     }
+  
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #333;
+    }
+
   </style>
 </head>
 <body>

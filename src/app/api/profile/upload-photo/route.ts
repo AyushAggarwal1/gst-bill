@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import cloudinary from "@/lib/cloudinary";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,23 +28,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "File size must be less than 5MB" }, { status: 400 });
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "profiles");
-    await mkdir(uploadsDir, { recursive: true });
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExtension = file.name.split(".").pop();
-    const fileName = `${currentUser.id}_${timestamp}.${fileExtension}`;
-    const filePath = path.join(uploadsDir, fileName);
-
-    // Convert file to buffer and save
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
 
-    // Update profile with photo path
-    const photoUrl = `/uploads/profiles/${fileName}`;
+    // Upload to Cloudinary
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'gst-bill-profiles',
+          public_id: `${currentUser.id}_${Date.now()}`,
+          transformation: [
+            { width: 300, height: 300, crop: 'fill' },
+            { quality: 'auto' }
+          ]
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+
+      uploadStream.end(buffer);
+    });
+
+    const photoUrl = (uploadResult as any).secure_url;
     
     const updatedProfile = await prisma.profile.upsert({
       where: {

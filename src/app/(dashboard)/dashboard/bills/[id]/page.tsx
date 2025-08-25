@@ -105,6 +105,7 @@ interface Profile {
   gstNo: string;
   phoneNo: string | null;
   bankDetails: string | null;
+  profilePhoto: string | null;
 }
 
 export default function BillDetailPage({ params }: BillParams) {
@@ -197,6 +198,11 @@ export default function BillDetailPage({ params }: BillParams) {
       `;
       const bankDetailsHTML = profile?.bankDetails ? `<div class="bank-details"><h3>Bank Details</h3><p>${(profile.bankDetails || '').replace(/\n/g, '<br>')}</p></div>` : '';
       const deliveryAddressHTML = bill?.deliveryAddress ? `<div style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px;"><p style="font-weight: 600;">Delivery Address:</p><p>${(bill.deliveryAddress).replace(/\n/g, '<br>')}</p></div>` : '';
+      
+      // Handle profile photo - only include if profile photo exists
+      const profilePhotoHTML = profile?.profilePhoto ? 
+        `<img src="${profile.profilePhoto}" alt="Business Logo" class="profile-photo" />` : '';
+      
       const printContent = htmlTemplate
         .replace(/{{BILL_NUMBER}}/g, bill?.billNumber || '')
         .replace(/{{BILL_DATE}}/g, format(new Date(bill?.billDate || new Date()), "dd/MM/yyyy"))
@@ -209,6 +215,7 @@ export default function BillDetailPage({ params }: BillParams) {
         .replace(/{{CUSTOMER_ADDRESS}}/g, (bill?.customer.address || '').replace(/\n/g, '<br>'))
         .replace(/{{CUSTOMER_GST}}/g, bill?.customer.gstNo || '')
         .replace(/{{DELIVERY_ADDRESS}}/g, deliveryAddressHTML)
+        .replace(/{{PROFILE_PHOTO}}/g, profilePhotoHTML)
         .replace(/{{ITEMS_TABLE}}/g, itemsTableHTML)
         .replace(/{{SUBTOTAL}}/g, bill?.subtotal.toFixed(2) || '0.00')
         .replace(/{{TAX_ROWS}}/g, taxRowsHTML)
