@@ -31,20 +31,26 @@ export async function GET(req: Request) {
 
     if (!user.profile) {
       return NextResponse.json({
+        id: "",
         firmName: "",
         address: "",
         gstNo: "",
         phoneNo: "",
         bankDetails: "",
+        profilePhoto: null,
+        defaultTemplate: null,
       });
     }
 
     return NextResponse.json({
+      id: user.profile.id,
       firmName: user.profile.firmName,
       address: user.profile.address,
       gstNo: user.profile.gstNo,
       phoneNo: user.profile.phoneNo || "",
       bankDetails: user.profile.bankDetails || "",
+      profilePhoto: user.profile.profilePhoto,
+      defaultTemplate: user.profile.defaultTemplate,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -64,7 +70,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { firmName, address, gstNo, phoneNo, bankDetails } = await req.json();
+    const { firmName, address, gstNo, phoneNo, bankDetails, profilePhoto } = await req.json();
 
     // Validate input
     if (!firmName || !address || !gstNo) {
@@ -106,6 +112,7 @@ export async function POST(req: Request) {
         gstNo,
         phoneNo: phoneNo || null,
         bankDetails: bankDetails || null,
+        profilePhoto: profilePhoto || null,
       },
       create: {
         firmName,
@@ -113,6 +120,7 @@ export async function POST(req: Request) {
         gstNo,
         phoneNo: phoneNo || null,
         bankDetails: bankDetails || null,
+        profilePhoto: profilePhoto || null,
         userId: user.id,
       },
     });

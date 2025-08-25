@@ -6824,6 +6824,8 @@ export namespace Prisma {
     gstNo: string | null
     phoneNo: string | null
     bankDetails: string | null
+    profilePhoto: string | null
+    defaultTemplate: string | null
     userId: string | null
   }
 
@@ -6834,6 +6836,8 @@ export namespace Prisma {
     gstNo: string | null
     phoneNo: string | null
     bankDetails: string | null
+    profilePhoto: string | null
+    defaultTemplate: string | null
     userId: string | null
   }
 
@@ -6844,6 +6848,8 @@ export namespace Prisma {
     gstNo: number
     phoneNo: number
     bankDetails: number
+    profilePhoto: number
+    defaultTemplate: number
     userId: number
     _all: number
   }
@@ -6856,6 +6862,8 @@ export namespace Prisma {
     gstNo?: true
     phoneNo?: true
     bankDetails?: true
+    profilePhoto?: true
+    defaultTemplate?: true
     userId?: true
   }
 
@@ -6866,6 +6874,8 @@ export namespace Prisma {
     gstNo?: true
     phoneNo?: true
     bankDetails?: true
+    profilePhoto?: true
+    defaultTemplate?: true
     userId?: true
   }
 
@@ -6876,6 +6886,8 @@ export namespace Prisma {
     gstNo?: true
     phoneNo?: true
     bankDetails?: true
+    profilePhoto?: true
+    defaultTemplate?: true
     userId?: true
     _all?: true
   }
@@ -6959,6 +6971,8 @@ export namespace Prisma {
     gstNo: string
     phoneNo: string | null
     bankDetails: string | null
+    profilePhoto: string | null
+    defaultTemplate: string | null
     userId: string
     _count: ProfileCountAggregateOutputType | null
     _min: ProfileMinAggregateOutputType | null
@@ -6986,6 +7000,8 @@ export namespace Prisma {
     gstNo?: boolean
     phoneNo?: boolean
     bankDetails?: boolean
+    profilePhoto?: boolean
+    defaultTemplate?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
@@ -6997,6 +7013,8 @@ export namespace Prisma {
     gstNo?: boolean
     phoneNo?: boolean
     bankDetails?: boolean
+    profilePhoto?: boolean
+    defaultTemplate?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
@@ -7008,6 +7026,8 @@ export namespace Prisma {
     gstNo?: boolean
     phoneNo?: boolean
     bankDetails?: boolean
+    profilePhoto?: boolean
+    defaultTemplate?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
@@ -7019,10 +7039,12 @@ export namespace Prisma {
     gstNo?: boolean
     phoneNo?: boolean
     bankDetails?: boolean
+    profilePhoto?: boolean
+    defaultTemplate?: boolean
     userId?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "phoneNo" | "bankDetails" | "userId", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "phoneNo" | "bankDetails" | "profilePhoto" | "defaultTemplate" | "userId", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -7045,6 +7067,8 @@ export namespace Prisma {
       gstNo: string
       phoneNo: string | null
       bankDetails: string | null
+      profilePhoto: string | null
+      defaultTemplate: string | null
       userId: string
     }, ExtArgs["result"]["profile"]>
     composites: {}
@@ -7476,6 +7500,8 @@ export namespace Prisma {
     readonly gstNo: FieldRef<"Profile", 'String'>
     readonly phoneNo: FieldRef<"Profile", 'String'>
     readonly bankDetails: FieldRef<"Profile", 'String'>
+    readonly profilePhoto: FieldRef<"Profile", 'String'>
+    readonly defaultTemplate: FieldRef<"Profile", 'String'>
     readonly userId: FieldRef<"Profile", 'String'>
   }
     
@@ -14883,6 +14909,8 @@ export namespace Prisma {
     gstNo: 'gstNo',
     phoneNo: 'phoneNo',
     bankDetails: 'bankDetails',
+    profilePhoto: 'profilePhoto',
+    defaultTemplate: 'defaultTemplate',
     userId: 'userId'
   };
 
@@ -15434,6 +15462,8 @@ export namespace Prisma {
     gstNo?: StringFilter<"Profile"> | string
     phoneNo?: StringNullableFilter<"Profile"> | string | null
     bankDetails?: StringNullableFilter<"Profile"> | string | null
+    profilePhoto?: StringNullableFilter<"Profile"> | string | null
+    defaultTemplate?: StringNullableFilter<"Profile"> | string | null
     userId?: StringFilter<"Profile"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -15445,6 +15475,8 @@ export namespace Prisma {
     gstNo?: SortOrder
     phoneNo?: SortOrderInput | SortOrder
     bankDetails?: SortOrderInput | SortOrder
+    profilePhoto?: SortOrderInput | SortOrder
+    defaultTemplate?: SortOrderInput | SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
   }
@@ -15460,6 +15492,8 @@ export namespace Prisma {
     gstNo?: StringFilter<"Profile"> | string
     phoneNo?: StringNullableFilter<"Profile"> | string | null
     bankDetails?: StringNullableFilter<"Profile"> | string | null
+    profilePhoto?: StringNullableFilter<"Profile"> | string | null
+    defaultTemplate?: StringNullableFilter<"Profile"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
 
@@ -15470,6 +15504,8 @@ export namespace Prisma {
     gstNo?: SortOrder
     phoneNo?: SortOrderInput | SortOrder
     bankDetails?: SortOrderInput | SortOrder
+    profilePhoto?: SortOrderInput | SortOrder
+    defaultTemplate?: SortOrderInput | SortOrder
     userId?: SortOrder
     _count?: ProfileCountOrderByAggregateInput
     _max?: ProfileMaxOrderByAggregateInput
@@ -15486,6 +15522,8 @@ export namespace Prisma {
     gstNo?: StringWithAggregatesFilter<"Profile"> | string
     phoneNo?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     bankDetails?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    profilePhoto?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    defaultTemplate?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     userId?: StringWithAggregatesFilter<"Profile"> | string
   }
 
@@ -16342,6 +16380,8 @@ export namespace Prisma {
     gstNo: string
     phoneNo?: string | null
     bankDetails?: string | null
+    profilePhoto?: string | null
+    defaultTemplate?: string | null
     user: UserCreateNestedOneWithoutProfileInput
   }
 
@@ -16352,6 +16392,8 @@ export namespace Prisma {
     gstNo: string
     phoneNo?: string | null
     bankDetails?: string | null
+    profilePhoto?: string | null
+    defaultTemplate?: string | null
     userId: string
   }
 
@@ -16362,6 +16404,8 @@ export namespace Prisma {
     gstNo?: StringFieldUpdateOperationsInput | string
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutProfileNestedInput
   }
 
@@ -16372,6 +16416,8 @@ export namespace Prisma {
     gstNo?: StringFieldUpdateOperationsInput | string
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -16382,6 +16428,8 @@ export namespace Prisma {
     gstNo: string
     phoneNo?: string | null
     bankDetails?: string | null
+    profilePhoto?: string | null
+    defaultTemplate?: string | null
     userId: string
   }
 
@@ -16392,6 +16440,8 @@ export namespace Prisma {
     gstNo?: StringFieldUpdateOperationsInput | string
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileUncheckedUpdateManyInput = {
@@ -16401,6 +16451,8 @@ export namespace Prisma {
     gstNo?: StringFieldUpdateOperationsInput | string
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -17310,6 +17362,8 @@ export namespace Prisma {
     gstNo?: SortOrder
     phoneNo?: SortOrder
     bankDetails?: SortOrder
+    profilePhoto?: SortOrder
+    defaultTemplate?: SortOrder
     userId?: SortOrder
   }
 
@@ -17320,6 +17374,8 @@ export namespace Prisma {
     gstNo?: SortOrder
     phoneNo?: SortOrder
     bankDetails?: SortOrder
+    profilePhoto?: SortOrder
+    defaultTemplate?: SortOrder
     userId?: SortOrder
   }
 
@@ -17330,6 +17386,8 @@ export namespace Prisma {
     gstNo?: SortOrder
     phoneNo?: SortOrder
     bankDetails?: SortOrder
+    profilePhoto?: SortOrder
+    defaultTemplate?: SortOrder
     userId?: SortOrder
   }
 
@@ -19549,6 +19607,8 @@ export namespace Prisma {
     gstNo: string
     phoneNo?: string | null
     bankDetails?: string | null
+    profilePhoto?: string | null
+    defaultTemplate?: string | null
   }
 
   export type ProfileUncheckedCreateWithoutUserInput = {
@@ -19558,6 +19618,8 @@ export namespace Prisma {
     gstNo: string
     phoneNo?: string | null
     bankDetails?: string | null
+    profilePhoto?: string | null
+    defaultTemplate?: string | null
   }
 
   export type ProfileCreateOrConnectWithoutUserInput = {
@@ -19777,6 +19839,8 @@ export namespace Prisma {
     gstNo?: StringFieldUpdateOperationsInput | string
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileUncheckedUpdateWithoutUserInput = {
@@ -19786,6 +19850,8 @@ export namespace Prisma {
     gstNo?: StringFieldUpdateOperationsInput | string
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserRoleUpsertWithWhereUniqueWithoutUserInput = {

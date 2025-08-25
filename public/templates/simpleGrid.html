@@ -1,0 +1,427 @@
+<!-- @template-name: Simple Grid -->
+<!-- @template-description: Grid-based layout with organized sections and clear structure -->
+<!-- @template-category: Structured -->
+<!-- @template-author: GST Bill System -->
+<!-- @template-version: 1.0 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{COMPANY_NAME}} - Invoice #{{BILL_NUMBER}}</title>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600;700&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      font-family: 'Source Sans Pro', Arial, sans-serif;
+      color: #333333;
+      line-height: 1.4;
+      padding: 0;
+      font-size: 11px;
+      background-color: white;
+    }
+    
+    .invoice-container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: white;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-gap: 20px;
+    }
+    
+    /* Header Grid */
+    .header-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #333333;
+      margin-bottom: 30px;
+    }
+    
+    .company-section h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333333;
+      margin-bottom: 8px;
+    }
+    
+    .company-section .subtitle {
+      font-size: 12px;
+      color: #666666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .invoice-section {
+      text-align: right;
+    }
+    
+    .invoice-section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333333;
+      margin-bottom: 10px;
+    }
+    
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      background-color: #f8f8f8;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: 1px solid #dddddd;
+    }
+    
+    .info-box {
+      text-align: center;
+    }
+    
+    .info-box .label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: #666666;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    
+    .info-box .value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333333;
+    }
+    
+    /* Parties Grid */
+    .parties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 30px;
+    }
+    
+    .party-section {
+      padding: 20px;
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .party-section h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #333333;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333333;
+    }
+    
+    .party-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 8px;
+    }
+    
+    .party-section p {
+      margin-bottom: 4px;
+      color: #666666;
+      line-height: 1.5;
+    }
+    
+    /* Items Section */
+    .items-header {
+      background-color: #333333;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    
+    .items-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      font-size: 11px;
+      border: 1px solid #333333;
+    }
+    
+    table thead th {
+      background-color: #f0f0f0;
+      color: #333333;
+      font-weight: 600;
+      text-align: center;
+      padding: 12px 8px;
+      border: 1px solid #333333;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+    
+    table tbody tr {
+      border-bottom: 1px solid #333333;
+    }
+    
+    table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    table tbody td {
+      padding: 12px 8px;
+      color: #333333;
+      vertical-align: middle;
+      border-right: 1px solid #333333;
+      text-align: center;
+    }
+    
+    table tbody td:last-child {
+      border-right: none;
+    }
+    
+    table tbody td:nth-child(2) {
+      text-align: left;
+    }
+    
+    table tbody td:nth-child(5),
+    table tbody td:nth-child(6),
+    table tbody td:nth-child(8) {
+      text-align: right;
+      font-weight: 500;
+    }
+    
+    /* Summary Grid */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 40px;
+      margin-bottom: 30px;
+    }
+    
+    .amount-words-section {
+      background-color: #f8f8f8;
+      padding: 20px;
+      border: 1px solid #dddddd;
+    }
+    
+    .amount-words-section h4 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    
+    .amount-words-section p {
+      color: #666666;
+      line-height: 1.5;
+    }
+    
+    .summary-section {
+      background-color: #fafafa;
+      border: 1px solid #dddddd;
+      padding: 20px;
+    }
+    
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .summary-table tr td {
+      padding: 8px 0;
+      font-size: 11px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .summary-table tr td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: #666666;
+    }
+    
+    .summary-table tr td:last-child {
+      text-align: right;
+      font-weight: 500;
+      color: #333333;
+    }
+    
+    .summary-table tr.total-row {
+      background-color: #333333;
+      color: white;
+    }
+    
+    .summary-table tr.total-row td {
+      padding: 15px 10px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      margin: 0 -20px;
+    }
+    
+    /* Bank Section */
+    .bank-section {
+      background-color: #f0f0f0;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: 1px solid #dddddd;
+    }
+    
+    .bank-section h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #333333;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333333;
+    }
+    
+    .bank-section p {
+      margin-bottom: 4px;
+      color: #666666;
+      line-height: 1.5;
+    }
+    
+    /* Footer */
+    .footer-section {
+      text-align: center;
+      padding: 20px 0;
+      border-top: 2px solid #333333;
+      font-size: 10px;
+      color: #666666;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+      
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      .invoice-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <div class="header-grid">
+      <div class="company-section">
+        <h1>{{COMPANY_NAME}}</h1>
+        <div class="subtitle">Professional Invoice</div>
+      </div>
+      <div class="invoice-section">
+        <h2>INVOICE</h2>
+      </div>
+    </div>
+    
+    <div class="info-grid">
+      <div class="info-box">
+        <span class="label">Invoice Number</span>
+        <span class="value">{{BILL_NUMBER}}</span>
+      </div>
+      <div class="info-box">
+        <span class="label">Invoice Date</span>
+        <span class="value">{{BILL_DATE}}</span>
+      </div>
+      <div class="info-box">
+        <span class="label">Tax Type</span>
+        <span class="value">{{TAX_TYPE}}</span>
+      </div>
+    </div>
+    
+    <div class="parties-grid">
+      <div class="party-section">
+        <h3>Invoice From</h3>
+        <div class="party-name">{{COMPANY_NAME}}</div>
+        <p>{{COMPANY_ADDRESS}}</p>
+        <p><strong>GSTIN:</strong> {{COMPANY_GST}}</p>
+        {{COMPANY_PHONE}}
+      </div>
+      <div class="party-section">
+        <h3>Invoice To</h3>
+        <div class="party-name">{{CUSTOMER_NAME}}</div>
+        <p>{{CUSTOMER_ADDRESS}}</p>
+        <p><strong>GSTIN:</strong> {{CUSTOMER_GST}}</p>
+        {{DELIVERY_ADDRESS}}
+      </div>
+    </div>
+    
+    <div class="items-header">
+      <h3>Items and Services Detail</h3>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 5%;">Sr.</th>
+          <th style="width: 30%;">Description</th>
+          <th style="width: 10%;">HSN</th>
+          <th style="width: 8%;">Qty</th>
+          <th style="width: 12%;">Rate</th>
+          <th style="width: 13%;">Amount</th>
+          <th style="width: 10%;">Tax%</th>
+          <th style="width: 12%;">Tax Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ITEMS_TABLE}}
+      </tbody>
+    </table>
+    
+    <div class="summary-grid">
+      <div class="amount-words-section">
+        <h4>Amount in Words</h4>
+        <p>{{AMOUNT_IN_WORDS}}</p>
+      </div>
+      <div class="summary-section">
+        <table class="summary-table">
+          <tr>
+            <td>Subtotal:</td>
+            <td>₹{{SUBTOTAL}}</td>
+          </tr>
+          {{TAX_ROWS}}
+          <tr class="total-row">
+            <td>TOTAL:</td>
+            <td>₹{{TOTAL}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    {{BANK_DETAILS}}
+    
+    <div class="footer-section">
+      <p>*** This is a computer generated invoice ***</p>
+    </div>
+  </div>
+</body>
+</html>

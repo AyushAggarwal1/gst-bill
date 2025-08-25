@@ -328,10 +328,22 @@ export default function BillsPage() {
       // Get the bill HTML
       const billHtml = billHtmlsArray[0];
 
+      // Fetch the user's profile to get default template
+      let userTemplate = 'billFormat.html';
+      try {
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          userTemplate = profileData.defaultTemplate || 'billFormat.html';
+        }
+      } catch (profileError) {
+        console.error('Error fetching user profile for template:', profileError);
+      }
+
       // Fetch the base template to extract <head> content
       let templateHeadContent = '';
       try {
-        const templateResponse = await fetch('/templates/billFormat.html');
+        const templateResponse = await fetch(`/templates/${userTemplate}`);
         if (templateResponse.ok) {
           const templateFullHtml = await templateResponse.text();
           const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);

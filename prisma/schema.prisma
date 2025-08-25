@@ -79,14 +79,16 @@ model Invitation {
 }
 
 model Profile {
-  id          String  @id @default(uuid())
-  firmName    String
-  address     String
-  gstNo       String
-  phoneNo     String?
-  bankDetails String?
-  userId      String  @unique
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String  @id @default(uuid())
+  firmName        String
+  address         String
+  gstNo           String
+  phoneNo         String?
+  bankDetails     String?
+  profilePhoto    String?
+  defaultTemplate String? @default("billFormat.html")
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Customer {

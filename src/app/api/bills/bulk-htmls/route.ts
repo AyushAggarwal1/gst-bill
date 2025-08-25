@@ -114,8 +114,19 @@ export const dynamic = 'force-dynamic';
 // Generate HTML content for a single bill
 function generateBillHTML(bill: any, profile: any): string {
   try {
-    const templatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
-    let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+    // Use user's default template if available, otherwise fall back to billFormat.html
+    const templateFilename = profile?.defaultTemplate || 'billFormat.html';
+    const templatePath = path.join(process.cwd(), 'public', 'templates', templateFilename);
+    
+    // Check if the template file exists, fall back to default if not
+    let htmlTemplate: string;
+    if (fs.existsSync(templatePath)) {
+      htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+    } else {
+      console.warn(`Template ${templateFilename} not found, falling back to billFormat.html`);
+      const defaultTemplatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
+      htmlTemplate = fs.readFileSync(defaultTemplatePath, 'utf8');
+    }
 
     const taxRate = bill?.items && bill.items.length > 0 && bill.items[0].item ? bill.items[0].item.taxRate : 0;
 
@@ -163,6 +174,10 @@ function generateBillHTML(bill: any, profile: any): string {
     ` : '';
 
     const companyPhoneHTML = profile?.phoneNo ? `<p>Phone: ${profile.phoneNo}</p>` : '';
+    
+    // Handle profile photo
+    const profilePhotoHTML = profile?.profilePhoto ? 
+      `<img src="${profile.profilePhoto}" alt="Business Logo" class="profile-photo" />` : '';
 
     htmlTemplate = htmlTemplate
       .replace(/{{BILL_NUMBER}}/g, bill?.billNumber || '')
@@ -176,6 +191,7 @@ function generateBillHTML(bill: any, profile: any): string {
       .replace(/{{CUSTOMER_ADDRESS}}/g, (bill?.customer?.address || '').replace(/\n/g, '<br>'))
       .replace(/{{CUSTOMER_GST}}/g, bill?.customer?.gstNo || '')
       .replace(/{{DELIVERY_ADDRESS}}/g, deliveryAddressHTML)
+      .replace(/{{PROFILE_PHOTO}}/g, profilePhotoHTML)
       .replace(/{{ITEMS_TABLE}}/g, itemsTableHTML)
       .replace(/{{SUBTOTAL}}/g, bill?.subtotal?.toFixed(2) || '0.00')
       .replace(/{{TAX_ROWS}}/g, taxRowsHTML)
