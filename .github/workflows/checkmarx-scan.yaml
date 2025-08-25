@@ -1,4 +1,4 @@
-name: Checkmarx to AccuKnox SaaS
+name: Checkmarx Scan
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch: 
 
 jobs:
-  checkmarx-accuknox:
+  checkmarx-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
