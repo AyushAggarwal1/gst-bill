@@ -52,7 +52,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} h-full`}>
+      <body className={`${inter.className} h-full`} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

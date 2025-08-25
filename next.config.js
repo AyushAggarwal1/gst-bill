@@ -16,9 +16,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   output: 'standalone',
-  experimental: {
-    serverComponentsExternalPackages: ['xlsx']
-  },
+  serverExternalPackages: ['xlsx'],
   // Configure dynamic routes
   async rewrites() {
     return {
