@@ -31,20 +31,24 @@ export async function GET(req: Request) {
 
     if (!user.profile) {
       return NextResponse.json({
+        id: "",
         firmName: "",
         address: "",
         gstNo: "",
         phoneNo: "",
         bankDetails: "",
+        defaultTemplate: null,
       });
     }
 
     return NextResponse.json({
+      id: user.profile.id,
       firmName: user.profile.firmName,
       address: user.profile.address,
       gstNo: user.profile.gstNo,
       phoneNo: user.profile.phoneNo || "",
       bankDetails: user.profile.bankDetails || "",
+      defaultTemplate: user.profile.defaultTemplate,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);

@@ -152,7 +152,19 @@ export default function BillDetailPage({ params }: BillParams) {
     const printWindow = window.open('', '_blank');
     if (!printWindow) { alert('Please allow pop-ups to print the invoice'); return; }
     try {
-      const templateResponse = await fetch('/templates/billFormat.html');
+      // Fetch the user's profile to get default template
+      let userTemplate = 'billFormat.html';
+      try {
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          userTemplate = profileData.defaultTemplate || 'billFormat.html';
+        }
+      } catch (profileError) {
+        console.error('Error fetching user profile for template:', profileError);
+      }
+
+      const templateResponse = await fetch(`/templates/${userTemplate}`);
       if (!templateResponse.ok) throw new Error('Failed to load template');
       let htmlTemplate = await templateResponse.text();
     const taxRate = bill?.items && bill.items.length > 0 ? bill.items[0].item.taxRate : 0;

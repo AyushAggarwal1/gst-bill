@@ -229,21 +229,28 @@ export async function POST(req: Request) {
             create: itemsWithCalculations,
           },
         },
-        include: {
-          customer: true,
-          items: {
-            include: {
-              item: true,
-            },
-          },
-        },
       });
 
       return newBill;
+    }, {
+      timeout: 10000, // 10 seconds timeout for this specific transaction
+    });
+
+    // Fetch the complete bill data after transaction
+    const completeBill = await prisma.bill.findUnique({
+      where: { id: bill.id },
+      include: {
+        customer: true,
+        items: {
+          include: {
+            item: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(
-      { message: "Bill created successfully", bill },
+      { message: "Bill created successfully", bill: completeBill },
       { status: 201 }
     );
   } catch (error) {
