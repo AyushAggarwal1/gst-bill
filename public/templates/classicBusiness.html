@@ -48,6 +48,18 @@
       letter-spacing: 2px;
       margin-bottom: 5px;
       text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #333;
     }
     
     .invoice-subtitle {
@@ -299,7 +311,10 @@
 <body>
   <div class="invoice-container">
     <div class="header-section">
-      <div class="invoice-title">TAX INVOICE</div>
+      <div class="invoice-title">
+      {{PROFILE_PHOTO}}
+      TAX INVOICE
+    </div>
       <div class="invoice-subtitle">Professional Business Invoice</div>
     </div>
     

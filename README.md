@@ -1,119 +1,165 @@
-# GST Bill Maker
+# GST Bill Management System
 
-A modern, user-friendly application for creating and managing GST bills. Built with Next.js, Prisma, and PostgreSQL.
-
-🌐 **Hosted on  Netlify**: [gstbillmaker.app](https://gstbillmaker.netlify.app) 
-
-
-![Demo](public/images/gst_bill_demo.gif)
+A comprehensive GST bill management system built with Next.js, Prisma, and PostgreSQL.
 
 ## Features
 
-### Security & Access Control
-- 🔐 **Multi-tenant Architecture**:
-  - Complete data isolation between organizations
-  - Tenant-specific data access and management
-  - Secure resource partitioning
-- 👥 **Role-Based Access Control (RBAC)**:
-  - Admin role: Full system access
-  - User role: Limited operational access
-  - Custom role permissions
-- 🔒 **Security Features**:
-  - Secure authentication with NextAuth
-  - Data encryption in transit
-  - Tenant-level audit trails
+- **User Authentication**: Secure login with NextAuth.js
+- **Customer Management**: Add, edit, and manage customers
+- **Item Management**: Create and manage inventory items
+- **Bill Generation**: Create professional GST bills with multiple templates
+- **Template System**: Dynamic template detection and selection
+- **Profile Management**: Business profile with logo upload
+- **PDF Generation**: Download bills as PDF files
+- **Bulk Operations**: Generate multiple bills at once
 
-### Core Features
-- 📊 **Dashboard**: Overview of your billing activities
-- 👥 **Customer Management**: Add and manage your customers
-- 📝 **Item Management**: Maintain your product/service catalog
-- 🏢 **Business Profile**: Manage your company details
+## Tech Stack
 
-### Billing Features
-- 💰 **GST Billing**: Create professional GST bills
-  - Automatic tax calculations (CGST/SGST/IGST)
-  - Automatic bill number generation
-  - Support for delivery address
-  - Print and download individual bills
-- 📄 **Bulk Operations**:
-  - Generate multiple bills as PDF
-  - Export bills to Excel with detailed analysis
-  - Bulk selection and actions
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: NextAuth.js
+- **File Storage**: Cloudinary (for profile photos)
+- **PDF Generation**: jsPDF
 
-### Search and Filtering
-- 🔍 **Advanced Search**:
-  - Search by bill number
-  - Filter by customer name
-  - Date range filtering
-- 📊 **Export Analysis**:
-  - Bills summary
-  - Item-wise analysis
-  - Price variation analysis
-  - Detailed sales reports
+## Getting Started
 
-### User Experience
-- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
-- 🎨 **Modern UI**: Clean and intuitive interface
-- ⚡ **Real-time Updates**: Instant search and filtering
-- 📋 **Bulk Actions**: Efficient management of multiple bills
+### Prerequisites
 
+- Node.js 18+ 
+- PostgreSQL database
+- Cloudinary account (for profile photo uploads)
 
-### API Routes [Complete API Guide](API_Docs.md)
-<!--
-- **Authentication & Authorization**
-  - POST `/api/auth/register`: User registration with tenant assignment
-  - POST `/api/auth/login`: User login with role validation
-  - GET `/api/auth/me`: Get current user profile with roles
+### Installation
 
-- **Tenant Management**
-  - GET `/api/tenants`: List all tenants (admin only)
-  - POST `/api/tenants`: Create new tenant
-  - PUT `/api/tenants/[id]`: Update tenant settings
-  - GET `/api/tenants/[id]/users`: List tenant users
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd gst-bill
+   ```
 
-- **Profile**
-  - GET `/api/profile`: Get business profile
-  - POST `/api/profile`: Update business profile
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- **Customers**
-  - GET `/api/customers`: List all customers (tenant-scoped)
-  - POST `/api/customers`: Create new customer
-  - PUT `/api/customers/[id]`: Update customer
-  - DELETE `/api/customers/[id]`: Delete customer
+3. **Set up environment variables**
+   Create a `.env.local` file with the following variables:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
+   
+   # NextAuth
+   NEXTAUTH_SECRET="your-nextauth-secret"
+   NEXTAUTH_URL="http://localhost:3000"
+   
+   # Cloudinary (for profile photo uploads)
+   CLOUDINARY_CLOUD_NAME="your-cloud-name"
+   CLOUDINARY_API_KEY="your-api-key"
+   CLOUDINARY_API_SECRET="your-api-secret"
+   ```
 
-- **Items**
-  - GET `/api/items`: List all items (tenant-scoped)
-  - POST `/api/items`: Create new item
-  - PUT `/api/items/[id]`: Update item
-  - DELETE `/api/items/[id]`: Delete item
+4. **Set up Cloudinary**
+   - Create a free account at [Cloudinary](https://cloudinary.com/)
+   - Get your cloud name, API key, and API secret from the dashboard
+   - Add them to your environment variables
 
-- **Bills**
-  - GET `/api/bills`: List all bills with search and filters (tenant-scoped)
-  - POST `/api/bills`: Create new bill
-  - GET `/api/bills/[id]`: Get bill details
-  - DELETE `/api/bills/[id]`: Delete bill
-  - POST `/api/bills/bulk-htmls`: Generate bulk PDFs
-  - POST `/api/bills/export`: Export bills to Excel
--->
-## Data Model
+5. **Set up the database**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-### Key Entities
-- **Tenant**: Organization/Business unit
-- **User**: System user with role assignments
-- **Role**: Access control role (Admin, User, etc.)
-- **Permission**: Granular access rights
-- **Customer**: Customer information (tenant-scoped)
-- **Item**: Product/service catalog (tenant-scoped)
-- **Bill**: GST bills (tenant-scoped)
+6. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+7. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Deployment
+
+### Netlify Deployment
+
+1. **Connect your repository** to Netlify
+2. **Set environment variables** in Netlify dashboard:
+   - `DATABASE_URL`
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL` (your Netlify domain)
+   - `CLOUDINARY_CLOUD_NAME`
+   - `CLOUDINARY_API_KEY`
+   - `CLOUDINARY_API_SECRET`
+
+3. **Build settings**:
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+
+### Vercel Deployment
+
+1. **Connect your repository** to Vercel
+2. **Set environment variables** in Vercel dashboard
+3. **Deploy** - Vercel will automatically detect Next.js settings
+
+## Template System
+
+The application supports dynamic template detection. Templates are automatically discovered from the `/public/templates/` directory.
+
+### Adding New Templates
+
+1. Create a new HTML file in `/public/templates/`
+2. Add metadata comments at the top:
+   ```html
+   <!-- @template-name: Your Template Name -->
+   <!-- @template-description: Brief description -->
+   <!-- @template-category: Category -->
+   ```
+3. Include required placeholders in your template
+4. The template will be automatically detected and available
+
+### Template Placeholders
+
+- `{{COMPANY_NAME}}` - Company name
+- `{{COMPANY_ADDRESS}}` - Company address
+- `{{COMPANY_GST}}` - Company GST number
+- `{{CUSTOMER_NAME}}` - Customer name
+- `{{CUSTOMER_ADDRESS}}` - Customer address
+- `{{BILL_NUMBER}}` - Invoice number
+- `{{BILL_DATE}}` - Invoice date
+- `{{ITEMS_TABLE}}` - Items table HTML
+- `{{TOTAL}}` - Total amount
+- `{{PROFILE_PHOTO}}` - Business logo/photo (optional)
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/check-profile` - Check if user has profile
+
+### Profile Management
+- `GET /api/profile` - Get user profile
+- `POST /api/profile` - Update user profile
+- `POST /api/profile/upload-photo` - Upload profile photo
+
+### Template Management
+- `GET /api/templates` - Get available templates
+- `PUT /api/templates/default` - Set default template
+
+### Bill Management
+- `GET /api/bills` - Get bills list
+- `POST /api/bills` - Create new bill
+- `GET /api/bills/[id]` - Get specific bill
+- `POST /api/bills/bulk-htmls` - Generate bulk bill HTMLs
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-## Support
+## License
 
-For support, please create an issue in the GitHub repository or contact the maintainers.
+This project is licensed under the MIT License.

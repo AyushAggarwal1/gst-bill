@@ -51,11 +51,10 @@
     }
     
     .document-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #555555;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
     
     .document-details {
@@ -337,13 +336,25 @@
         border: none;
       }
     }
+  
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #333;
+    }
+
   </style>
 </head>
 <body>
   <div class="invoice-container">
     <div class="letterhead">
       <div class="company-name">{{COMPANY_NAME}}</div>
-      <div class="document-title">Tax Invoice</div>
+      <div class="document-title">
+        {{PROFILE_PHOTO}}
+        Tax Invoice
+      </div>
     </div>
     
     <div class="document-details">

@@ -217,10 +217,24 @@ export default function BillsPage() {
         throw new Error("No HTML content received for bills.");
       }
 
+      // Fetch user's default template and profile
+      let userTemplate = 'billFormat.html';
+      let userProfile = null;
+      try {
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          userTemplate = profileData.defaultTemplate || 'billFormat.html';
+          userProfile = profileData;
+        }
+      } catch (profileError) {
+        console.error('Error fetching user profile:', profileError);
+      }
+
       // Fetch the base template to extract <head> content
       let templateHeadContent = '';
       try {
-        const templateResponse = await fetch('/templates/billFormat.html');
+        const templateResponse = await fetch(`/templates/${userTemplate}`);
         if (!templateResponse.ok) {
           console.error('Failed to fetch bill template for head. Status:', templateResponse.status);
         } else {
