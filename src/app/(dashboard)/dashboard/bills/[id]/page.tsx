@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -61,10 +61,11 @@ import NumberToWords from "@/components/NumberToWords";
 // }
 
 interface BillParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
+
 
 interface BillItem {
   id: string;
@@ -108,7 +109,7 @@ interface Profile {
 
 export default function BillDetailPage({ params }: BillParams) {
   const router = useRouter();
-  const { id } = params;
+  const { id } = React.use(params);
   const [bill, setBill] = useState<Bill | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
