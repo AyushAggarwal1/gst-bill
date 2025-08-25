@@ -169,6 +169,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   gstNo: 'gstNo',
   phoneNo: 'phoneNo',
   bankDetails: 'bankDetails',
+  profilePhoto: 'profilePhoto',
   defaultTemplate: 'defaultTemplate',
   userId: 'userId'
 };

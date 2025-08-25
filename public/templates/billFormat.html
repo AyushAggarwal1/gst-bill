@@ -40,6 +40,21 @@
       margin-bottom: 20px;
     }
     
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #eee;
+    }
+    
     .invoice-header h1 {
       font-size: 20px;
       color: #000;
@@ -225,7 +240,10 @@
 <body>
   <div class="invoice-container">
     <div class="invoice-header">
-      <h1>TAX INVOICE</h1>
+      <div class="header-content">
+        {{PROFILE_PHOTO}}
+        <h1>TAX INVOICE</h1>
+      </div>
     </div>
     
     <div class="invoice-subheader">

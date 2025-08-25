@@ -174,6 +174,10 @@ function generateBillHTML(bill: any, profile: any): string {
     ` : '';
 
     const companyPhoneHTML = profile?.phoneNo ? `<p>Phone: ${profile.phoneNo}</p>` : '';
+    
+    // Handle profile photo
+    const profilePhotoHTML = profile?.profilePhoto ? 
+      `<img src="${profile.profilePhoto}" alt="Business Logo" class="profile-photo" />` : '';
 
     htmlTemplate = htmlTemplate
       .replace(/{{BILL_NUMBER}}/g, bill?.billNumber || '')
@@ -187,6 +191,7 @@ function generateBillHTML(bill: any, profile: any): string {
       .replace(/{{CUSTOMER_ADDRESS}}/g, (bill?.customer?.address || '').replace(/\n/g, '<br>'))
       .replace(/{{CUSTOMER_GST}}/g, bill?.customer?.gstNo || '')
       .replace(/{{DELIVERY_ADDRESS}}/g, deliveryAddressHTML)
+      .replace(/{{PROFILE_PHOTO}}/g, profilePhotoHTML)
       .replace(/{{ITEMS_TABLE}}/g, itemsTableHTML)
       .replace(/{{SUBTOTAL}}/g, bill?.subtotal?.toFixed(2) || '0.00')
       .replace(/{{TAX_ROWS}}/g, taxRowsHTML)

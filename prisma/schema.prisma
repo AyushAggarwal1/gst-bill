@@ -85,6 +85,7 @@ model Profile {
   gstNo           String
   phoneNo         String?
   bankDetails     String?
+  profilePhoto    String?
   defaultTemplate String? @default("billFormat.html")
   userId          String  @unique
   user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)

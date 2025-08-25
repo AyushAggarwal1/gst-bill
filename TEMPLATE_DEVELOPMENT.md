@@ -54,6 +54,23 @@ Your template must include these placeholder variables:
 - `{{AMOUNT_IN_WORDS}}` - Total amount in words
 - `{{BANK_DETAILS}}` - Bank details section (optional, can be empty)
 
+#### Optional Placeholders:
+- `{{PROFILE_PHOTO}}` - Business logo/photo (optional, will be empty if no photo uploaded)
+
+#### Profile Photo Integration:
+To include the business logo/photo in your template, add this placeholder where you want the image to appear:
+
+```html
+<div class="header-content">
+  {{PROFILE_PHOTO}}
+  <h1>TAX INVOICE</h1>
+</div>
+```
+
+The system will automatically replace `{{PROFILE_PHOTO}}` with:
+- An `<img>` tag if a photo is uploaded
+- Empty string if no photo is uploaded
+
 #### Items Table Structure
 
 The `{{ITEMS_TABLE}}` will be replaced with:
@@ -125,6 +142,26 @@ The `{{TAX_ROWS}}` will be replaced with either:
 }
 ```
 
+#### Profile Photo Styling:
+If you include the profile photo, consider these CSS styles:
+
+```css
+.profile-photo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #eee;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+```
+
 ## 📂 Template Categories
 
 Organize templates using categories:
@@ -181,12 +218,21 @@ The system will:
       font-family: Arial, sans-serif;
       margin: 20px;
     }
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
     /* Your CSS styles here */
   </style>
 </head>
 <body>
   <div class="invoice">
-    <h1>{{COMPANY_NAME}}</h1>
+    <div class="header">
+      {{PROFILE_PHOTO}}
+      <h1>{{COMPANY_NAME}}</h1>
+    </div>
     <p>Invoice #: {{BILL_NUMBER}}</p>
     <p>Date: {{BILL_DATE}}</p>
     
