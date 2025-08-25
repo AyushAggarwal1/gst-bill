@@ -30,6 +30,21 @@ export default function Dashboard() {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
 
   useEffect(() => {
+    const checkProfileAndRedirect = async () => {
+      try {
+        const profileCheck = await fetch("/api/auth/check-profile");
+        if (profileCheck.ok) {
+          const { hasProfile } = await profileCheck.json();
+          if (!hasProfile) {
+            window.location.href = "/dashboard/profile";
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error checking profile:", error);
+      }
+    };
+
     const fetchStats = async () => {
       try {
         const [customersRes, itemsRes, billsRes] = await Promise.all([
@@ -123,6 +138,7 @@ export default function Dashboard() {
       }
     };
 
+    checkProfileAndRedirect();
     fetchStats();
     fetchRecentActivities();
   }, []);
