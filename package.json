@@ -33,6 +33,8 @@
     "puppeteer": "^24.17.0",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz"
   },
   "devDependencies": {
