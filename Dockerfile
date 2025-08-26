@@ -1,22 +1,49 @@
-FROM node:current-alpine3.22 AS base
+# Use the official Node.js 20 Alpine image as base
+FROM node:20-alpine AS base
 
-# Set working directory
-WORKDIR /app
+# Install system dependencies needed for Puppeteer and other packages
+RUN apk add --no-cache \
+    libc6-compat \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    python3 \
+    make \
+    g++ \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    musl-dev \
+    giflib-dev \
+    && rm -rf /var/cache/apk/*
+
+# Set environment variables for Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install dependencies only when needed
 FROM base AS deps
-COPY package.json package-lock.json ./
-RUN npm ci
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm install --only=production
 
 # Rebuild the source code only when needed
 FROM base AS builder
+WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line to disable telemetry at build time
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Build the application
 RUN npm run build
@@ -26,25 +53,30 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
-# Uncomment the following line to disable telemetry at runtime
+# Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# Create system user and group, set up directories and permissions
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    mkdir .next && \
-    chown nextjs:nodejs .next
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
+# Copy the public folder
 COPY --from=builder /app/public ./public
 
-# Automatically leverage output traces to reduce image size
-COPY --from=builder nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder nextjs:nodejs /app/.next/static ./.next/static
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
 
-# Generate Prisma client
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy Prisma files
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+# Copy package.json for runtime dependencies
 COPY --from=builder /app/package.json ./package.json
-RUN npm install --omit=dev && npx prisma generate
 
 USER nextjs
 
@@ -54,8 +86,6 @@ ENV PORT 3000
 # set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
 
-# Health check to verify the application is running
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))" || exit 1
-
-CMD ["node", "server.js"] 
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+CMD ["node", "server.js"]
