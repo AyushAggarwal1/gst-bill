@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, Role, Permission } from '@/generated/prisma';
-import bcrypt from 'bcryptjs'; // For password hashing
+import { hash } from 'bcrypt'; // For password hashing
 
 const prisma = new PrismaClient();
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       } 
     });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
 
     if (user) {
         // User exists in this tenant, update their details
