@@ -20,10 +20,6 @@
 # production
 /build
 
-# misc
-.DS_Store
-*.pem
-
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -32,6 +28,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+*.pem
+
 
 # vercel
 .vercel
@@ -42,10 +40,6 @@ next-env.d.ts
 
 # macos
 .DS_Store
-
-# docker
-docker-compose.yml
-DOCKER.md
 
 # exported data of prod database
 /exportedSupabaseDbProdEnv/
