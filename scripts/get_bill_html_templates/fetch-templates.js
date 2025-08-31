@@ -12,7 +12,7 @@ let CONFIG;
 try {
   CONFIG = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
 } catch (error) {
-  console.error('❌ Failed to load configuration file. Please check scripts/template-config.json');
+  console.error('❌ Failed to load configuration file. Please check scripts/get_bill_html_templates/template-config.json');
   process.exit(1);
 }
 

@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 // Update external templates (trigger fetch)
 export async function POST(request: NextRequest) {
   try {
-    const { fetchTemplatesFromRepo } = await import('../../../../scripts/get_bill_html_templates/fetch-templates.js');
+    const { fetchTemplatesFromRepo } = await import('../../../../../scripts/get_bill_html_templates/fetch-templates.js');
     
     // This would require the script to be properly set up
     // For now, return a message about manual fetching
