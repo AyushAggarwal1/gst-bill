@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://gstbillmaker.netlify.app/</loc>
+    <loc>https://gstly.netlify.app/</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,35 +10,35 @@
 
   <!-- Authentication Pages -->
   <url>
-    <loc>https://gstbillmaker.netlify.app/login</loc>
+    <loc>https://gstly.netlify.app/login</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/register</loc>
+    <loc>https://gstly.netlify.app/register</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/forgot-password</loc>
+    <loc>https://gstly.netlify.app/forgot-password</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/reset-password</loc>
+    <loc>https://gstly.netlify.app/reset-password</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/accept-invitation</loc>
+    <loc>https://gstly.netlify.app/accept-invitation</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -46,14 +46,14 @@
 
   <!-- Search Pages -->
   <url>
-    <loc>https://gstbillmaker.netlify.app/search-gst</loc>
+    <loc>https://gstly.netlify.app/search-gst</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/search-hsn</loc>
+    <loc>https://gstly.netlify.app/search-hsn</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -61,49 +61,49 @@
 
   <!-- Dashboard Pages (Protected Routes) -->
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard</loc>
+    <loc>https://gstly.netlify.app/dashboard</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard/profile</loc>
+    <loc>https://gstly.netlify.app/dashboard/profile</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard/change-password</loc>
+    <loc>https://gstly.netlify.app/dashboard/change-password</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard/bills</loc>
+    <loc>https://gstly.netlify.app/dashboard/bills</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard/customers</loc>
+    <loc>https://gstly.netlify.app/dashboard/customers</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard/items</loc>
+    <loc>https://gstly.netlify.app/dashboard/items</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/dashboard/user-management</loc>
+    <loc>https://gstly.netlify.app/dashboard/user-management</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -111,14 +111,14 @@
 
   <!-- Legal Pages -->
   <url>
-    <loc>https://gstbillmaker.netlify.app/privacy-policy</loc>
+    <loc>https://gstly.netlify.app/privacy-policy</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/terms-of-service</loc>
+    <loc>https://gstly.netlify.app/terms-of-service</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
@@ -126,14 +126,14 @@
 
   <!-- Utility Pages -->
   <url>
-    <loc>https://gstbillmaker.netlify.app/health</loc>
+    <loc>https://gstly.netlify.app/health</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://gstbillmaker.netlify.app/ui-demo</loc>
+    <loc>https://gstly.netlify.app/ui-demo</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
