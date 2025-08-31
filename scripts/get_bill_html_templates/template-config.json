@@ -34,7 +34,7 @@
     ]
   },
   "autoUpdate": {
-    "enabled": false,
+    "enabled": true,
     "interval": "24h",
     "lastUpdate": "2025-08-31T11:55:11.897Z"
   }
