@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../src/generated/prisma/index.js';
+import { PrismaClient } from '../../../src/generated/prisma/index.js';
 import fs from 'fs/promises';
 import path from 'path';
 

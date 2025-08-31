@@ -234,7 +234,7 @@ export default function BillsPage() {
       // Fetch the base template to extract <head> content
       let templateHeadContent = '';
       try {
-        const templateResponse = await fetch(`/templates/${userTemplate}`);
+        const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
         if (!templateResponse.ok) {
           console.error('Failed to fetch bill template for head. Status:', templateResponse.status);
         } else {
@@ -357,7 +357,7 @@ export default function BillsPage() {
       // Fetch the base template to extract <head> content
       let templateHeadContent = '';
       try {
-        const templateResponse = await fetch(`/templates/${userTemplate}`);
+        const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
         if (templateResponse.ok) {
           const templateFullHtml = await templateResponse.text();
           const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);

@@ -1,0 +1,41 @@
+{
+  "externalRepo": {
+    "owner": "AyushAggarwal1",
+    "repo": "gst-bill-html-templates",
+    "branch": "main",
+    "path": ""
+  },
+  "localPaths": {
+    "externalTemplatesDir": "public/templates",
+    "templateIndexFile": "public/templates/index.json"
+  },
+  "templateValidation": {
+    "requiredPlaceholders": [
+      "{{COMPANY_NAME}}",
+      "{{COMPANY_ADDRESS}}",
+      "{{COMPANY_GST}}",
+      "{{CUSTOMER_NAME}}",
+      "{{CUSTOMER_ADDRESS}}",
+      "{{CUSTOMER_GST}}",
+      "{{BILL_NUMBER}}",
+      "{{BILL_DATE}}",
+      "{{TAX_TYPE}}",
+      "{{ITEMS_TABLE}}",
+      "{{SUBTOTAL}}",
+      "{{TAX_ROWS}}",
+      "{{TOTAL}}",
+      "{{AMOUNT_IN_WORDS}}"
+    ],
+    "optionalPlaceholders": [
+      "{{COMPANY_PHONE}}",
+      "{{DELIVERY_ADDRESS}}",
+      "{{BANK_DETAILS}}",
+      "{{PROFILE_PHOTO}}"
+    ]
+  },
+  "autoUpdate": {
+    "enabled": false,
+    "interval": "24h",
+    "lastUpdate": "2025-08-31T11:55:11.897Z"
+  }
+}

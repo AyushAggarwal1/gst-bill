@@ -95,7 +95,7 @@ export default function TemplatesPage() {
 
   const previewTemplate = (templateFilename: string) => {
     // Open template preview in a new tab
-    window.open(`/templates/${templateFilename}`, '_blank');
+    window.open(`/api/templates/serve?template=${encodeURIComponent(templateFilename)}`, '_blank');
   };
 
   if (loading) {

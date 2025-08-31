@@ -281,7 +281,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/ayush/ayush-project/gst-bill/src/generated/prisma",
+      "value": "/home/ayush/Desktop/ayush-projects/gst-bill/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -295,7 +295,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/ayush/ayush-project/gst-bill/prisma/schema.prisma",
+    "sourceFilePath": "/home/ayush/Desktop/ayush-projects/gst-bill/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -309,7 +309,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": true,
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

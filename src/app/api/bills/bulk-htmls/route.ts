@@ -116,7 +116,14 @@ function generateBillHTML(bill: any, profile: any): string {
   try {
     // Use user's default template if available, otherwise fall back to billFormat.html
     const templateFilename = profile?.defaultTemplate || 'billFormat.html';
-    const templatePath = path.join(process.cwd(), 'public', 'templates', templateFilename);
+    
+    // Check if it's a backup template
+    let templatePath: string;
+    if (templateFilename.startsWith('backup-templates/')) {
+      templatePath = path.join(process.cwd(), 'public', templateFilename);
+    } else {
+      templatePath = path.join(process.cwd(), 'public', 'templates', templateFilename);
+    }
     
     // Check if the template file exists, fall back to default if not
     let htmlTemplate: string;
