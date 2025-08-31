@@ -12,6 +12,9 @@ interface Template {
   author?: string;
   version?: string;
   createdAt?: string;
+  source?: string;
+  isExternal?: boolean;
+  isBackup?: boolean;
 }
 
 interface TemplateMetadata {
@@ -84,47 +87,101 @@ function extractTemplateMetadata(htmlContent: string, filename: string): Templat
  */
 function getAvailableTemplates(): Template[] {
   const templatesDir = path.join(process.cwd(), 'public', 'templates');
+  const backupTemplatesDir = path.join(process.cwd(), 'public', 'backup-templates');
   
+  const templates: Template[] = [];
+  let templateId = 1;
+  
+  // Load main templates (from external repository)
   try {
     const files = fs.readdirSync(templatesDir)
       .filter(file => file.endsWith('.html'))
       .sort(); // Sort alphabetically for consistent ordering
     
-    const templates: Template[] = [];
-    
-    files.forEach((filename, index) => {
+    files.forEach((filename) => {
       try {
         const filePath = path.join(templatesDir, filename);
         const htmlContent = fs.readFileSync(filePath, 'utf8');
         const metadata = extractTemplateMetadata(htmlContent, filename);
         
+        // Extract source information from metadata
+        const sourceMatch = htmlContent.match(/@template-source:\s*(.+)/);
+        const importDateMatch = htmlContent.match(/@template-import-date:\s*(.+)/);
+        
         templates.push({
-          id: (index + 1).toString(),
+          id: templateId.toString(),
           name: metadata.name || filename.replace('.html', ''),
           filename,
           description: metadata.description || `Professional invoice template`,
-          category: metadata.category,
-          author: metadata.author,
-          version: metadata.version,
-          createdAt: fs.statSync(filePath).birthtime.toISOString()
+          category: metadata.category || 'Main',
+          author: metadata.author || 'GST Bill System',
+          version: metadata.version || '1.0',
+          createdAt: importDateMatch ? importDateMatch[1].trim() : fs.statSync(filePath).birthtime.toISOString(),
+          source: sourceMatch ? sourceMatch[1].trim() : 'main'
         });
+        templateId++;
       } catch (error) {
         console.error(`Error processing template ${filename}:`, error);
         // Still include the template with basic info
         templates.push({
-          id: (index + 1).toString(),
+          id: templateId.toString(),
           name: filename.replace('.html', '').replace(/([A-Z])/g, ' $1').trim(),
           filename,
-          description: `Professional invoice template`
+          description: `Professional invoice template`,
+          source: 'main'
         });
+        templateId++;
       }
     });
-    
-    return templates;
   } catch (error) {
-    console.error('Error scanning templates directory:', error);
-    return [];
+    console.error('Error scanning main templates directory:', error);
   }
+  
+  // Load backup templates (old local templates)
+  try {
+    if (fs.existsSync(backupTemplatesDir)) {
+      const backupFiles = fs.readdirSync(backupTemplatesDir)
+        .filter(file => file.endsWith('.html'))
+        .sort();
+      
+      backupFiles.forEach((filename) => {
+        try {
+          const filePath = path.join(backupTemplatesDir, filename);
+          const htmlContent = fs.readFileSync(filePath, 'utf8');
+          const metadata = extractTemplateMetadata(htmlContent, filename);
+          
+          templates.push({
+            id: templateId.toString(),
+            name: metadata.name || filename.replace('.html', ''),
+            filename: `backup-templates/${filename}`,
+            description: metadata.description || `Backup invoice template`,
+            category: metadata.category || 'Backup',
+            author: metadata.author || 'Backup Repository',
+            version: metadata.version || '1.0',
+            createdAt: fs.statSync(filePath).birthtime.toISOString(),
+            source: 'backup',
+            isBackup: true
+          });
+          templateId++;
+        } catch (error) {
+          console.error(`Error processing backup template ${filename}:`, error);
+          templates.push({
+            id: templateId.toString(),
+            name: filename.replace('.html', '').replace(/([A-Z])/g, ' $1').trim(),
+            filename: `backup-templates/${filename}`,
+            description: `Backup invoice template`,
+            source: 'backup',
+            isBackup: true
+          });
+          templateId++;
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error scanning backup templates directory:', error);
+  }
+  
+  return templates;
 }
 
 export async function GET(req: NextRequest) {

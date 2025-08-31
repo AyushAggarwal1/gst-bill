@@ -22,7 +22,13 @@ export async function PUT(req: NextRequest) {
     }
 
     // Validate that the template file exists
-    const templatePath = path.join(process.cwd(), 'public', 'templates', defaultTemplate);
+    let templatePath: string;
+    if (defaultTemplate.startsWith('backup-templates/')) {
+      templatePath = path.join(process.cwd(), 'public', defaultTemplate);
+    } else {
+      templatePath = path.join(process.cwd(), 'public', 'templates', defaultTemplate);
+    }
+    
     if (!fs.existsSync(templatePath)) {
       return NextResponse.json(
         { error: "Template file not found" },

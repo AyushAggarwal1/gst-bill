@@ -165,7 +165,7 @@ export default function BillDetailPage({ params }: BillParams) {
         console.error('Error fetching user profile for template:', profileError);
       }
 
-      const templateResponse = await fetch(`/templates/${userTemplate}`);
+      const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
       if (!templateResponse.ok) throw new Error('Failed to load template');
       let htmlTemplate = await templateResponse.text();
     const taxRate = bill?.items && bill.items.length > 0 ? bill.items[0].item.taxRate : 0;
