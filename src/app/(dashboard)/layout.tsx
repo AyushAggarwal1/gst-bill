@@ -4,11 +4,31 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment, Suspense } from "react";
 import { Transition } from "@headlessui/react";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import FeatureDisabled from "@/components/FeatureDisabled";
 import FeatureRedirectNotification from "@/components/FeatureRedirectNotification";
+
+// Component to handle search params with Suspense
+function SearchParamsHandler() {
+  const searchParams = useSearchParams();
+  
+  // Check for feature redirect message from middleware
+  const redirectMessage = searchParams?.get('message');
+  const redirectedFrom = searchParams?.get('from');
+
+  if (redirectMessage) {
+    return (
+      <FeatureRedirectNotification 
+        message={redirectMessage} 
+        from={redirectedFrom || undefined} 
+      />
+    );
+  }
+
+  return null;
+}
 
 export default function DashboardLayout({
   children,
@@ -18,7 +38,6 @@ export default function DashboardLayout({
   const router = useRouter();
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
@@ -43,10 +62,6 @@ export default function DashboardLayout({
   
   const typedSession = session as { user: SessionUser } | null;
   const isAdmin = typedSession?.user?.isAdmin || typedSession?.user?.role === 'ADMIN'; // Adjust as needed
-
-  // Check for feature redirect message from middleware
-  const redirectMessage = searchParams?.get('message');
-  const redirectedFrom = searchParams?.get('from');
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -858,7 +873,9 @@ export default function DashboardLayout({
       </Transition>
       
       {/* Feature Redirect Notification */}
-      <FeatureRedirectNotification />
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
     </div>
   );
 } 
