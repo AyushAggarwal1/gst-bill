@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import FeatureGuard from "@/components/FeatureGuard";
 
 interface Template {
   id: string;
@@ -20,7 +21,7 @@ interface UserProfile {
   defaultTemplate: string | null;
 }
 
-export default function TemplatesPage() {
+function TemplatesPageContent() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -269,5 +270,13 @@ export default function TemplatesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TemplatesPage() {
+  return (
+    <FeatureGuard feature="TEMPLATES">
+      <TemplatesPageContent />
+    </FeatureGuard>
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader, StatsCard, QuickActionCard, LoadingSpinner, EmptyState } from "@/components/ui";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import FeatureGuard from "@/components/FeatureGuard";
 
 interface Customer {
   id: string;
@@ -15,7 +16,7 @@ interface Customer {
   createdAt: string;
 }
 
-export default function CustomersPage() {
+function CustomersPageContent() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -612,5 +613,13 @@ export default function CustomersPage() {
           )}
       </div>
     </div>
+  );
+}
+
+export default function CustomersPage() {
+  return (
+    <FeatureGuard feature="CUSTOMERS">
+      <CustomersPageContent />
+    </FeatureGuard>
   );
 } 

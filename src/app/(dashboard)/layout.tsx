@@ -3,9 +3,32 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, useEffect, useRef, Fragment } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef, Fragment, Suspense } from "react";
 import { Transition } from "@headlessui/react";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import FeatureDisabled from "@/components/FeatureDisabled";
+import FeatureRedirectNotification from "@/components/FeatureRedirectNotification";
+
+// Component to handle search params with Suspense
+function SearchParamsHandler() {
+  const searchParams = useSearchParams();
+  
+  // Check for feature redirect message from middleware
+  const redirectMessage = searchParams?.get('message');
+  const redirectedFrom = searchParams?.get('from');
+
+  if (redirectMessage) {
+    return (
+      <FeatureRedirectNotification 
+        message={redirectMessage} 
+        from={redirectedFrom || undefined} 
+      />
+    );
+  }
+
+  return null;
+}
 
 export default function DashboardLayout({
   children,
@@ -21,8 +44,10 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [enabledFeatures, setEnabledFeatures] = useState<Set<string> | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  
+  // Use the feature flags hook
+  const { enabledFeatures, isFeatureEnabled, isLoading: flagsLoading } = useFeatureFlags();
 
   // Extend the session user type to include isAdmin (if not already there)
   // This is an example; adjust based on your actual session user type
@@ -37,28 +62,6 @@ export default function DashboardLayout({
   
   const typedSession = session as { user: SessionUser } | null;
   const isAdmin = typedSession?.user?.isAdmin || typedSession?.user?.role === 'ADMIN'; // Adjust as needed
-
-  // Feature flags
-  useEffect(() => {
-    async function loadFlags() {
-      try {
-        const res = await fetch('/api/feature-flags', { cache: 'no-store' });
-        if (!res.ok) return;
-        const data: Array<{ feature: string; enabled: boolean }> = await res.json();
-        const set = new Set<string>();
-        for (const f of data) if (f.enabled) set.add(f.feature);
-        setEnabledFeatures(set);
-      } catch {
-        setEnabledFeatures(null); // default allow
-      }
-    }
-    loadFlags();
-  }, []);
-
-  const isFeatureEnabled = (feature: string | undefined) => {
-    if (!feature) return true;
-    return enabledFeatures ? enabledFeatures.has(feature) : true;
-  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -868,6 +871,11 @@ export default function DashboardLayout({
           </div>
         </div>
       </Transition>
+      
+      {/* Feature Redirect Notification */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
     </div>
   );
 } 
