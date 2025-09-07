@@ -17,7 +17,7 @@ export default function TermsOfService() {
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Terms of Service</h1>
-                <p className="text-sm text-gray-600 mt-1">GST Bill Maker - Professional billing solution</p>
+                <p className="text-sm text-gray-600 mt-1">GSTly - Professional billing solution</p>
               </div>
             </div>
             <Link
@@ -52,7 +52,7 @@ export default function TermsOfService() {
             
             <div className="space-y-4 text-gray-700 leading-relaxed">
               <p>
-                By accessing and using GST Bill Maker ("the Service"), you accept and agree to be bound by the terms and provision of this agreement.
+                By accessing and using GSTly ("the Service"), you accept and agree to be bound by the terms and provision of this agreement.
               </p>
               <p>
                 If you do not agree to abide by the above, please do not use this service. These terms apply to all users of the service, including browsers, vendors, customers, merchants, and content contributors.
@@ -227,7 +227,7 @@ export default function TermsOfService() {
             </div>
             
             <p className="text-gray-700 leading-relaxed mb-4">
-              GST Bill Maker provides this service "as is" without any warranties. We are not liable for any damages arising from the use of our service, including but not limited to:
+              GSTly provides this service "as is" without any warranties. We are not liable for any damages arising from the use of our service, including but not limited to:
             </p>
             <ul className="space-y-3 text-gray-700 mb-4">
               <li className="flex items-start">

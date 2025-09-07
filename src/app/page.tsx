@@ -16,7 +16,7 @@ export default function Home() {
         <div className="flex flex-col items-center space-y-6">
           <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4 border-gray-200 border-t-blue-600"></div>
           <div className="text-center space-y-2">
-            <p className="text-gray-700 font-semibold text-base sm:text-lg">Loading GST Bill Maker</p>
+            <p className="text-gray-700 font-semibold text-base sm:text-lg">Loading GSTly</p>
             <p className="text-gray-500 text-sm">Preparing your billing solution...</p>
           </div>
         </div>
@@ -37,7 +37,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-gray-900 tracking-tight leading-tight">
-              <span className="block mb-2">GST Bill Maker</span>
+              <span className="block mb-2">GSTly</span>
               <span className="block text-blue-600">
                 Simplified Billing Solution
               </span>
@@ -193,7 +193,7 @@ export default function Home() {
                 </div>
                 <div className="flex-1 mx-4">
                   <div className="bg-gray-100 rounded-full px-3 py-1.5 text-xs sm:text-sm text-gray-600 text-center">
-                    GST Bill Maker - Create Invoice
+                  GSTly - Create Invoice
                   </div>
                 </div>
               </div>
@@ -222,7 +222,7 @@ export default function Home() {
                 <noscript>
                   <img
                     src="/images/gst_bill_demo.gif"
-                    alt="GST Bill Maker Demo - Creating professional GST invoices"
+                    alt="GSTly Demo - Creating professional GST invoices"
                     className="w-full h-auto object-contain max-w-full block mx-auto"
                     style={{
                       minHeight: '200px',
@@ -837,7 +837,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <span className="sm:ml-4 text-2xl sm:text-3xl font-bold text-white">GST Bill Maker</span>
+              <span className="sm:ml-4 text-2xl sm:text-3xl font-bold text-white">GSTly</span>
             </div>
             <p className="text-gray-300 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto px-4 sm:px-0">
               Simplifying GST billing for businesses across India. Create professional invoices and stay compliant with ease.
@@ -849,7 +849,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
               <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-center md:text-left">
                 <p className="text-gray-400 text-sm sm:text-base">
-                  &copy; {new Date().getFullYear()} GST Bill Maker. All rights reserved.
+                  &copy; {new Date().getFullYear()} GSTly. All rights reserved.
                 </p>
                 <div className="flex space-x-4 sm:space-x-6 text-xs sm:text-sm">
                   <Link href="/privacy-policy" className="text-gray-400 hover:text-blue-400 transition-colors">Privacy Policy</Link>

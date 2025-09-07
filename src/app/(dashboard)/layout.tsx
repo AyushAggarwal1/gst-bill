@@ -430,7 +430,7 @@ export default function DashboardLayout({
                       <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span className="text-xl font-bold text-gray-900">GST Bill Maker</span>
+                  <span className="text-xl font-bold text-gray-900">GSTly</span>
                 </Link>
               </div>
             </div>

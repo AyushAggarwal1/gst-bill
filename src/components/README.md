@@ -1,6 +1,6 @@
 # Component Structure Documentation
 
-This document outlines the refactored component structure for the GST Bill Maker application.
+This document outlines the refactored component structure for the GSTly application.
 
 ## Overview
 

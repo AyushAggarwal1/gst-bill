@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "e5e3e0a0-0b0a-4e0a-9e0a-0b0a4e0a9e0a",
-		"name": "GST Bill Maker API",
+		"name": "GSTly API",
 		"description": "API collection for GST Bill Application",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},

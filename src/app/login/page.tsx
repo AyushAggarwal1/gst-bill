@@ -73,7 +73,7 @@ function LoginForm() {
             </svg>
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-            GST Bill Maker
+            GSTly
           </h1>
           <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
             Professional billing solution for your business
