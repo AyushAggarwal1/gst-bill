@@ -5,13 +5,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+  PrismaClientRustPanicError,
+  PrismaClientInitializationError,
+  PrismaClientValidationError,
+  getPrismaClient,
+  sqltag,
+  empty,
+  join,
+  raw,
+  skip,
   Decimal,
+  Debug,
   objectEnumValues,
   makeStrictEnum,
+  Extensions,
+  warnOnce,
+  defineDmmfProperty,
   Public,
   getRuntime,
-  skip
-} = require('./runtime/index-browser.js')
+  createParam,
+} = require('./runtime/wasm-engine-edge.js')
 
 
 const Prisma = {}
@@ -20,79 +35,35 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.15.0
- * Query Engine version: 85179d7826409ee107a6ba334b5e305ae3fba9fb
+ * Prisma Client JS version: 6.16.1
+ * Query Engine version: 1c57fdcd7e44b29b9313256c76699e91c3ac3c43
  */
 Prisma.prismaVersion = {
-  client: "6.15.0",
-  engine: "85179d7826409ee107a6ba334b5e305ae3fba9fb"
+  client: "6.16.1",
+  engine: "1c57fdcd7e44b29b9313256c76699e91c3ac3c43"
 }
 
-Prisma.PrismaClientKnownRequestError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientKnownRequestError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)};
-Prisma.PrismaClientUnknownRequestError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientUnknownRequestError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientRustPanicError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientRustPanicError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientInitializationError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientInitializationError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientValidationError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientValidationError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
+Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError
+Prisma.PrismaClientRustPanicError = PrismaClientRustPanicError
+Prisma.PrismaClientInitializationError = PrismaClientInitializationError
+Prisma.PrismaClientValidationError = PrismaClientValidationError
 Prisma.Decimal = Decimal
 
 /**
  * Re-export of sql-template-tag
  */
-Prisma.sql = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`sqltag is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.empty = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`empty is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.join = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`join is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.raw = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`raw is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.sql = sqltag
+Prisma.empty = empty
+Prisma.join = join
+Prisma.raw = raw
 Prisma.validator = Public.validator
 
 /**
 * Extensions
 */
-Prisma.getExtensionContext = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`Extensions.getExtensionContext is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.defineExtension = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`Extensions.defineExtension is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.getExtensionContext = Extensions.getExtensionContext
+Prisma.defineExtension = Extensions.defineExtension
 
 /**
  * Shorthand utilities for JSON filtering
@@ -109,10 +80,11 @@ Prisma.NullTypes = {
 
 
 
+
+
 /**
  * Enums
  */
-
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
@@ -298,34 +270,83 @@ exports.Prisma.ModelName = {
   PasswordResetRequest: 'PasswordResetRequest',
   SignupVerification: 'SignupVerification'
 };
-
 /**
- * This is a stub Prisma Client that will error at runtime if called.
+ * Create the Client
  */
-class PrismaClient {
-  constructor() {
-    return new Proxy(this, {
-      get(target, prop) {
-        let message
-        const runtime = getRuntime()
-        if (runtime.isEdge) {
-          message = `PrismaClient is not configured to run in ${runtime.prettyName}. In order to run Prisma Client on edge runtime, either:
-- Use Prisma Accelerate: https://pris.ly/d/accelerate
-- Use Driver Adapters: https://pris.ly/d/driver-adapters
-`;
-        } else {
-          message = 'PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `' + runtime.prettyName + '`).'
-        }
-
-        message += `
-If this is unexpected, please open an issue: https://pris.ly/prisma-prisma-bug-report`
-
-        throw new Error(message)
+const config = {
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client-js"
+    },
+    "output": {
+      "value": "/home/ayush/Desktop/ayush-projects/gst-bill/src/generated/prisma",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "library"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x",
+        "native": true
       }
-    })
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "/home/ayush/Desktop/ayush-projects/gst-bill/prisma/schema.prisma",
+    "isCustomOutput": true
+  },
+  "relativeEnvPaths": {
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
+  },
+  "relativePath": "../../../prisma",
+  "clientVersion": "6.16.1",
+  "engineVersion": "1c57fdcd7e44b29b9313256c76699e91c3ac3c43",
+  "datasourceNames": [
+    "db"
+  ],
+  "activeProvider": "postgresql",
+  "postinstall": true,
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nmodel Tenant {\n  id                    String                 @id @default(uuid())\n  name                  String // Name of the organization/business\n  createdAt             DateTime               @default(now())\n  updatedAt             DateTime               @updatedAt\n  users                 User[]\n  customers             Customer[]\n  items                 Item[]\n  bills                 Bill[]\n  invitations           Invitation[]\n  passwordResetRequests PasswordResetRequest[]\n}\n\nmodel User {\n  id                    String                 @id @default(uuid())\n  email                 String\n  password              String?\n  name                  String?\n  isAdmin               Boolean                @default(false)\n  tenantId              String // Every user belongs to a tenant\n  tenant                Tenant                 @relation(fields: [tenantId], references: [id])\n  createdAt             DateTime               @default(now())\n  updatedAt             DateTime               @updatedAt\n  bills                 Bill[]\n  customers             Customer[]\n  sentInvitations       Invitation[]           @relation(\"SentInvitations\")\n  receivedInvitation    Invitation?            @relation(\"ReceivedInvitation\")\n  items                 Item[]\n  profile               Profile?\n  roles                 UserRole[]\n  passwordResetRequests PasswordResetRequest[]\n\n  @@unique([email, tenantId]) // Email must be unique within a tenant\n  @@index([tenantId])\n}\n\nmodel UserRole {\n  id          String       @id @default(uuid())\n  userId      String\n  role        Role\n  permissions Permission[]\n  createdAt   DateTime     @default(now())\n  updatedAt   DateTime     @updatedAt\n  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, role])\n}\n\nmodel Invitation {\n  id            String       @id @default(uuid())\n  email         String\n  role          Role\n  permissions   Permission[]\n  invitedById   String\n  invitedUserId String?      @unique\n  token         String       @unique\n  expiresAt     DateTime\n  status        String       @default(\"PENDING\")\n  tenantId      String // The tenant this invitation is for\n  tenant        Tenant       @relation(fields: [tenantId], references: [id])\n  createdAt     DateTime     @default(now())\n  updatedAt     DateTime     @updatedAt\n  invitedBy     User         @relation(\"SentInvitations\", fields: [invitedById], references: [id])\n  invitedUser   User?        @relation(\"ReceivedInvitation\", fields: [invitedUserId], references: [id])\n\n  @@unique([email, tenantId]) // One email can be invited to multiple tenants, but only once per tenant\n  @@index([tenantId])\n}\n\nmodel Profile {\n  id              String  @id @default(uuid())\n  firmName        String\n  address         String\n  gstNo           String\n  phoneNo         String?\n  bankDetails     String?\n  profilePhoto    String?\n  defaultTemplate String? @default(\"billFormat.html\")\n  userId          String  @unique\n  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Customer {\n  id              String   @id @default(uuid())\n  name            String\n  address         String\n  deliveryAddress String?\n  gstNo           String\n  userId          String\n  tenantId        String // Every customer belongs to a tenant\n  tenant          Tenant   @relation(fields: [tenantId], references: [id])\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n  bills           Bill[]\n  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([tenantId])\n}\n\nmodel Item {\n  id          String     @id @default(uuid())\n  name        String\n  description String? // Optional description field\n  hsnCode     String\n  taxRate     Float\n  userId      String\n  tenantId    String // Every item belongs to a tenant\n  tenant      Tenant     @relation(fields: [tenantId], references: [id])\n  createdAt   DateTime   @default(now())\n  updatedAt   DateTime   @updatedAt\n  billItems   BillItem[]\n  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([tenantId])\n}\n\nmodel Bill {\n  id              String     @id @default(uuid())\n  billNumber      String\n  billDate        DateTime   @default(now())\n  customerId      String\n  userId          String\n  tenantId        String // Every bill belongs to a tenant\n  tenant          Tenant     @relation(fields: [tenantId], references: [id])\n  isIGST          Boolean    @default(false)\n  subtotal        Float\n  cgst            Float      @default(0)\n  sgst            Float      @default(0)\n  igst            Float      @default(0)\n  total           Float\n  deliveryAddress String?\n  createdAt       DateTime   @default(now())\n  updatedAt       DateTime   @updatedAt\n  customer        Customer   @relation(fields: [customerId], references: [id])\n  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  items           BillItem[]\n\n  @@unique([billNumber, tenantId]) // Bill numbers are unique within a tenant\n  @@index([tenantId])\n}\n\nmodel BillItem {\n  id        String @id @default(uuid())\n  billId    String\n  itemId    String\n  quantity  Int\n  price     Float\n  taxAmount Float\n  amount    Float\n  bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)\n  item      Item   @relation(fields: [itemId], references: [id])\n}\n\nmodel PasswordResetRequest {\n  id        String    @id @default(uuid())\n  email     String\n  tenantId  String\n  userId    String\n  otpHash   String\n  expiresAt DateTime\n  usedAt    DateTime?\n  createdAt DateTime  @default(now())\n\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n  tenant Tenant @relation(fields: [tenantId], references: [id])\n\n  @@index([email, tenantId])\n  @@index([userId])\n}\n\nmodel SignupVerification {\n  id               String    @id @default(uuid())\n  email            String    @unique\n  name             String\n  hashedPassword   String\n  organizationName String?\n  invitationToken  String?\n  otpHash          String\n  expiresAt        DateTime\n  usedAt           DateTime?\n  createdAt        DateTime  @default(now())\n\n  @@index([email])\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum Permission {\n  CREATE_BILLS\n  READ_BILLS\n  UPDATE_BILLS\n  DELETE_BILLS\n  CREATE_CUSTOMERS\n  READ_CUSTOMERS\n  UPDATE_CUSTOMERS\n  DELETE_CUSTOMERS\n  CREATE_ITEMS\n  READ_ITEMS\n  UPDATE_ITEMS\n  DELETE_ITEMS\n  INVITE_USERS\n}\n",
+  "inlineSchemaHash": "23b0a75fb819b6ac4e0dea4cabbdf7a60472bd864f0f34a3b70b46bc4924b826",
+  "copyEngine": true
+}
+config.dirname = '/'
+
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Tenant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TenantToUser\"},{\"name\":\"customers\",\"kind\":\"object\",\"type\":\"Customer\",\"relationName\":\"CustomerToTenant\"},{\"name\":\"items\",\"kind\":\"object\",\"type\":\"Item\",\"relationName\":\"ItemToTenant\"},{\"name\":\"bills\",\"kind\":\"object\",\"type\":\"Bill\",\"relationName\":\"BillToTenant\"},{\"name\":\"invitations\",\"kind\":\"object\",\"type\":\"Invitation\",\"relationName\":\"InvitationToTenant\"},{\"name\":\"passwordResetRequests\",\"kind\":\"object\",\"type\":\"PasswordResetRequest\",\"relationName\":\"PasswordResetRequestToTenant\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isAdmin\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"TenantToUser\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"bills\",\"kind\":\"object\",\"type\":\"Bill\",\"relationName\":\"BillToUser\"},{\"name\":\"customers\",\"kind\":\"object\",\"type\":\"Customer\",\"relationName\":\"CustomerToUser\"},{\"name\":\"sentInvitations\",\"kind\":\"object\",\"type\":\"Invitation\",\"relationName\":\"SentInvitations\"},{\"name\":\"receivedInvitation\",\"kind\":\"object\",\"type\":\"Invitation\",\"relationName\":\"ReceivedInvitation\"},{\"name\":\"items\",\"kind\":\"object\",\"type\":\"Item\",\"relationName\":\"ItemToUser\"},{\"name\":\"profile\",\"kind\":\"object\",\"type\":\"Profile\",\"relationName\":\"ProfileToUser\"},{\"name\":\"roles\",\"kind\":\"object\",\"type\":\"UserRole\",\"relationName\":\"UserToUserRole\"},{\"name\":\"passwordResetRequests\",\"kind\":\"object\",\"type\":\"PasswordResetRequest\",\"relationName\":\"PasswordResetRequestToUser\"}],\"dbName\":null},\"UserRole\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"permissions\",\"kind\":\"enum\",\"type\":\"Permission\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserRole\"}],\"dbName\":null},\"Invitation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"permissions\",\"kind\":\"enum\",\"type\":\"Permission\"},{\"name\":\"invitedById\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"invitedUserId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"InvitationToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"invitedBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SentInvitations\"},{\"name\":\"invitedUser\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReceivedInvitation\"}],\"dbName\":null},\"Profile\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"firmName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"gstNo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bankDetails\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"profilePhoto\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"defaultTemplate\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ProfileToUser\"}],\"dbName\":null},\"Customer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"deliveryAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"gstNo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"CustomerToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"bills\",\"kind\":\"object\",\"type\":\"Bill\",\"relationName\":\"BillToCustomer\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CustomerToUser\"}],\"dbName\":null},\"Item\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hsnCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taxRate\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"ItemToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"billItems\",\"kind\":\"object\",\"type\":\"BillItem\",\"relationName\":\"BillItemToItem\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ItemToUser\"}],\"dbName\":null},\"Bill\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"customerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"BillToTenant\"},{\"name\":\"isIGST\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"subtotal\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"cgst\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"sgst\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"igst\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"total\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"deliveryAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"customer\",\"kind\":\"object\",\"type\":\"Customer\",\"relationName\":\"BillToCustomer\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BillToUser\"},{\"name\":\"items\",\"kind\":\"object\",\"type\":\"BillItem\",\"relationName\":\"BillToBillItem\"}],\"dbName\":null},\"BillItem\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"itemId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"taxAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"bill\",\"kind\":\"object\",\"type\":\"Bill\",\"relationName\":\"BillToBillItem\"},{\"name\":\"item\",\"kind\":\"object\",\"type\":\"Item\",\"relationName\":\"BillItemToItem\"}],\"dbName\":null},\"PasswordResetRequest\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"otpHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"usedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PasswordResetRequestToUser\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PasswordResetRequestToTenant\"}],\"dbName\":null},\"SignupVerification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"hashedPassword\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"organizationName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"invitationToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"otpHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"usedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
+config.engineWasm = {
+  getRuntime: async () => require('./query_engine_bg.js'),
+  getQueryEngineWasmModule: async () => {
+    const loader = (await import('#wasm-engine-loader')).default
+    const engine = (await loader).default
+    return engine
   }
 }
+config.compilerWasm = undefined
 
+config.injectableEdgeEnv = () => ({
+  parsed: {
+    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
+  }
+})
+
+if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
+  Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined)
+}
+
+const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
-
 Object.assign(exports, Prisma)
+
