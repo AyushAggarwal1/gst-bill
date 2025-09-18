@@ -3,15 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET a specific bill
 export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {
@@ -51,7 +51,7 @@ export async function GET(req: Request, { params }: RouteParams) {
 // DELETE a bill
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {

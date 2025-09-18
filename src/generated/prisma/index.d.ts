@@ -12255,7 +12255,7 @@ export namespace Prisma {
     readonly id: FieldRef<"BillItem", 'String'>
     readonly billId: FieldRef<"BillItem", 'String'>
     readonly itemId: FieldRef<"BillItem", 'String'>
-    readonly quantity: FieldRef<"BillItem", 'Int'>
+    readonly quantity: FieldRef<"BillItem", 'Float'>
     readonly price: FieldRef<"BillItem", 'Float'>
     readonly taxAmount: FieldRef<"BillItem", 'Float'>
     readonly amount: FieldRef<"BillItem", 'Float'>
@@ -15819,7 +15819,7 @@ export namespace Prisma {
     id?: StringFilter<"BillItem"> | string
     billId?: StringFilter<"BillItem"> | string
     itemId?: StringFilter<"BillItem"> | string
-    quantity?: IntFilter<"BillItem"> | number
+    quantity?: FloatFilter<"BillItem"> | number
     price?: FloatFilter<"BillItem"> | number
     taxAmount?: FloatFilter<"BillItem"> | number
     amount?: FloatFilter<"BillItem"> | number
@@ -15846,7 +15846,7 @@ export namespace Prisma {
     NOT?: BillItemWhereInput | BillItemWhereInput[]
     billId?: StringFilter<"BillItem"> | string
     itemId?: StringFilter<"BillItem"> | string
-    quantity?: IntFilter<"BillItem"> | number
+    quantity?: FloatFilter<"BillItem"> | number
     price?: FloatFilter<"BillItem"> | number
     taxAmount?: FloatFilter<"BillItem"> | number
     amount?: FloatFilter<"BillItem"> | number
@@ -15876,7 +15876,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"BillItem"> | string
     billId?: StringWithAggregatesFilter<"BillItem"> | string
     itemId?: StringWithAggregatesFilter<"BillItem"> | string
-    quantity?: IntWithAggregatesFilter<"BillItem"> | number
+    quantity?: FloatWithAggregatesFilter<"BillItem"> | number
     price?: FloatWithAggregatesFilter<"BillItem"> | number
     taxAmount?: FloatWithAggregatesFilter<"BillItem"> | number
     amount?: FloatWithAggregatesFilter<"BillItem"> | number
@@ -16781,7 +16781,7 @@ export namespace Prisma {
 
   export type BillItemUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -16793,7 +16793,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -16811,7 +16811,7 @@ export namespace Prisma {
 
   export type BillItemUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -16821,7 +16821,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -17592,17 +17592,6 @@ export namespace Prisma {
     total?: SortOrder
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type BillScalarRelationFilter = {
     is?: BillWhereInput
     isNot?: BillWhereInput
@@ -17655,22 +17644,6 @@ export namespace Prisma {
     price?: SortOrder
     taxAmount?: SortOrder
     amount?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -18706,14 +18679,6 @@ export namespace Prisma {
     connect?: ItemWhereUniqueInput
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type BillUpdateOneRequiredWithoutItemsNestedInput = {
     create?: XOR<BillCreateWithoutItemsInput, BillUncheckedCreateWithoutItemsInput>
     connectOrCreate?: BillCreateOrConnectWithoutItemsInput
@@ -18926,22 +18891,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -20688,7 +20637,7 @@ export namespace Prisma {
     id?: StringFilter<"BillItem"> | string
     billId?: StringFilter<"BillItem"> | string
     itemId?: StringFilter<"BillItem"> | string
-    quantity?: IntFilter<"BillItem"> | number
+    quantity?: FloatFilter<"BillItem"> | number
     price?: FloatFilter<"BillItem"> | number
     taxAmount?: FloatFilter<"BillItem"> | number
     amount?: FloatFilter<"BillItem"> | number
@@ -21990,7 +21939,7 @@ export namespace Prisma {
 
   export type BillItemUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -22000,7 +21949,7 @@ export namespace Prisma {
   export type BillItemUncheckedUpdateWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -22009,7 +21958,7 @@ export namespace Prisma {
   export type BillItemUncheckedUpdateManyWithoutItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -22026,7 +21975,7 @@ export namespace Prisma {
 
   export type BillItemUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -22036,7 +21985,7 @@ export namespace Prisma {
   export type BillItemUncheckedUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number
@@ -22045,7 +21994,7 @@ export namespace Prisma {
   export type BillItemUncheckedUpdateManyWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
     itemId?: StringFieldUpdateOperationsInput | string
-    quantity?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     amount?: FloatFieldUpdateOperationsInput | number

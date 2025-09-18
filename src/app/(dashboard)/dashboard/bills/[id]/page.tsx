@@ -174,7 +174,7 @@ export default function BillDetailPage({ params }: BillParams) {
                   <td class="text-center">${index + 1}</td>
                   <td>${item.item.name}</td>
                   <td>${item.item.hsnCode}</td>
-                  <td class="text-center">${item.quantity}</td>
+                  <td class="text-center">${item.quantity.toFixed(2)}</td>
                   <td class="text-right">₹${item.price.toFixed(2)}</td>
                   <td class="text-right">₹${item.amount.toFixed(2)}</td>
                   <td class="text-center">${item.item.taxRate}%</td>
@@ -538,7 +538,7 @@ export default function BillDetailPage({ params }: BillParams) {
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{item.item.hsnCode}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-center">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {item.quantity}
+                            {item.quantity.toFixed(2)}
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right font-medium">₹{item.price.toFixed(2)}</td>

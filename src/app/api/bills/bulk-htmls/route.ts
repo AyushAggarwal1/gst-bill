@@ -142,7 +142,7 @@ function generateBillHTML(bill: any, profile: any): string {
         <td class="text-center">${index + 1}</td>
         <td>${item.item.name}</td>
         <td>${item.item.hsnCode || ''}</td>
-        <td class="text-center">${item.quantity}</td>
+        <td class="text-center">${parseFloat(item.quantity).toFixed(2)}</td>
         <td class="text-right">₹${item.price.toFixed(2)}</td>
         <td class="text-right">₹${item.amount.toFixed(2)}</td>
         <td class="text-center">${item.item.taxRate || 0}%</td>
