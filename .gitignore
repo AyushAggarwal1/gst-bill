@@ -44,3 +44,6 @@ next-env.d.ts
 # exported data of prod database
 /exportedSupabaseDbProdEnv/
 /exportedPrismaDbProdEnv/
+
+# gst-bill-html-templates
+/public/templates/
