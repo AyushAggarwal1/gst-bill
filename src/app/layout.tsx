@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GST Bill Maker",
+  title: "GSTly",
   description: "Create and manage GST bills with professional invoicing",
   icons: {
     icon: [

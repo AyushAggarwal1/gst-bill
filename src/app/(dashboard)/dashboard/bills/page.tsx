@@ -8,6 +8,7 @@ import { Transition } from "@headlessui/react";
 import { LoadingSpinner } from "@/components/Spinner";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader, StatsCard, QuickActionCard, EmptyState } from "@/components/ui";
+import FeatureGuard from "@/components/FeatureGuard";
 import { 
     SearchIcon, 
     ClearFilterIcon, 
@@ -40,7 +41,7 @@ interface Bill {
   createdAt: string;
 }
 
-export default function BillsPage() {
+function BillsPageContent() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [totalBillsCount, setTotalBillsCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -1281,5 +1282,13 @@ export default function BillsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BillsPage() {
+  return (
+    <FeatureGuard feature="BILLS">
+      <BillsPageContent />
+    </FeatureGuard>
   );
 } 

@@ -176,7 +176,7 @@ export async function POST(req: Request) {
         throw new Error(`Item not found: ${item.itemId}`);
       }
 
-      const quantity = parseInt(item.quantity);
+      const quantity = parseFloat(item.quantity);
       const price = parseFloat(item.price);
       const amount = quantity * price;
       const taxRate = itemData.taxRate;

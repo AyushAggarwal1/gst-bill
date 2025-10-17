@@ -17,7 +17,7 @@ export default function PrivacyPolicy() {
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Privacy Policy</h1>
-                <p className="text-sm text-gray-600 mt-1">GST Bill Maker - Professional billing solution</p>
+                <p className="text-sm text-gray-600 mt-1">GSTly - Professional billing solution</p>
               </div>
             </div>
             <Link

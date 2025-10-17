@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader, StatsCard, LoadingSpinner, EmptyState, QuickActionCard } from "@/components/ui";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import FeatureGuard from "@/components/FeatureGuard";
 
 interface Item {
   id: string;
@@ -16,7 +17,7 @@ interface Item {
   createdAt: string;
 }
 
-export default function ItemsPage() {
+function ItemsPageContent() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -588,5 +589,13 @@ export default function ItemsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ItemsPage() {
+  return (
+    <FeatureGuard feature="ITEMS">
+      <ItemsPageContent />
+    </FeatureGuard>
   );
 } 
