@@ -229,8 +229,8 @@ export default function NewBillPage() {
   };
 
   const addItemToBill = () => {
-    if (!newItem.itemId || !newItem.quantity || !newItem.price) {
-      setError("Please select an item and specify quantity and price");
+    if (!newItem.itemId || !newItem.quantity || !newItem.price || newItem.quantity <= 0) {
+      setError("Please select an item and specify valid quantity and price");
       return;
     }
 
@@ -240,7 +240,7 @@ export default function NewBillPage() {
       return;
     }
 
-    const quantity = parseInt(String(newItem.quantity));
+    const quantity = parseFloat(String(newItem.quantity));
     const price = parseFloat(String(newItem.price));
     const amount = quantity * price;
     const taxAmount = (amount * selectedItem.taxRate) / 100;
@@ -700,7 +700,8 @@ export default function NewBillPage() {
                           </div>
                           <input
                             type="number"
-                            min="1"
+                            min="0.01"
+                            step="0.01"
                             name="quantity"
                             id="quantity"
                             value={newItem.quantity || ''}
@@ -811,7 +812,7 @@ export default function NewBillPage() {
                                     </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                      {item.quantity}
+                                      {item.quantity.toFixed(2)}
                                 </span>
                                     </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right font-medium">

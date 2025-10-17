@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       
       // Create a detailed item summary with quantities
       const itemSummaryWithQty = bill.items.map(item => 
-        `${item.item.name} (${item.quantity} × ₹${item.price.toFixed(2)})`
+        `${item.item.name} (${parseFloat(item.quantity).toFixed(2)} × ₹${item.price.toFixed(2)})`
       ).join(", ");
       
       return {
@@ -140,7 +140,7 @@ export async function POST(req: Request) {
           'Customer GSTIN': bill.customer.gstNo,
           'Item Name': item.item.name,
           'HSN Code': item.item.hsnCode,
-          'Quantity': item.quantity,
+          'Quantity': parseFloat(item.quantity).toFixed(2),
           'Unit Price': item.price.toFixed(2),
           'Amount': item.amount.toFixed(2),
           'Tax Rate': item.item.taxRate + '%',
@@ -206,7 +206,7 @@ export async function POST(req: Request) {
       itemAnalysisData.push({
         'Item Name': item.name,
         'HSN Code': item.hsnCode,
-        'Total Quantity': item.totalQuantity,
+        'Total Quantity': parseFloat(item.totalQuantity).toFixed(2),
         'Total Sales Amount': item.totalAmount.toFixed(2),
         'Total Tax Amount': item.totalTax.toFixed(2),
         'Total Value': (item.totalAmount + item.totalTax).toFixed(2),
@@ -281,7 +281,7 @@ export async function POST(req: Request) {
         priceAnalysisData.push({
           'Item Name': itemName,
           'Unit Price': price,
-          'Quantity Sold at This Price': data.totalQuantity,
+          'Quantity Sold at This Price': parseFloat(data.totalQuantity).toFixed(2),
           'Number of Sales': data.occurrences,
           'Number of Bills': data.billNumbers.length,
           'Bill Numbers': data.billNumbers.join(", "),

@@ -20,10 +20,10 @@ BACKUP_FOLDER="db_backup_${CURRENT_DATE}"
 git clone --depth=1 --branch=$BRANCH $REPO_URL db-repo
 
 # Install dependencies for data exporter script
-pip install -r ./usefulScripts/exportSupabaseDbPy/requirements.txt
+pip install -r ./scripts/database_export/exportSupabaseDbPy/requirements.txt
 
 # Run data exporter script 
-python3 ./usefulScripts/exportSupabaseDbPy/egressSupdabaseDb.py  # db_backup_YYYY-MM-DD folder is generated
+python3 ./scripts/database_export/exportSupabaseDbPy/egressSupdabaseDb.py  # db_backup_YYYY-MM-DD folder is generated
 
 # Create the date folder in the cloned repo
 mkdir -p ./db-repo/${BACKUP_FOLDER}

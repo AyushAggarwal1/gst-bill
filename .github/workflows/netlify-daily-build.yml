@@ -1,0 +1,23 @@
+name: Netlify Daily Build
+
+on:
+  # push:
+  #   branches:
+  #     - dev
+  schedule:
+    - cron: '0 0 * * *' # Daily at 00:00 UTC
+  workflow_dispatch:
+
+jobs:
+  trigger-netlify-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Netlify build hook
+        env:
+          BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+        run: |
+          if [ -z "$BUILD_HOOK_URL" ]; then
+            echo "NETLIFY_BUILD_HOOK_URL secret is not set"; exit 1;
+          fi
+          curl -fsS -X POST -H "Content-Type: application/json" -d '{}' "$BUILD_HOOK_URL" | cat
+
