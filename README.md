@@ -1,119 +1,107 @@
-# GST Bill Maker
+# GST Bill Management System
 
-A modern, user-friendly application for creating and managing GST bills. Built with Next.js, Prisma, and PostgreSQL.
-
-🌐 **Hosted on  Netlify**: [gstbillmaker.app](https://gstbillmaker.netlify.app) 
-
-
-![Demo](public/images/gst_bill_demo.gif)
+A comprehensive, enterprise-grade GST bill management system built with Next.js, Prisma, and PostgreSQL, designed for multi-tenant organizations with advanced security and compliance features.
 
 ## Features
 
-### Security & Access Control
-- 🔐 **Multi-tenant Architecture**:
-  - Complete data isolation between organizations
-  - Tenant-specific data access and management
-  - Secure resource partitioning
-- 👥 **Role-Based Access Control (RBAC)**:
-  - Admin role: Full system access
-  - User role: Limited operational access
-  - Custom role permissions
-- 🔒 **Security Features**:
-  - Secure authentication with NextAuth
-  - Data encryption in transit
-  - Tenant-level audit trails
+### Core Business Features
+- **User Authentication**: Secure login with NextAuth.js and multi-tenant support
+- **Customer Management**: Add, edit, and manage customers with tenant isolation
+- **Item Management**: Create and manage inventory items with HSN codes and tax rates
+- **Bill Generation**: Create professional GST bills with multiple templates
+- **Template System**: Dynamic template detection and selection with custom placeholders
+- **Profile Management**: Business profile with logo upload via Cloudinary
+- **PDF Generation**: Download bills as PDF files with high-quality rendering
+- **Bulk Operations**: Generate multiple bills at once with batch processing
 
-### Core Features
-- 📊 **Dashboard**: Overview of your billing activities
-- 👥 **Customer Management**: Add and manage your customers
-- 📝 **Item Management**: Maintain your product/service catalog
-- 🏢 **Business Profile**: Manage your company details
+### Enterprise & Multi-Tenant Features
+- **Multi-Tenant Architecture**: Complete tenant isolation with separate data spaces
+- **Role-Based Access Control (RBAC)**: Granular permissions system with predefined roles
+- **User Invitations**: Secure invitation system with role and permission assignment
+- **Organization Management**: Multi-organization support with isolated workspaces
+- **Tenant-Specific Data**: All data (customers, items, bills) scoped to tenant boundaries
 
-### Billing Features
-- 💰 **GST Billing**: Create professional GST bills
-  - Automatic tax calculations (CGST/SGST/IGST)
-  - Automatic bill number generation
-  - Support for delivery address
-  - Print and download individual bills
-- 📄 **Bulk Operations**:
-  - Generate multiple bills as PDF
-  - Export bills to Excel with detailed analysis
-  - Bulk selection and actions
+### Security & Compliance
+- **Password Security**: Bcrypt hashing with secure password reset via OTP
+- **Email Verification**: OTP-based email verification for account creation
+- **Session Management**: Secure JWT-based sessions with tenant context
+- **API Security**: Comprehensive middleware with authentication and authorization
+- **Data Isolation**: Complete tenant data separation with database-level constraints
 
-### Search and Filtering
-- 🔍 **Advanced Search**:
-  - Search by bill number
-  - Filter by customer name
-  - Date range filtering
-- 📊 **Export Analysis**:
-  - Bills summary
-  - Item-wise analysis
-  - Price variation analysis
-  - Detailed sales reports
+### Data Management & Backup
+- **Daily Data Backup**: Automated daily database backups with GitHub Actions
+- **Backup Repository**: Dedicated backup repository with versioned JSON exports
+- **Data Export**: Python-based data export scripts for Supabase compatibility
+- **Backup Scheduling**: Cron-based automated backup scheduling (daily at 12:00 AM)
 
-### User Experience
-- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
-- 🎨 **Modern UI**: Clean and intuitive interface
-- ⚡ **Real-time Updates**: Instant search and filtering
-- 📋 **Bulk Actions**: Efficient management of multiple bills
+### Communication & Notifications
+- **Email Notifications**: SMTP-based email system for password resets and verifications
+- **Invitation Emails**: Automated email invitations with secure tokens
+- **OTP System**: Time-based OTP for password resets and account verification
+- **Email Templates**: Professional HTML email templates with branding support
 
+### Advanced Features
+- **GST Number Validation**: Integration with Master India GST verification API
+- **HSN Code Search**: Built-in HSN code search functionality
+- **Tax Calculation**: Automated CGST, SGST, and IGST calculations
+- **Bulk Bill Generation**: Generate multiple bills simultaneously
+- **Template Customization**: Dynamic template system with metadata support
+- **File Upload Security**: Secure file uploads with Cloudinary integration
+- **API Rate Limiting**: Built-in API protection and rate limiting
 
-### API Routes [Complete API Guide](API_Docs.md)
-<!--
-- **Authentication & Authorization**
-  - POST `/api/auth/register`: User registration with tenant assignment
-  - POST `/api/auth/login`: User login with role validation
-  - GET `/api/auth/me`: Get current user profile with roles
+### Monitoring & Analytics
+- **Application Health**: Real-time health monitoring with system metrics
+- **Database Monitoring**: Database connectivity and performance monitoring
+- **Memory Usage Tracking**: Application memory usage and performance metrics
+- **Uptime Monitoring**: Application uptime and availability tracking
+- **Error Tracking**: Comprehensive error logging and monitoring
 
-- **Tenant Management**
-  - GET `/api/tenants`: List all tenants (admin only)
-  - POST `/api/tenants`: Create new tenant
-  - PUT `/api/tenants/[id]`: Update tenant settings
-  - GET `/api/tenants/[id]/users`: List tenant users
+## Tech Stack
 
-- **Profile**
-  - GET `/api/profile`: Get business profile
-  - POST `/api/profile`: Update business profile
+- **Frontend**: Next.js 14, React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM, Cloudinary
+- **Database**: PostgreSQL with Supabase support
+- **Authentication**: NextAuth.js with multi-tenant support
+- **File Storage**: Cloudinary (for profile photos and documents)
+- **PDF Generation**: jsPDF with Puppeteer for high-quality rendering
+- **Email**: Nodemailer with SMTP support
+- **Security**: Checkmarx integration, bcrypt, JWT
+- **DevOps**: Docker, GitHub Actions, automated backups
+- **Monitoring**: Health checks, performance metrics, error tracking
 
-- **Customers**
-  - GET `/api/customers`: List all customers (tenant-scoped)
-  - POST `/api/customers`: Create new customer
-  - PUT `/api/customers/[id]`: Update customer
-  - DELETE `/api/customers/[id]`: Delete customer
+## Getting Started
 
-- **Items**
-  - GET `/api/items`: List all items (tenant-scoped)
-  - POST `/api/items`: Create new item
-  - PUT `/api/items/[id]`: Update item
-  - DELETE `/api/items/[id]`: Delete item
+### Multi-Tenant Configuration
+The application supports multiple organizations (tenants) with complete data isolation:
+- Each tenant has its own users, customers, items, and bills
+- Users can belong to multiple tenants with different roles
+- All data queries are automatically scoped to the current tenant
 
-- **Bills**
-  - GET `/api/bills`: List all bills with search and filters (tenant-scoped)
-  - POST `/api/bills`: Create new bill
-  - GET `/api/bills/[id]`: Get bill details
-  - DELETE `/api/bills/[id]`: Delete bill
-  - POST `/api/bills/bulk-htmls`: Generate bulk PDFs
-  - POST `/api/bills/export`: Export bills to Excel
--->
-## Data Model
+### Role-Based Access Control (RBAC)
+Configure user permissions with granular control:
+- **ADMIN**: Full access to all features
+- **USER**: Limited access based on assigned permissions
+- **Permissions**: CREATE_BILLS, READ_BILLS, UPDATE_BILLS, DELETE_BILLS, CREATE_CUSTOMERS, READ_CUSTOMERS, UPDATE_CUSTOMERS, DELETE_CUSTOMERS, CREATE_ITEMS, READ_ITEMS, UPDATE_ITEMS, DELETE_ITEMS, INVITE_USERS
 
-### Key Entities
-- **Tenant**: Organization/Business unit
-- **User**: System user with role assignments
-- **Role**: Access control role (Admin, User, etc.)
-- **Permission**: Granular access rights
-- **Customer**: Customer information (tenant-scoped)
-- **Item**: Product/service catalog (tenant-scoped)
-- **Bill**: GST bills (tenant-scoped)
+### Automated Backups
+The system includes automated daily database backups:
+- Runs daily at 12:00 AM via GitHub Actions
+- Exports data to JSON format for easy restoration
+- Stores backups in a dedicated GitHub repository
+- Includes backup verification and error handling
+
+### Security Scanning
+Automated security scanning with Checkmarx:
+- Daily security scans at 10:00 AM UTC
+- Integration with CI/CD pipeline
+- Comprehensive vulnerability assessment
+- Automated reporting and alerting
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Support
-
-For support, please create an issue in the GitHub repository or contact the maintainers.
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly with multi-tenant scenarios
+5. Ensure security best practices are followed
+6. Submit a pull request

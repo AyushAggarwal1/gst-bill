@@ -1,0 +1,35 @@
+name: Checkmarx Scan
+
+on:
+  push:
+    branches:
+      - dev
+  schedule:
+    - cron: '0 10 * * *'  # Every day at 10:00 UTC
+  workflow_dispatch: 
+
+jobs:
+  checkmarx-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        
+      - name: Run Checkmarx Scan
+        uses: checkmarx/ast-github-action@main
+        with:
+          base_uri: https://deu.ast.checkmarx.net/
+          cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+          cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
+          cx_tenant: accuknox-nfr
+          
+#       - name: Send Checkmarx Result to AccuKnox SaaS Dev Env
+#         uses: accuknox/checkmarx-accuknox-action@v1.0.0
+#         with:
+#           api_key: ${{ secrets.CX_API_KEY }}
+#           project_name: "AyushAggarwal1/gst-bill"
+#           accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
+#           tenant_id: ${{ secrets.TENANT_ID }}
+#           ak_token: ${{ secrets.ACCUKNOX_TOKEN }}
+#           label_id: "ayushcicd"
+#           upload_artifact: true

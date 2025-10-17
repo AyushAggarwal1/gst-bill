@@ -8,6 +8,7 @@ import { Transition } from "@headlessui/react";
 import { LoadingSpinner } from "@/components/Spinner";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader, StatsCard, QuickActionCard, EmptyState } from "@/components/ui";
+import FeatureGuard from "@/components/FeatureGuard";
 import { 
     SearchIcon, 
     ClearFilterIcon, 
@@ -40,7 +41,7 @@ interface Bill {
   createdAt: string;
 }
 
-export default function BillsPage() {
+function BillsPageContent() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [totalBillsCount, setTotalBillsCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -217,10 +218,24 @@ export default function BillsPage() {
         throw new Error("No HTML content received for bills.");
       }
 
+      // Fetch user's default template and profile
+      let userTemplate = 'billFormat.html';
+      let userProfile = null;
+      try {
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          userTemplate = profileData.defaultTemplate || 'billFormat.html';
+          userProfile = profileData;
+        }
+      } catch (profileError) {
+        console.error('Error fetching user profile:', profileError);
+      }
+
       // Fetch the base template to extract <head> content
       let templateHeadContent = '';
       try {
-        const templateResponse = await fetch('/templates/billFormat.html');
+        const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
         if (!templateResponse.ok) {
           console.error('Failed to fetch bill template for head. Status:', templateResponse.status);
         } else {
@@ -328,10 +343,22 @@ export default function BillsPage() {
       // Get the bill HTML
       const billHtml = billHtmlsArray[0];
 
+      // Fetch the user's profile to get default template
+      let userTemplate = 'billFormat.html';
+      try {
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          userTemplate = profileData.defaultTemplate || 'billFormat.html';
+        }
+      } catch (profileError) {
+        console.error('Error fetching user profile for template:', profileError);
+      }
+
       // Fetch the base template to extract <head> content
       let templateHeadContent = '';
       try {
-        const templateResponse = await fetch('/templates/billFormat.html');
+        const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
         if (templateResponse.ok) {
           const templateFullHtml = await templateResponse.text();
           const headMatch = templateFullHtml.match(/<head>([\s\S]*?)<\/head>/);
@@ -1255,5 +1282,13 @@ export default function BillsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BillsPage() {
+  return (
+    <FeatureGuard feature="BILLS">
+      <BillsPageContent />
+    </FeatureGuard>
   );
 } 

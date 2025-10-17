@@ -49,7 +49,7 @@ export default function SignOutPage() {
             </svg>
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-            GST Bill Maker
+            GSTly
           </h1>
           <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
             Professional billing solution for your business
@@ -80,7 +80,7 @@ export default function SignOutPage() {
                   </svg>
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Successfully signed out</h2>
-                <p className="mt-1 text-xs sm:text-sm text-gray-600">Thanks for using GST Bill Maker</p>
+                <p className="mt-1 text-xs sm:text-sm text-gray-600">Thanks for using GSTly</p>
               </>
             )}
           </div>

@@ -105,6 +105,7 @@ interface Profile {
   gstNo: string;
   phoneNo: string | null;
   bankDetails: string | null;
+  profilePhoto: string | null;
 }
 
 export default function BillDetailPage({ params }: BillParams) {
@@ -152,7 +153,19 @@ export default function BillDetailPage({ params }: BillParams) {
     const printWindow = window.open('', '_blank');
     if (!printWindow) { alert('Please allow pop-ups to print the invoice'); return; }
     try {
-      const templateResponse = await fetch('/templates/billFormat.html');
+      // Fetch the user's profile to get default template
+      let userTemplate = 'billFormat.html';
+      try {
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          userTemplate = profileData.defaultTemplate || 'billFormat.html';
+        }
+      } catch (profileError) {
+        console.error('Error fetching user profile for template:', profileError);
+      }
+
+      const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
       if (!templateResponse.ok) throw new Error('Failed to load template');
       let htmlTemplate = await templateResponse.text();
     const taxRate = bill?.items && bill.items.length > 0 ? bill.items[0].item.taxRate : 0;
@@ -161,7 +174,7 @@ export default function BillDetailPage({ params }: BillParams) {
                   <td class="text-center">${index + 1}</td>
                   <td>${item.item.name}</td>
                   <td>${item.item.hsnCode}</td>
-                  <td class="text-center">${item.quantity}</td>
+                  <td class="text-center">${item.quantity.toFixed(2)}</td>
                   <td class="text-right">₹${item.price.toFixed(2)}</td>
                   <td class="text-right">₹${item.amount.toFixed(2)}</td>
                   <td class="text-center">${item.item.taxRate}%</td>
@@ -185,6 +198,11 @@ export default function BillDetailPage({ params }: BillParams) {
       `;
       const bankDetailsHTML = profile?.bankDetails ? `<div class="bank-details"><h3>Bank Details</h3><p>${(profile.bankDetails || '').replace(/\n/g, '<br>')}</p></div>` : '';
       const deliveryAddressHTML = bill?.deliveryAddress ? `<div style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px;"><p style="font-weight: 600;">Delivery Address:</p><p>${(bill.deliveryAddress).replace(/\n/g, '<br>')}</p></div>` : '';
+      
+      // Handle profile photo - only include if profile photo exists
+      const profilePhotoHTML = profile?.profilePhoto ? 
+        `<img src="${profile.profilePhoto}" alt="Business Logo" class="profile-photo" />` : '';
+      
       const printContent = htmlTemplate
         .replace(/{{BILL_NUMBER}}/g, bill?.billNumber || '')
         .replace(/{{BILL_DATE}}/g, format(new Date(bill?.billDate || new Date()), "dd/MM/yyyy"))
@@ -197,6 +215,7 @@ export default function BillDetailPage({ params }: BillParams) {
         .replace(/{{CUSTOMER_ADDRESS}}/g, (bill?.customer.address || '').replace(/\n/g, '<br>'))
         .replace(/{{CUSTOMER_GST}}/g, bill?.customer.gstNo || '')
         .replace(/{{DELIVERY_ADDRESS}}/g, deliveryAddressHTML)
+        .replace(/{{PROFILE_PHOTO}}/g, profilePhotoHTML)
         .replace(/{{ITEMS_TABLE}}/g, itemsTableHTML)
         .replace(/{{SUBTOTAL}}/g, bill?.subtotal.toFixed(2) || '0.00')
         .replace(/{{TAX_ROWS}}/g, taxRowsHTML)
@@ -519,7 +538,7 @@ export default function BillDetailPage({ params }: BillParams) {
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{item.item.hsnCode}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-center">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {item.quantity}
+                            {item.quantity.toFixed(2)}
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right font-medium">₹{item.price.toFixed(2)}</td>

@@ -1,25 +1,9 @@
 User-agent: *
 Allow: /
 
-# Allow access to main pages
-Allow: /login
-Allow: /register
-Allow: /forgot-password
-Allow: /reset-password
-Allow: /accept-invitation
-Allow: /search-gst
-Allow: /search-hsn
-Allow: /privacy-policy
-Allow: /terms-of-service
-Allow: /health
-Allow: /ui-demo
-
-# Allow access to sitemap
-Allow: /sitemap.xml
-
 # Disallow access to private/dashboard areas (these require authentication)
 Disallow: /dashboard/
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://gstbillmaker.netlify.app/sitemap.xml
+Sitemap: https://gstly.netlify.app/sitemap.xml
