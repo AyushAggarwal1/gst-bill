@@ -33,7 +33,7 @@ function getRequiredFeature(path: string): string | null {
   return null
 }
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
   
   // Define public paths that don't require authentication
