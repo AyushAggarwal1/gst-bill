@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       },
     });
 
-    let nextBillNumber = "B0001";
+    let nextBillNumber = "0001";
 
     if (latestBill) {
       // Extract number from the bill number (assuming format like B0001)
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
       const nextNumber = latestNumber + 1;
       
       // Format with leading zeros
-      nextBillNumber = `B${String(nextNumber).padStart(4, "0")}`;
+      nextBillNumber = `${String(nextNumber).padStart(4, "0")}`;
     }
 
     return NextResponse.json({
