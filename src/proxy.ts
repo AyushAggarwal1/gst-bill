@@ -12,8 +12,8 @@ const FEATURE_ROUTE_MAP: Record<string, string> = {
   '/dashboard/templates': 'TEMPLATES',
   '/dashboard/user-management': 'USER_MANAGEMENT',
   '/dashboard/api-docs': 'API_DOCS',
-  '/search-gst': 'GST_SEARCH',
-  '/search-hsn': 'HSN_SEARCH',
+  // '/search-gst': 'GST_SEARCH',
+  // '/search-hsn': 'HSN_SEARCH',
 }
 
 // Helper function to check if a path matches any feature-protected route
@@ -33,11 +33,11 @@ function getRequiredFeature(path: string): string | null {
   return null
 }
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
   
   // Define public paths that don't require authentication
-  const publicPaths = ['/', '/privacy-policy', '/terms-of-service', '/forgot-password', '/reset-password', '/health', '/sitemap.xml', '/robots.txt']
+  const publicPaths = ['/', '/privacy-policy', '/search-gst', '/search-hsn', '/terms-of-service', '/forgot-password', '/reset-password', '/health', '/sitemap.xml', '/robots.txt']
   
   // Define auth-only paths that logged-in users shouldn't access
   const authOnlyPaths = ['/login', '/register', '/']

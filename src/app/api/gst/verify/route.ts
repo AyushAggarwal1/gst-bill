@@ -2,42 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface GSTAPIProviderResponse {
   success: boolean;
-  data?: {
-    stjCd: string;
-    dty: string;
-    lgnm: string;
-    stj: string;
-    adadr: any[];
-    cxdt: string;
-    gstin: string;
-    nba: string[];
-    lstupdt: string;
-    rgdt: string;
-    ctb: string;
-    pradr: {
-      addr: {
-        bnm: string;
-        st: string;
-        loc: string;
-        bno: string;
-        dst: string;
-        lt: string;
-        locality: string;
-        pncd: string;
-        landMark: string;
-        stcd: string;
-        geocodelvl: string;
-        flno: string;
-        lg: string;
-      };
-      ntr: string;
-    };
-    tradeNam: string;
-    sts: string;
-    ctjCd: string;
-    ctj: string;
-    einvoiceStatus: string;
-  };
+  // Provider responses have inconsistent shapes:
+  // - An array of records
+  // - An object containing rawData: Record[]
+  // - A single record object
+  // Use any here and normalize at runtime below.
+  data?: any;
   error?: string;
 }
 
@@ -57,7 +27,7 @@ export async function POST(request: NextRequest) {
     const cleanGstin = gstin.replace(/\s/g, '').toUpperCase();
 
     // Call MastersIndia API
-    const apiUrl = `https://blog-backend.mastersindia.co/api/v1/custom/search/gstin/?keyword=${cleanGstin}&unique_id=dlfmlvcC6BhEkStrgbKdeLthGnZqQ1`;
+    const apiUrl = `https://blog-backend.mastersindia.co/api/v1/custom/search/name_and_pan/?keyword=${cleanGstin}&unique_id=dlfmlvcC6BhEkStrgbKdeLthGnZqQ1`;
     
     const response = await fetch(apiUrl, {
       method: 'GET',
@@ -77,13 +47,14 @@ export async function POST(request: NextRequest) {
         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
       }
     });
+    // console.log(response);
 
           if (!response.ok) {
         throw new Error(`GST API error: ${response.status} ${response.statusText}`);
       }
 
     const apiData: GSTAPIProviderResponse = await response.json();
-
+    // console.log(apiData);
     if (!apiData.success || !apiData.data) {
       return NextResponse.json(
         { 
@@ -95,11 +66,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Transform the response to our standard format
-    const data = apiData.data;
+    // Normalize provider data to a single record shape
+    const providerData: any = apiData.data;
+    let record: any | null = null;
+    if (Array.isArray(providerData)) {
+      record = providerData[0] ?? null;
+    } else if (providerData && Array.isArray(providerData.rawData)) {
+      record = providerData.rawData[0] ?? null;
+    } else if (providerData && typeof providerData === 'object') {
+      record = providerData;
+    }
+
+    if (!record) {
+      return NextResponse.json(
+        {
+          error: 'GST record not found',
+          gstin: cleanGstin,
+          isValid: false
+        },
+        { status: 404 }
+      );
+    }
+
+    // Transform the record to our standard format
     
     // Build complete address
-    const addr = data.pradr?.addr;
+    const addr = record.pradr?.addr;
     const addressParts = [
       addr?.bno,
       addr?.bnm,
@@ -114,15 +106,15 @@ export async function POST(request: NextRequest) {
     const fullAddress = addressParts.join(', ');
 
     const transformedData = {
-      gstin: data.gstin,
-      legalName: data.lgnm,
-      tradeName: data.tradeNam,
-      registrationDate: data.rgdt,
-      constitutionOfBusiness: data.ctb,
-      taxpayerType: data.dty,
-      gstinStatus: data.sts,
-      lastUpdatedDate: data.lstupdt,
-      natureOfBusiness: data.nba,
+      gstin: record.gstin,
+      legalName: record.lgnm,
+      tradeName: record.tradeNam,
+      registrationDate: record.rgdt,
+      constitutionOfBusiness: record.ctb,
+      taxpayerType: record.dty,
+      gstinStatus: record.sts,
+      lastUpdatedDate: record.lstupdt,
+      natureOfBusiness: record.nba,
       principalPlaceOfBusiness: {
         address: fullAddress,
         state: addr?.stcd || '',
@@ -135,17 +127,23 @@ export async function POST(request: NextRequest) {
         floorNumber: addr?.flno || '',
         landmark: addr?.landMark || ''
       },
-      additionalPlacesOfBusiness: data.adadr,
+      additionalPlacesOfBusiness: record.adadr,
       jurisdiction: {
-        state: data.stj,
-        stateCode: data.stjCd,
-        center: data.ctj,
-        centerCode: data.ctjCd
+        state: record.stj,
+        stateCode: record.stjCd,
+        center: record.ctj,
+        centerCode: record.ctjCd
       },
-      einvoiceStatus: data.einvoiceStatus,
-      cancellationDate: data.cxdt,
-      // Raw data for debugging
-      rawData: data
+      einvoiceStatus: record.einvoiceStatus,
+      cancellationDate: record.cxdt,
+      // Raw data for debugging; always return an array for consistency
+      rawData: Array.isArray(providerData)
+        ? providerData
+        : Array.isArray(providerData?.rawData)
+          ? providerData.rawData
+          : record
+            ? [record]
+            : []
     };
 
     return NextResponse.json({
