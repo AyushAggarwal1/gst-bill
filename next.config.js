@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-// Force Prisma to use the classic/binary engine instead of the new "client" engine,
-// so we don't need Accelerate or driver adapters for local/server builds.
+// Force Prisma to use the classic/binary engine instead of the new "client" engine
+// in ALL environments (dev and prod), so we don't need Accelerate or driver adapters.
 // See: https://pris.ly/d/client-constructor
-if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
-  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
-}
+process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
 
 const nextConfig = {
   /* config options here */
