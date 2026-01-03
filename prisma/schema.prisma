@@ -1,12 +1,13 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider   = "prisma-client-js"
+  output     = "../src/generated/prisma"
+  // Force Prisma Client to use the classic/binary engine to avoid requiring adapters/Accelerate.
+  // This matches prisma.config.ts (`engine: 'classic'`) and is stable for Node.js server environments.
+  engineType = "binary"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 model Tenant {

@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader, LoadingSpinner } from "@/components/ui";
 
 interface EditCustomerPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditCustomerPage({ params }: EditCustomerPageProps) {
   const router = useRouter();
+  const { id } = use(params);
   const [customer, setCustomer] = useState({
     name: "",
     address: "",
@@ -36,7 +37,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
     const fetchCustomer = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/customers/${params.id}`);
+        const res = await fetch(`/api/customers/${id}`);
         if (!res.ok) {
           throw new Error("Failed to fetch customer");
         }
@@ -56,10 +57,10 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
         setLoading(false);
       }
     };
-    if (params.id) {
+    if (id) {
       fetchCustomer();
     }
-  }, [params.id]);
+  }, [id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -142,7 +143,7 @@ export default function EditCustomerPage({ params }: EditCustomerPageProps) {
     setSaving(true);
     setError("");
     try {
-      const res = await fetch(`/api/customers/${params.id}`, {
+      const res = await fetch(`/api/customers/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(customer),
