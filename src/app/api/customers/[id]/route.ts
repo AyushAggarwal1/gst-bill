@@ -3,15 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET a specific customer
 export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {
@@ -42,7 +42,7 @@ export async function GET(req: Request, { params }: RouteParams) {
 // PUT to update a customer
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {
@@ -109,7 +109,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
 // DELETE a customer
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {

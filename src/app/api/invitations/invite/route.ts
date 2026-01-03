@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role, Permission } from '@/generated/prisma';
+import { Role, Permission } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 import { v4 as uuidv4 } from 'uuid';
 // We'll need a way to get the current user, assuming you have an auth system.
 // For now, let's placeholder it. You'll need to integrate this with your actual auth.
 // import { getCurrentUser } from '@/lib/auth'; // Replace with your actual auth logic
-
-const prisma = new PrismaClient();
 
 // Placeholder for getting current user - replace with your actual implementation
 async function getCurrentUser(request: Request): Promise<{ id: string; isAdmin: boolean; tenantId: string } | null> {

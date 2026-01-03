@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role, Permission } from '@/generated/prisma';
+import { Role, Permission } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-
-const prisma = new PrismaClient();
 
 // Placeholder for getting current user - replace with your actual implementation
 async function getCurrentUser(request: Request): Promise<{ id: string; isAdmin: boolean } | null> {

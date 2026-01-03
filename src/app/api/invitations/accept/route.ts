@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, Role, Permission } from '@/generated/prisma';
+import { Role, Permission } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 import { hash } from 'bcrypt'; // For password hashing
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
