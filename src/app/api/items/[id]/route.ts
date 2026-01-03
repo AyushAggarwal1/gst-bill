@@ -11,7 +11,7 @@ interface RouteParams {
 // GET a specific item
 export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {
@@ -42,7 +42,7 @@ export async function GET(req: Request, { params }: RouteParams) {
 // PUT to update an item
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {
@@ -108,7 +108,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
 // DELETE an item
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {

@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader, LoadingSpinner } from "@/components/ui";
 
 interface ItemParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditItemPage({ params }: ItemParams) {
   const router = useRouter();
-  const { id } = params;
+  const id = use(params).id;
   const [item, setItem] = useState({
     name: "",
     description: "",
