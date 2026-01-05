@@ -22,6 +22,18 @@ jobs:
           cx_client_id: ${{ secrets.CX_CLIENT_ID }}
           cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
           cx_tenant: accuknox-nfr
+          additional_params: --report-format sarif --output-path .
+          
+      - name: Upload SARIF file with code snippets
+        uses: actions/upload-artifact@v3
+        with:
+          name: sarif-results-with-snippets
+          path: *.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: *.sarif  
           
 #       - name: Send Checkmarx Result to AccuKnox SaaS Dev Env
 #         uses: accuknox/checkmarx-accuknox-action@v1.0.0
