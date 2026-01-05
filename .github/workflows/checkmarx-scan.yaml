@@ -28,12 +28,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: sarif-results-with-snippets
-          path: *.sarif
+          path: cx_result.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: *.sarif  
+          sarif_file: cx_result.sarif  
           
 #       - name: Send Checkmarx Result to AccuKnox SaaS Dev Env
 #         uses: accuknox/checkmarx-accuknox-action@v1.0.0
