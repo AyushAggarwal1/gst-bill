@@ -25,13 +25,13 @@ jobs:
           additional_params: --report-format sarif --output-path .
           
       - name: Upload SARIF file with code snippets
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sarif-results-with-snippets
           path: cx_result.sarif
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: cx_result.sarif  
           
