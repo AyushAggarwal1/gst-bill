@@ -22,7 +22,7 @@ jobs:
           cx_client_id: ${{ secrets.CX_CLIENT_ID }}
           cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
           cx_tenant: accuknox-nfr
-          additional_params: --report-format sarif --output-path .
+          scan_params: --report-format sarif --output-path .
           
       - name: Upload SARIF file with code snippets
         uses: actions/upload-artifact@v4
