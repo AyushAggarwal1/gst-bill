@@ -10,6 +10,7 @@ on:
 
 jobs:
   trigger-netlify-build:
+    permissions: {}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Netlify build hook
