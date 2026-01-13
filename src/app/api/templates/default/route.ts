@@ -21,12 +21,28 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Validate that the template file exists
+    // Validate that the template file exists in an allowed directory
+    const templatesRoot = path.join(process.cwd(), 'public', 'templates');
+    const backupTemplatesRoot = path.join(process.cwd(), 'public', 'backup-templates');
+
     let templatePath: string;
     if (defaultTemplate.startsWith('backup-templates/')) {
-      templatePath = path.join(process.cwd(), 'public', defaultTemplate);
+      const relativePath = defaultTemplate.slice('backup-templates/'.length);
+      templatePath = path.resolve(backupTemplatesRoot, relativePath);
+      if (!templatePath.startsWith(backupTemplatesRoot + path.sep) && templatePath !== backupTemplatesRoot) {
+        return NextResponse.json(
+          { error: "Invalid template path" },
+          { status: 400 }
+        );
+      }
     } else {
-      templatePath = path.join(process.cwd(), 'public', 'templates', defaultTemplate);
+      templatePath = path.resolve(templatesRoot, defaultTemplate);
+      if (!templatePath.startsWith(templatesRoot + path.sep) && templatePath !== templatesRoot) {
+        return NextResponse.json(
+          { error: "Invalid template path" },
+          { status: 400 }
+        );
+      }
     }
     
     if (!fs.existsSync(templatePath)) {
