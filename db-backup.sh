@@ -9,7 +9,7 @@ if [[ -z "$GIT_TOKEN" ]]; then
 fi
 
 # Database Backup Repo URL
-REPO_URL="https://x-access-token:${GIT_TOKEN}@github.com/AyushAggarwal1/gst-bill-db-backup"
+REPO_URL="https://x-access-token:${GIT_TOKEN}@github.com/AyushAggarwal1/gstly-db-backup"
 BRANCH="main"  # Branch to push the backup files to
 
 # Get current date for folder name
