@@ -3,7 +3,7 @@ name: Checkmarx Scan
 on:
   push:
     branches:
-      - *
+      - "*"
   schedule:
     - cron: '0 10 * * *'  # Every day at 10:00 UTC
   workflow_dispatch: 
