@@ -3,13 +3,14 @@ name: Checkmarx Scan
 on:
   push:
     branches:
-      - dev
+      - "*"
   schedule:
     - cron: '0 10 * * *'  # Every day at 10:00 UTC
   workflow_dispatch: 
 
 permissions:
   contents: read
+  security-events: write
 
 jobs:
   checkmarx-scan:
@@ -26,6 +27,12 @@ jobs:
           cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
           cx_tenant: accuknox-nfr
           scan_params: --report-format sarif --output-path .
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cx_result.sarif
           
       - name: Upload SARIF file 
         if: always()
