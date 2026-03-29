@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - name: Run Checkmarx Scan
         uses: checkmarx/ast-github-action@main
@@ -29,7 +29,7 @@ jobs:
           
       - name: Upload SARIF file 
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sarif-results-push
           path: cx_result.sarif
