@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "next lint",
     "prebuild": "npm run templates:fetch && npm run templates:list && npm run templates:status && npm run templates:index",
     "templates:fetch": "node scripts/get_bill_html_templates/fetch-templates.js fetch",

@@ -33,4 +33,5 @@ export const authConfig = {
     },
   },
   session: { strategy: "jwt" as const },
+  trustHost: true,
 } satisfies NextAuthConfig
