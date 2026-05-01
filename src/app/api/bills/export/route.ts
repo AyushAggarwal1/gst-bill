@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/auth";
+import { auth } from "@/app/auth";
 import { prisma } from "@/lib/prisma";
 // Import XLSX dynamically to avoid build issues
 // import * as XLSX from 'xlsx';
@@ -14,7 +13,7 @@ export async function POST(req: Request) {
     // Dynamically import xlsx to avoid build issues
     const XLSX = await import('xlsx');
     
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.email || !(session.user as any).tenantId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

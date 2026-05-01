@@ -13,41 +13,52 @@ interface UseFeatureFlagsReturn {
   refetch: () => Promise<void>
 }
 
+// Module-level cache — shared across all hook instances and page navigations
+const cache: { flags: Set<string> | null; ts: number } = { flags: null, ts: 0 }
+const CACHE_TTL = 60_000 // 60 seconds
+let inFlight: Promise<Set<string> | null> | null = null
+
+async function loadFlags(): Promise<Set<string> | null> {
+  if (cache.flags !== null && Date.now() - cache.ts < CACHE_TTL) {
+    return cache.flags
+  }
+  if (inFlight) return inFlight
+
+  inFlight = (async () => {
+    try {
+      const response = await fetch('/api/feature-flags', {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Failed to fetch feature flags')
+      const flags: FeatureFlag[] = await response.json()
+      const set = new Set<string>(flags.filter(f => f.enabled).map(f => f.feature))
+      cache.flags = set
+      cache.ts = Date.now()
+      return set
+    } catch {
+      return null
+    } finally {
+      inFlight = null
+    }
+  })()
+
+  return inFlight
+}
+
 export function useFeatureFlags(): UseFeatureFlagsReturn {
-  const [enabledFeatures, setEnabledFeatures] = useState<Set<string> | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [enabledFeatures, setEnabledFeatures] = useState<Set<string> | null>(cache.flags)
+  const [isLoading, setIsLoading] = useState(cache.flags === null)
   const [error, setError] = useState<string | null>(null)
 
   const fetchFeatureFlags = async () => {
     try {
       setIsLoading(true)
       setError(null)
-      
-      const response = await fetch('/api/feature-flags', { 
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch feature flags')
-      }
-      
-      const flags: FeatureFlag[] = await response.json()
-      const enabledSet = new Set<string>()
-      
-      for (const flag of flags) {
-        if (flag.enabled) {
-          enabledSet.add(flag.feature)
-        }
-      }
-      
-      setEnabledFeatures(enabledSet)
+      const result = await loadFlags()
+      setEnabledFeatures(result)
     } catch (err) {
       console.error('Error fetching feature flags:', err)
       setError(err instanceof Error ? err.message : 'Unknown error')
-      // Default to allowing all features if there's an error (fail open)
       setEnabledFeatures(null)
     } finally {
       setIsLoading(false)
@@ -60,6 +71,7 @@ export function useFeatureFlags(): UseFeatureFlagsReturn {
   }
 
   const refetch = async () => {
+    cache.ts = 0 // invalidate cache
     await fetchFeatureFlags()
   }
 

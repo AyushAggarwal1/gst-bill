@@ -85,7 +85,7 @@ function BillsPageContent() {
         setSearchCustomerName(customerNameValue);
         setSearchBillNumber(billNumberValue);
         setIsSearching(false);
-      }, 1000); // 1000ms debounce delay
+      }, 400); // 400ms debounce delay
       
       setSearchDebounceTimeout(timeout);
     } else {
@@ -95,6 +95,14 @@ function BillsPageContent() {
       setIsSearching(false);
     }
   }, [searchDebounceTimeout]);
+
+  // Fetch total (unfiltered) count once on mount
+  useEffect(() => {
+    fetch("/api/bills/count")
+      .then(r => r.json())
+      .then(({ count }) => setTotalBillsCount(count))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetchBills();
@@ -132,22 +140,6 @@ function BillsPageContent() {
 
       setBills(sortedBills);
       setSelectedBills([]);
-
-      // Fetch total count if no filters are applied
-      if (!startDate && !endDate && !searchCustomerName && !searchBillNumber) {
-        setTotalBillsCount(sortedBills.length);
-      } else if (totalBillsCount === 0) {
-        // If we haven't fetched total count yet, fetch it
-        try {
-          const totalRes = await fetch("/api/bills");
-          if (totalRes.ok) {
-            const totalData = await totalRes.json();
-            setTotalBillsCount(totalData.length);
-          }
-        } catch (error) {
-          console.error("Error fetching total bills count:", error);
-        }
-      }
     } catch (error) {
       console.error("Error fetching bills:", error);
       setError(error instanceof Error ? error.message : "Failed to load bills. Please try again.");
@@ -627,13 +619,6 @@ function BillsPageContent() {
 
   const filteredBills = bills;
 
-  if (loading) {
-  return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner text="Loading bills..." />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -994,7 +979,40 @@ function BillsPageContent() {
           </Card>
         )}
 
-        {error ? (
+        {loading ? (
+          <Card>
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <div className="h-5 bg-gray-200 rounded w-32 animate-pulse" />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {["", "Bill Number", "Date", "Customer", "Amount", "Status", "Download", ""].map((h, i) => (
+                      <th key={i} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="p-4"><div className="h-4 w-4 bg-gray-200 rounded" /></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-16" /></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-24" /></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-32" /></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20 ml-auto" /></td>
+                      <td className="px-6 py-4"><div className="h-6 bg-gray-200 rounded-full w-20 mx-auto" /></td>
+                      <td className="px-6 py-4"><div className="h-8 w-8 bg-gray-200 rounded-lg mx-auto" /></td>
+                      <td className="px-6 py-4"><div className="h-8 w-8 bg-gray-200 rounded-lg ml-auto" /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        ) : error ? (
           <Card>
             <CardContent className="p-8 text-center">
               <div className="text-red-600 mb-4">
