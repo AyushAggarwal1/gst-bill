@@ -116,13 +116,21 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if bill number is unique for this tenant
-    const existingBill = await prisma.bill.findFirst({
-      where: {
-        billNumber,
-        tenantId: currentUser.tenantId,
-      },
-    });
+    // Run all validation reads in parallel
+    const itemIds = items.map((item: any) => item.itemId);
+    const [existingBill, customer, itemsData] = await Promise.all([
+      prisma.bill.findFirst({
+        where: { billNumber, tenantId: currentUser.tenantId },
+        select: { id: true },
+      }),
+      prisma.customer.findFirst({
+        where: { id: customerId, tenantId: currentUser.tenantId },
+        select: { id: true },
+      }),
+      prisma.item.findMany({
+        where: { id: { in: itemIds }, tenantId: currentUser.tenantId },
+      }),
+    ]);
 
     if (existingBill) {
       return NextResponse.json(
@@ -130,14 +138,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    // Verify customer belongs to the same tenant
-    const customer = await prisma.customer.findFirst({
-      where: {
-        id: customerId,
-        tenantId: currentUser.tenantId,
-      },
-    });
 
     if (!customer) {
       return NextResponse.json(
@@ -149,17 +149,6 @@ export async function POST(req: Request) {
     // Calculate tax amounts and totals
     let subtotal = 0;
     let totalTax = 0;
-
-    // First, fetch all items to get their tax rates (only from this tenant)
-    const itemIds = items.map((item: any) => item.itemId);
-    const itemsData = await prisma.item.findMany({
-      where: {
-        id: {
-          in: itemIds,
-        },
-        tenantId: currentUser.tenantId,
-      },
-    });
 
     // Verify all items exist and belong to this tenant
     if (itemsData.length !== itemIds.length) {
@@ -210,8 +199,7 @@ export async function POST(req: Request) {
 
     // Create the bill with its items in a transaction
     const bill = await prisma.$transaction(async (tx) => {
-      // Create the bill
-      const newBill = await tx.bill.create({
+      return tx.bill.create({
         data: {
           billNumber,
           billDate: billDate ? new Date(billDate) : new Date(),
@@ -229,28 +217,19 @@ export async function POST(req: Request) {
             create: itemsWithCalculations,
           },
         },
-      });
-
-      return newBill;
-    }, {
-      timeout: 10000, // 10 seconds timeout for this specific transaction
-    });
-
-    // Fetch the complete bill data after transaction
-    const completeBill = await prisma.bill.findUnique({
-      where: { id: bill.id },
-      include: {
-        customer: true,
-        items: {
-          include: {
-            item: true,
+        include: {
+          customer: true,
+          items: {
+            include: { item: true },
           },
         },
-      },
+      });
+    }, {
+      timeout: 10000,
     });
 
     return NextResponse.json(
-      { message: "Bill created successfully", bill: completeBill },
+      { message: "Bill created successfully", bill },
       { status: 201 }
     );
   } catch (error) {
