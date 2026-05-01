@@ -1,7 +1,133 @@
-@import './reset.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body, div, span,
+  h1, h2, h3, h4, h5, h6,
+  p, a, ul, ol, li {
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  body {
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+  }
+}
+
+@theme {
+  /* Primary brand colors */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+
+  /* Secondary colors */
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+
+  /* Success colors */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+
+  /* Warning colors */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* Danger colors */
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+
+  /* Font families */
+  --font-family-sans: Inter, system-ui, sans-serif;
+  --font-family-display: Inter, system-ui, sans-serif;
+
+  /* Custom spacing */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+
+  /* Custom border radius */
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+
+  /* Custom shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+  /* Custom animations */
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-slide-down: slideDown 0.3s ease-out;
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    0% { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slideDown {
+    0% { transform: translateY(-10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+}
 
 :root {
   --foreground-rgb: 15, 23, 42;
@@ -11,12 +137,10 @@
   --success-rgb: 34, 197, 94;
   --warning-rgb: 245, 158, 11;
   --danger-rgb: 239, 68, 68;
-  
-  /* Card backgrounds */
+
   --card-rgb: 255, 255, 255;
   --card-border-rgb: 226, 232, 240;
-  
-  /* Text colors */
+
   --text-primary-rgb: 15, 23, 42;
   --text-secondary-rgb: 100, 116, 139;
   --text-muted-rgb: 148, 163, 184;
@@ -34,7 +158,6 @@
   }
 }
 
-/* Base styles */
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
@@ -44,23 +167,18 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Focus styles */
-@layer utilities {
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900;
-  }
-  
-  .focus-ring-inset {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
-  }
+@utility focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900;
 }
 
-/* Custom scrollbar */
+@utility focus-ring-inset {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -79,132 +197,114 @@ html {
   background: rgb(var(--text-secondary-rgb));
 }
 
-/* Component styles */
 @layer components {
   .card {
     @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm;
   }
-  
+
   .card-header {
     @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
   }
-  
+
   .card-body {
     @apply px-6 py-4;
   }
-  
+
   .card-footer {
     @apply px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 rounded-b-xl;
   }
-  
+
   .btn {
     @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus-ring disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
+
   .btn-primary {
     @apply bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md;
   }
-  
+
   .btn-secondary {
     @apply bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm hover:shadow-md;
   }
-  
+
   .btn-success {
     @apply bg-success-600 hover:bg-success-700 text-white shadow-sm hover:shadow-md;
   }
-  
+
   .btn-warning {
     @apply bg-warning-600 hover:bg-warning-700 text-white shadow-sm hover:shadow-md;
   }
-  
+
   .btn-danger {
     @apply bg-danger-600 hover:bg-danger-700 text-white shadow-sm hover:shadow-md;
   }
-  
+
   .btn-ghost {
     @apply hover:bg-gray-100 text-gray-700 dark:hover:bg-gray-800 dark:text-gray-300;
   }
-  
+
   .btn-sm {
     @apply px-3 py-1.5 text-xs;
   }
-  
+
   .btn-lg {
     @apply px-6 py-3 text-base;
   }
-  
+
   .input {
     @apply block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors;
   }
-  
+
   .input-error {
     @apply border-danger-300 focus:ring-danger-500 focus:border-danger-500;
   }
-  
+
   .label {
     @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
   }
-  
+
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
-  
+
   .badge-primary {
     @apply bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200;
   }
-  
+
   .badge-success {
     @apply bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200;
   }
-  
+
   .badge-warning {
     @apply bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-200;
   }
-  
+
   .badge-danger {
     @apply bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200;
   }
-  
+
   .badge-secondary {
     @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300;
   }
 }
 
-/* Animation utilities */
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.3s ease-out;
-  }
-  
-  .animate-slide-down {
-    animation: slideDown 0.3s ease-out;
-  }
-}
-
-/* Print Styles */
 @media print {
   @page {
     size: auto;
     margin: 15mm 10mm 15mm 10mm;
   }
-  
+
   body {
     background: white !important;
     color: black !important;
   }
-  
-  /* Hide all navigation elements */
-  nav, header, footer, 
-  [role="navigation"], 
-  a[href="/dashboard"], 
-  a[href="/dashboard/customers"], 
+
+  nav, header, footer,
+  [role="navigation"],
+  a[href="/dashboard"],
+  a[href="/dashboard/customers"],
   a[href="/dashboard/items"],
   a[href="/dashboard/bills"],
-  a[href="/dashboard/profile"], 
+  a[href="/dashboard/profile"],
   a[href="/api/auth/signout"],
   button,
   .print-hidden {
@@ -214,25 +314,22 @@ html {
     overflow: hidden !important;
     visibility: hidden !important;
   }
-  
-  /* Remove unnecessary backgrounds, borders and shadows */
+
   .bg-gray-100, .bg-primary-600, .bg-primary-700 {
     background-color: white !important;
   }
-  
+
   .shadow, .shadow-sm, .shadow-md, .shadow-lg {
     box-shadow: none !important;
   }
-  
-  /* Ensure the bill takes full width */
+
   main, div {
     width: 100% !important;
     max-width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
   }
-  
-  /* Make sure content is visible */
+
   .sm\:rounded-lg {
     padding: 0 !important;
     margin: 0 !important;

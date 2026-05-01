@@ -1,6 +1,5 @@
 import { hash } from "bcrypt";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/auth";
+import { auth } from "@/app/auth";
 
 interface SessionUser {
   id: string;
@@ -14,17 +13,17 @@ export async function hashPassword(password: string): Promise<string> {
   return hash(password, 10);
 }
 
-export async function getCurrentUser(req: Request) {
-  const session = await getServerSession(authOptions);
+export async function getCurrentUser(_req?: Request) {
+  const session = await auth();
   if (!session?.user) {
     return null;
   }
 
   return {
-    id: (session.user as SessionUser).id,
+    id: (session.user as unknown as SessionUser).id,
     email: session.user.email,
     name: session.user.name,
-    isAdmin: (session.user as SessionUser).isAdmin,
-    tenantId: (session.user as SessionUser).tenantId,
+    isAdmin: (session.user as unknown as SessionUser).isAdmin,
+    tenantId: (session.user as unknown as SessionUser).tenantId,
   };
-} 
+}

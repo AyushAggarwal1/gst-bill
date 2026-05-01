@@ -1,13 +1,13 @@
 import NextAuth from "next-auth"
-import type { NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
+import Credentials from "next-auth/providers/credentials"
 import { compare } from "bcrypt"
 import { prisma } from "@/lib/prisma"
+import { authConfig } from "@/auth.config"
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
+    Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -18,38 +18,28 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // First find the tenant
         const tenant = await prisma.tenant.findFirst({
-          where: { name: credentials.organizationName }
+          where: { name: credentials.organizationName as string }
         });
 
-        if (!tenant) {
-          return null;
-        }
+        if (!tenant) return null;
 
-        // Then find user in that tenant
         const user = await prisma.user.findFirst({
           where: {
-            email: credentials.email,
+            email: credentials.email as string,
             tenantId: tenant.id
           },
-          include: {
-            tenant: true
-          }
+          include: { tenant: true }
         })
 
-        if (!user || !user.password) {
-          return null
-        }
+        if (!user || !user.password) return null
 
         const isPasswordValid = await compare(
-          credentials.password,
+          credentials.password as string,
           user.password
         )
 
-        if (!isPasswordValid) {
-          return null
-        }
+        if (!isPasswordValid) return null
 
         return {
           id: user.id,
@@ -62,48 +52,4 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
-  callbacks: {
-    session: ({ session, token }) => {
-      interface SessionUser {
-        id?: string;
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-        isAdmin?: boolean;
-        tenantId?: string;
-        tenantName?: string;
-      }
-
-      return {
-        ...session,
-        user: {
-          ...session.user as SessionUser,
-          id: token.id as string,
-          isAdmin: token.isAdmin as boolean,
-          tenantId: token.tenantId as string,
-          tenantName: token.tenantName as string,
-        },
-      }
-    },
-    jwt: ({ token, user }) => {
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
-          isAdmin: (user as any).isAdmin,
-          tenantId: (user as any).tenantId,
-          tenantName: (user as any).tenantName,
-        }
-      }
-      return token
-    }
-  },
-  session: {
-    strategy: "jwt"
-  },
-  pages: {
-    signIn: "/login",
-    signOut: "/signout",
-  },
-  secret: process.env.NEXTAUTH_SECRET || "your-secret-key"
-} 
+})

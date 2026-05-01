@@ -249,11 +249,18 @@ export default function DashboardLayout({
           {/* Sidebar Header - matches main header height */}
           <div className="flex h-16 shrink-0 items-center justify-center border-b border-gray-200">
             {sidebarOpen || isHovering ? (
-              <div className="text-sm font-medium text-gray-500">Way Finder</div>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-sm font-bold text-gray-900">GSTly</span>
+              </div>
             ) : (
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM1 15a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm12-10a2 2 0 00-2 2v11a3 3 0 106 0V7a2 2 0 00-2-2h-2zM11 17a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                 </svg>
               </div>
             )}
@@ -319,30 +326,30 @@ export default function DashboardLayout({
                         href="/search-gst"
                         className={`${
                           pathname === "/search-gst"
-                            ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
-                            : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50'
-                                                } group flex items-center transition-all duration-200 ${
-                            sidebarOpen || isHovering
-                              ? 'gap-x-3 rounded-l-md p-3 text-sm leading-6 font-medium' 
-                              : 'justify-center p-3 rounded-lg mx-1 mb-2'
-                          }`}
-                          title={!sidebarOpen && !isHovering ? 'GST Search' : undefined}
+                            ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
+                            : 'text-gray-700 hover:text-primary-700 hover:bg-gray-50'
+                        } group flex items-center transition-all duration-200 ${
+                          sidebarOpen || isHovering
+                            ? 'gap-x-3 rounded-l-md p-3 text-sm leading-6 font-medium'
+                            : 'justify-center p-3 rounded-lg mx-1 mb-2'
+                        }`}
+                        title={!sidebarOpen && !isHovering ? 'GST Search' : undefined}
                       >
-                                                <svg className={`shrink-0 ${
-                            pathname === "/search-gst"
-                              ? 'text-blue-600'
-                              : 'text-gray-400 group-hover:text-blue-600'
-                          } transition-colors duration-200 ${sidebarOpen || isHovering ? 'h-5 w-5' : 'h-5 w-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                          </svg>
-                          {(sidebarOpen || isHovering) && (
-                            <>
-                              <span className="transition-opacity duration-300">GST Search</span>
-                              {pathname === "/search-gst" && (
-                                <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
-                              )}
-                            </>
-                          )}
+                        <svg className={`shrink-0 h-5 w-5 ${
+                          pathname === "/search-gst"
+                            ? 'text-primary-600'
+                            : 'text-gray-400 group-hover:text-primary-600'
+                        } transition-colors duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        {(sidebarOpen || isHovering) && (
+                          <>
+                            <span className="transition-opacity duration-300">GST Search</span>
+                            {pathname === "/search-gst" && (
+                              <div className="ml-auto w-2 h-2 bg-primary-600 rounded-full"></div>
+                            )}
+                          </>
+                        )}
                       </Link>
                     </li>
                   )}
@@ -352,30 +359,30 @@ export default function DashboardLayout({
                         href="/search-hsn"
                         className={`${
                           pathname === "/search-hsn"
-                            ? 'bg-green-50 text-green-700 border-r-2 border-green-600'
-                            : 'text-gray-700 hover:text-green-700 hover:bg-green-50'
-                                                } group flex items-center transition-all duration-200 ${
-                            sidebarOpen || isHovering
-                              ? 'gap-x-3 rounded-l-md p-3 text-sm leading-6 font-medium' 
-                              : 'justify-center p-3 rounded-lg mx-1 mb-2'
-                          }`}
-                          title={!sidebarOpen && !isHovering ? 'HSN Search' : undefined}
+                            ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
+                            : 'text-gray-700 hover:text-primary-700 hover:bg-gray-50'
+                        } group flex items-center transition-all duration-200 ${
+                          sidebarOpen || isHovering
+                            ? 'gap-x-3 rounded-l-md p-3 text-sm leading-6 font-medium'
+                            : 'justify-center p-3 rounded-lg mx-1 mb-2'
+                        }`}
+                        title={!sidebarOpen && !isHovering ? 'HSN Search' : undefined}
                       >
-                                                <svg className={`shrink-0 ${
-                            pathname === "/search-hsn"
-                              ? 'text-green-600'
-                              : 'text-gray-400 group-hover:text-green-600'
-                          } transition-colors duration-200 ${sidebarOpen || isHovering ? 'h-5 w-5' : 'h-5 w-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                          </svg>
-                          {(sidebarOpen || isHovering) && (
-                            <>
-                              <span className="transition-opacity duration-300">HSN Search</span>
-                              {pathname === "/search-hsn" && (
-                                <div className="ml-auto w-2 h-2 bg-green-600 rounded-full"></div>
-                              )}
-                            </>
-                          )}
+                        <svg className={`shrink-0 h-5 w-5 ${
+                          pathname === "/search-hsn"
+                            ? 'text-primary-600'
+                            : 'text-gray-400 group-hover:text-primary-600'
+                        } transition-colors duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        {(sidebarOpen || isHovering) && (
+                          <>
+                            <span className="transition-opacity duration-300">HSN Search</span>
+                            {pathname === "/search-hsn" && (
+                              <div className="ml-auto w-2 h-2 bg-primary-600 rounded-full"></div>
+                            )}
+                          </>
+                        )}
                       </Link>
                     </li>
                   )}
@@ -596,20 +603,20 @@ export default function DashboardLayout({
                       onClick={() => setIsMobileNavOpen(false)}
                       className={`${
                         isActive(item.href)
-                          ? "bg-blue-50 text-blue-700 border-blue-200 shadow-sm"
+                          ? "bg-primary-50 text-primary-700 border-primary-200 shadow-sm"
                           : "text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-transparent"
                       } group flex items-center px-4 py-3 rounded-xl text-base font-medium border transition-all duration-200 hover:shadow-sm`}
                     >
                       <div className={`${
                         isActive(item.href)
-                          ? "text-blue-600"
+                          ? "text-primary-600"
                           : "text-gray-400 group-hover:text-gray-600"
                       } transition-colors duration-200`}>
                         {item.icon}
                       </div>
                       <span className="ml-3">{item.name}</span>
                       {isActive(item.href) && (
-                        <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <div className="ml-auto w-2 h-2 bg-primary-600 rounded-full"></div>
                       )}
                     </Link>
                   )
@@ -726,7 +733,7 @@ export default function DashboardLayout({
                 <div className="p-6">
                   {/* Main Navigation */}
                   <div className="mb-8">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-4">Way Finder</h4>
+                    <h4 className="text-sm font-semibold text-gray-900 mb-4">Navigation</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {navigation.map((item) => (
                         (!item.adminOnly || (item.adminOnly && isAdmin)) && isFeatureEnabled(item.feature) && (
@@ -777,15 +784,15 @@ export default function DashboardLayout({
                         onClick={() => setCommandPaletteOpen(false)}
                         className={`group relative rounded-xl border p-6 hover:shadow-lg transition-all duration-200 ${
                           pathname === "/search-gst"
-                            ? "border-blue-300 bg-blue-50"
-                            : "border-gray-200 hover:border-blue-300"
+                            ? "border-primary-300 bg-primary-50"
+                            : "border-gray-200 hover:border-primary-300"
                         }`}
                       >
                         <div className="flex items-center">
                           <div className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
                             pathname === "/search-gst"
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-blue-50 text-blue-600 group-hover:bg-blue-100"
+                              ? "bg-primary-100 text-primary-600"
+                              : "bg-primary-50 text-primary-600 group-hover:bg-primary-100"
                           }`}>
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -794,8 +801,8 @@ export default function DashboardLayout({
                           <div className="ml-4">
                             <h4 className={`text-lg font-semibold transition-colors ${
                               pathname === "/search-gst"
-                                ? "text-blue-700"
-                                : "text-gray-900 group-hover:text-blue-600"
+                                ? "text-primary-700"
+                                : "text-gray-900 group-hover:text-primary-600"
                             }`}>
                               GST Search
                             </h4>
@@ -804,7 +811,7 @@ export default function DashboardLayout({
                             </p>
                           </div>
                           {pathname === "/search-gst" && (
-                            <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                            <div className="ml-auto w-2 h-2 bg-primary-600 rounded-full"></div>
                           )}
                         </div>
                         <div className="mt-4">
@@ -820,15 +827,15 @@ export default function DashboardLayout({
                         onClick={() => setCommandPaletteOpen(false)}
                         className={`group relative rounded-xl border p-6 hover:shadow-lg transition-all duration-200 ${
                           pathname === "/search-hsn"
-                            ? "border-green-300 bg-green-50"
-                            : "border-gray-200 hover:border-green-300"
+                            ? "border-primary-300 bg-primary-50"
+                            : "border-gray-200 hover:border-primary-300"
                         }`}
                       >
                         <div className="flex items-center">
                           <div className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
                             pathname === "/search-hsn"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-green-50 text-green-600 group-hover:bg-green-100"
+                              ? "bg-primary-100 text-primary-600"
+                              : "bg-primary-50 text-primary-600 group-hover:bg-primary-100"
                           }`}>
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -837,8 +844,8 @@ export default function DashboardLayout({
                           <div className="ml-4">
                             <h4 className={`text-lg font-semibold transition-colors ${
                               pathname === "/search-hsn"
-                                ? "text-green-700"
-                                : "text-gray-900 group-hover:text-green-600"
+                                ? "text-primary-700"
+                                : "text-gray-900 group-hover:text-primary-600"
                             }`}>
                               HSN Search
                             </h4>
@@ -847,7 +854,7 @@ export default function DashboardLayout({
                             </p>
                           </div>
                           {pathname === "/search-hsn" && (
-                            <div className="ml-auto w-2 h-2 bg-green-600 rounded-full"></div>
+                            <div className="ml-auto w-2 h-2 bg-primary-600 rounded-full"></div>
                           )}
                         </div>
                         <div className="mt-4">

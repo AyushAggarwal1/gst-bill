@@ -2,11 +2,11 @@
 
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { 
-  PageHeader, 
-  StatsCard, 
-  QuickActionCard, 
-  LoadingSpinner 
+import {
+  PageHeader,
+  StatsCard,
+  QuickActionCard,
+  LoadingSpinner,
 } from "@/components/ui";
 
 interface Activity {
@@ -143,14 +143,6 @@ export default function Dashboard() {
     fetchRecentActivities();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <LoadingSpinner text="Loading dashboard..." />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <PageHeader
@@ -184,44 +176,57 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-6 sm:mb-8">
-          <StatsCard
-            title="Total Customers"
-            value={stats.customers}
-            icon={
-              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            }
-            href="/dashboard/customers"
-            linkText="View all customers"
-            iconBgColor="bg-slate-100"
-          />
-
-          <StatsCard
-            title="Total Items"
-            value={stats.items}
-            icon={
-              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            }
-            href="/dashboard/items"
-            linkText="View all items"
-            iconBgColor="bg-emerald-100"
-          />
-
-          <StatsCard
-            title="Total Bills"
-            value={stats.bills}
-            icon={
-              <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            }
-            href="/dashboard/bills"
-            linkText="View all bills"
-            iconBgColor="bg-blue-100"
-          />
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200 p-4 sm:p-6 animate-pulse">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-lg flex-shrink-0" />
+                  <div className="ml-3 sm:ml-4 flex-1">
+                    <div className="h-3 bg-gray-200 rounded w-28 mb-2" />
+                    <div className="h-6 bg-gray-200 rounded w-16" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : null}
+          {!isLoading && <>
+            <StatsCard
+              title="Total Customers"
+              value={stats.customers}
+              icon={
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              }
+              href="/dashboard/customers"
+              linkText="View all customers"
+              iconBgColor="bg-slate-100"
+            />
+            <StatsCard
+              title="Total Items"
+              value={stats.items}
+              icon={
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              }
+              href="/dashboard/items"
+              linkText="View all items"
+              iconBgColor="bg-emerald-100"
+            />
+            <StatsCard
+              title="Total Bills"
+              value={stats.bills}
+              icon={
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              }
+              href="/dashboard/bills"
+              linkText="View all bills"
+              iconBgColor="bg-blue-100"
+            />
+          </>}
         </div>
 
         {/* Quick Actions */}

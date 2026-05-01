@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/auth";
+import { auth } from "@/app/auth";
 
 interface SessionUser {
   id: string;
@@ -8,7 +7,7 @@ interface SessionUser {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const user = session?.user as unknown as SessionUser | undefined;
   if (!user?.tenantId) {
     return NextResponse.json([], { status: 200 });
