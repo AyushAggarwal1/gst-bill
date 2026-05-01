@@ -1,7 +1,11 @@
+import NextAuth from "next-auth"
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/app/auth'
+import { authConfig } from '@/auth.config'
 import { findFirstAvailableFeature } from './lib/featureRedirect'
+
+// Use only the edge-safe config — no bcrypt, no prisma, no native addons
+const { auth } = NextAuth(authConfig)
 
 // Feature flag mapping for protected routes
 const FEATURE_ROUTE_MAP: Record<string, string> = {
