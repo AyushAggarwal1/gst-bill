@@ -75,12 +75,9 @@ export async function GET(request: NextRequest) {
 }
 
 // Update external templates (trigger fetch)
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const { fetchTemplatesFromRepo } = await import('../../../../../scripts/get_bill_html_templates/fetch-templates.js');
-    
-    // This would require the script to be properly set up
-    // For now, return a message about manual fetching
+    // Fetching is done at build time by the script; the route only reports how.
     return NextResponse.json({
       success: true,
       message: 'External templates should be fetched using the script: node scripts/get_bill_html_templates/fetch-templates.js fetch'
