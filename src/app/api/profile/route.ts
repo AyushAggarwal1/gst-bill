@@ -38,6 +38,7 @@ export async function GET(req: Request) {
         phoneNo: "",
         bankDetails: "",
         profilePhoto: null,
+        upiId: "",
         defaultTemplate: null,
       });
     }
@@ -50,6 +51,7 @@ export async function GET(req: Request) {
       phoneNo: user.profile.phoneNo || "",
       bankDetails: user.profile.bankDetails || "",
       profilePhoto: user.profile.profilePhoto,
+      upiId: user.profile.upiId || "",
       defaultTemplate: user.profile.defaultTemplate,
     });
   } catch (error) {
@@ -70,7 +72,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { firmName, address, gstNo, phoneNo, bankDetails, profilePhoto } = await req.json();
+    const { firmName, address, gstNo, phoneNo, bankDetails, profilePhoto, upiId } = await req.json();
 
     // Validate input
     if (!firmName || !address || !gstNo) {
@@ -85,6 +87,14 @@ export async function POST(req: Request) {
     if (!gstRegex.test(gstNo)) {
       return NextResponse.json(
         { error: "Invalid GST Number format" },
+        { status: 400 }
+      );
+    }
+
+    // Validate UPI ID (VPA) format when provided, e.g. shopname@okhdfcbank
+    if (upiId && !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiId)) {
+      return NextResponse.json(
+        { error: "Invalid UPI ID format (expected something like name@bank)" },
         { status: 400 }
       );
     }
@@ -113,6 +123,7 @@ export async function POST(req: Request) {
         phoneNo: phoneNo || null,
         bankDetails: bankDetails || null,
         profilePhoto: profilePhoto || null,
+        upiId: upiId || null,
       },
       create: {
         firmName,
@@ -121,6 +132,7 @@ export async function POST(req: Request) {
         phoneNo: phoneNo || null,
         bankDetails: bankDetails || null,
         profilePhoto: profilePhoto || null,
+        upiId: upiId || null,
         userId: user.id,
       },
     });

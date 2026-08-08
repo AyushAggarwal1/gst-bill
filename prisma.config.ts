@@ -11,7 +11,11 @@ export default defineConfig({
   datasource: {
     // Primary database connection URL (read from .env / environment)
     url: env('DATABASE_URL'),
-    // Optional shadow database URL (used by Migrate); safe to omit if not set
-    shadowDatabaseUrl: process.env.DIRECT_URL,
+    // Optional shadow database URL (used by `migrate dev`). Must be a SEPARATE
+    // empty database — never the main DB (DIRECT_URL points at the main DB, so
+    // it must not be used here). Omit unless SHADOW_DATABASE_URL is configured.
+    ...(process.env.SHADOW_DATABASE_URL
+      ? { shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL }
+      : {}),
   },
 });

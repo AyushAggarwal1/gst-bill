@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.1.0
- * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
+ * Prisma Client JS version: 7.9.1
+ * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
  */
 Prisma.prismaVersion = {
-  client: "7.1.0",
-  engine: "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba"
+  client: "7.9.1",
+  engine: "e922089b7d7502aff4249d5da3420f6fa55fc6ad"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -170,6 +170,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   phoneNo: 'phoneNo',
   bankDetails: 'bankDetails',
   profilePhoto: 'profilePhoto',
+  upiId: 'upiId',
   defaultTemplate: 'defaultTemplate',
   userId: 'userId'
 };
@@ -212,6 +213,7 @@ exports.Prisma.BillScalarFieldEnum = {
   igst: 'igst',
   total: 'total',
   deliveryAddress: 'deliveryAddress',
+  publicToken: 'publicToken',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

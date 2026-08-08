@@ -76,7 +76,8 @@ export default auth(async function proxy(request: NextRequest & { auth: any }) {
   const publicPaths = ['/', '/privacy-policy', '/search-gst', '/search-hsn', '/terms-of-service', '/forgot-password', '/reset-password', '/health', '/sitemap.xml', '/robots.txt']
   const authOnlyPaths = ['/login', '/register', '/']
 
-  const isPublicPath = publicPaths.includes(path)
+  // Public invoice links (/i/<token>) are shareable with customers — no auth.
+  const isPublicPath = publicPaths.includes(path) || path.startsWith('/i/')
   const isAuthOnlyPath = authOnlyPaths.includes(path)
 
   if (isAuthOnlyPath && session) {
