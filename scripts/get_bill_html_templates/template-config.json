@@ -2,7 +2,7 @@
   "externalRepo": {
     "owner": "AyushAggarwal1",
     "repo": "gstly-html-templates",
-    "branch": "main",
+    "branch": "dev",
     "path": ""
   },
   "localPaths": {
@@ -37,6 +37,6 @@
   "autoUpdate": {
     "enabled": false,
     "interval": "24h",
-    "lastUpdate": "2026-05-01T08:44:34.306Z"
+    "lastUpdate": "2026-08-08T11:10:13.405Z"
   }
 }
