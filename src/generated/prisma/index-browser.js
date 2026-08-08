@@ -181,6 +181,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
   address: 'address',
   deliveryAddress: 'deliveryAddress',
   gstNo: 'gstNo',
+  phone: 'phone',
+  email: 'email',
   userId: 'userId',
   tenantId: 'tenantId',
   createdAt: 'createdAt',
@@ -236,6 +238,7 @@ exports.Prisma.PasswordResetRequestScalarFieldEnum = {
   otpHash: 'otpHash',
   expiresAt: 'expiresAt',
   usedAt: 'usedAt',
+  attempts: 'attempts',
   createdAt: 'createdAt'
 };
 
@@ -249,6 +252,7 @@ exports.Prisma.SignupVerificationScalarFieldEnum = {
   otpHash: 'otpHash',
   expiresAt: 'expiresAt',
   usedAt: 'usedAt',
+  attempts: 'attempts',
   createdAt: 'createdAt'
 };
 

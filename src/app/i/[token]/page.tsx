@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
+import { cache } from "react";
 import { format } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { renderBillHtml } from "@/lib/billHtml";
@@ -13,7 +14,8 @@ interface PageProps {
   params: Promise<{ token: string }>;
 }
 
-async function getBillByToken(token: string) {
+// cache() dedupes the lookup between generateMetadata and the page render.
+const getBillByToken = cache(async (token: string) => {
   if (!token || token.length < 16) return null;
   return prisma.bill.findUnique({
     where: { publicToken: token },
@@ -23,15 +25,50 @@ async function getBillByToken(token: string) {
       user: { include: { profile: true } },
     },
   });
+});
+
+async function requestOrigin(): Promise<string> {
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost:3000";
+  const proto = headersList.get("x-forwarded-proto") || "http";
+  return `${proto}://${host}`;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { token } = await params;
   const bill = await getBillByToken(token);
-  const firm = bill?.user?.profile?.firmName;
+  if (!bill) {
+    return { title: "Invoice", robots: { index: false, follow: false } };
+  }
+
+  const firm = bill.user?.profile?.firmName;
+  const logo = bill.user?.profile?.profilePhoto;
+  const title = `Invoice ${bill.billNumber}${firm ? ` — ${firm}` : ""}`;
+  const description = `₹${bill.total.toLocaleString("en-IN", { minimumFractionDigits: 2 })} · ${format(
+    new Date(bill.billDate),
+    "dd MMM yyyy",
+  )} · Tap to view, download or pay via UPI`;
+  const origin = await requestOrigin();
+
   return {
-    title: bill ? `Invoice ${bill.billNumber}${firm ? ` — ${firm}` : ""}` : "Invoice",
+    title,
+    description,
     robots: { index: false, follow: false },
+    // WhatsApp (and other messengers) read these to build the link preview card.
+    openGraph: {
+      title,
+      description,
+      url: `${origin}/i/${token}`,
+      siteName: firm || "GSTly",
+      type: "website",
+      ...(logo ? { images: [{ url: logo, width: 400, height: 400, alt: firm || "Business logo" }] } : {}),
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      ...(logo ? { images: [logo] } : {}),
+    },
   };
 }
 
@@ -47,10 +84,7 @@ export default async function PublicInvoicePage({ params }: PageProps) {
   const firmName = profile?.firmName || "Invoice";
   const invoiceHtml = await renderBillHtml(bill, profile);
 
-  const headersList = await headers();
-  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost:3000";
-  const proto = headersList.get("x-forwarded-proto") || "http";
-  const pageUrl = `${proto}://${host}/i/${token}`;
+  const pageUrl = `${await requestOrigin()}/i/${token}`;
 
   const waMessage = `Invoice ${bill.billNumber} from ${firmName} for ₹${bill.total.toFixed(2)}\n${pageUrl}`;
   const waHref = `https://wa.me/?text=${encodeURIComponent(waMessage)}`;

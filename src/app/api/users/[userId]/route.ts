@@ -1,25 +1,13 @@
 import { NextResponse } from 'next/server';
 import { Role, Permission } from '@/generated/prisma';
 import { prisma } from '@/lib/prisma';
+import { getCurrentUser } from '@/lib/auth';
 import { z } from 'zod';
 
-// Placeholder for getting current user - replace with your actual implementation
-async function getCurrentUser(request: Request): Promise<{ id: string; isAdmin: boolean } | null> {
-  // TODO: Replace with actual session validation (e.g., NextAuth.js getServerSession)
-  const mockUserId = request.headers.get('user-id'); // Using a header for now
-  if (mockUserId) {
-    const user = await prisma.user.findUnique({ where: { id: mockUserId } });
-    if (user) {
-      return { id: user.id, isAdmin: user.isAdmin };
-    }
-  }
-  return null;
-}
-
 interface RouteContext {
-  params: {
+  params: Promise<{
     userId: string;
-  };
+  }>;
 }
 
 // Zod schema for validating the update request body
@@ -38,37 +26,34 @@ const updateUserSchema = z.object({
 export async function PUT(request: Request, context: RouteContext) {
   try {
     const currentUser = await getCurrentUser(request);
-    const { userId } = context.params;
+    const { userId } = await context.params;
 
-    if (!currentUser || !currentUser.isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized. Only admins can update users.' }, { status: 403 });
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+    if (!currentUser.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden. Only admins can update users.' }, { status: 403 });
     }
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    // Target user must belong to the caller's tenant
+    const targetUser = await prisma.user.findFirst({
+      where: { id: userId, tenantId: currentUser.tenantId },
+    });
     if (!targetUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
-    // // Prevent admin from accidentally removing their own admin rights if they are the last admin
-    // if (currentUser.id === userId && body.isAdmin === false) {
-    //   const adminCount = await prisma.user.count({ where: { isAdmin: true } });
-    //   if (adminCount === 1) {
-    //     return NextResponse.json({ error: 'Cannot remove admin status from the last admin.' }, { status: 400 });
-    //   }
-    // }
-
 
     let body;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
-    
+
     const validation = updateUserSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json({ error: 'Invalid request body', details: validation.error.flatten() }, { status: 400 });
@@ -79,15 +64,11 @@ export async function PUT(request: Request, context: RouteContext) {
     // Use a transaction to ensure atomicity
     const updatedUser = await prisma.$transaction(async (tx) => {
       if (roles !== undefined) {
-        // Delete existing roles for the user
-        await tx.userRole.deleteMany({
-          where: { userId: userId },
-        });
-        // Create new roles
+        await tx.userRole.deleteMany({ where: { userId } });
         if (roles.length > 0) {
           await tx.userRole.createMany({
             data: roles.map(r => ({
-              userId: userId,
+              userId,
               role: r.role,
               permissions: r.permissions,
             })),
@@ -95,47 +76,42 @@ export async function PUT(request: Request, context: RouteContext) {
         }
       }
 
-      // Update user details
       const userDataToUpdate: { name?: string; isAdmin?: boolean } = {};
       if (name !== undefined) userDataToUpdate.name = name;
       if (isAdmin !== undefined) {
-         // Prevent admin from accidentally removing their own admin rights if they are the last admin
+        // Don't let the last admin in THIS tenant drop their own admin rights
         if (currentUser.id === userId && isAdmin === false) {
-          const adminCount = await tx.user.count({ where: { isAdmin: true } });
+          const adminCount = await tx.user.count({
+            where: { isAdmin: true, tenantId: currentUser.tenantId },
+          });
           if (adminCount === 1) {
-            // Instead of throwing error, which would rollback, we explicitly ignore this change
-            // Or, throw an error that the client can catch and display
-             throw new Error('Cannot remove admin status from the last admin.');
+            throw new Error('Cannot remove admin status from the last admin.');
           }
         }
         userDataToUpdate.isAdmin = isAdmin;
       }
 
-
       if (Object.keys(userDataToUpdate).length > 0) {
         return tx.user.update({
           where: { id: userId },
           data: userDataToUpdate,
-          include: { roles: true }, // Return updated roles
+          include: { roles: true },
         });
       }
-      // If only roles were updated, fetch the user again to include roles
       return tx.user.findUnique({
-          where: { id: userId },
-          include: { roles: true },
+        where: { id: userId },
+        include: { roles: true },
       });
     });
 
     return NextResponse.json({ message: 'User updated successfully', user: updatedUser }, { status: 200 });
 
   } catch (error: any) {
-    console.error('Error updating user:', error);
-     if (error.message === 'Cannot remove admin status from the last admin.') {
+    if (error.message === 'Cannot remove admin status from the last admin.') {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    console.error('Error updating user:', error);
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -143,48 +119,39 @@ export async function PUT(request: Request, context: RouteContext) {
 export async function DELETE(request: Request, context: RouteContext) {
   try {
     const currentUser = await getCurrentUser(request);
-    const { userId } = context.params;
+    const { userId } = await context.params;
 
-    if (!currentUser || !currentUser.isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized. Only admins can delete users.' }, { status: 403 });
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+    if (!currentUser.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden. Only admins can delete users.' }, { status: 403 });
     }
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
-    if (!targetUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
     // Prevent admin from deleting themselves
     if (currentUser.id === userId) {
       return NextResponse.json({ error: 'Admins cannot delete their own account.' }, { status: 400 });
     }
-    
-    // Additional check: Prevent deletion of the last admin if you want to be extra careful
-    // This is often a business rule. The self-deletion check above is more common.
-    // if (targetUser.isAdmin) {
-    //   const adminCount = await prisma.user.count({ where: { isAdmin: true } });
-    //   if (adminCount === 1) {
-    //     return NextResponse.json({ error: 'Cannot delete the last admin account.' }, { status: 400 });
-    //   }
-    // }
 
-    await prisma.user.delete({
-      where: { id: userId },
+    // Target user must belong to the caller's tenant
+    const targetUser = await prisma.user.findFirst({
+      where: { id: userId, tenantId: currentUser.tenantId },
     });
-    // UserRole entries are deleted by onDelete: Cascade
-    // Invitation inviterId/invitedUserId are set to null by onDelete: SetNull
+    if (!targetUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    await prisma.user.delete({ where: { id: userId } });
 
     return NextResponse.json({ message: 'User deleted successfully' }, { status: 200 });
 
   } catch (error) {
     console.error('Error deleting user:', error);
     return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -192,47 +159,39 @@ export async function DELETE(request: Request, context: RouteContext) {
 export async function GET(request: Request, context: RouteContext) {
   try {
     const currentUser = await getCurrentUser(request);
-    const { userId } = context.params;
+    const { userId } = await context.params;
 
-    if (!currentUser) { // User must be logged in
-        return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
-    }
-    
-    // Admin can fetch any user, or user can fetch their own details
-    if (!currentUser.isAdmin && currentUser.id !== userId) {
-        return NextResponse.json({ error: 'Forbidden. You can only fetch your own details or an admin must perform this action.' }, { status: 403 });
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
+    // Admin can fetch any user in their tenant; a non-admin only their own record
+    if (!currentUser.isAdmin && currentUser.id !== userId) {
+      return NextResponse.json({ error: 'Forbidden. You can only fetch your own details.' }, { status: 403 });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { id: userId, tenantId: currentUser.tenantId },
       include: {
         roles: {
-          select: {
-            role: true,
-            permissions: true,
-          },
+          select: { role: true, permissions: true },
         },
-        // Do not include password
       },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
-    // Exclude password from the response
-    const { password, ...userWithoutPassword } = user;
 
+    const { password, ...userWithoutPassword } = user;
     return NextResponse.json(userWithoutPassword, { status: 200 });
 
   } catch (error) {
     console.error('Error fetching user:', error);
     return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
-} 
+}

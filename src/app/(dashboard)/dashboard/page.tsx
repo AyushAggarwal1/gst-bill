@@ -8,6 +8,7 @@ import {
   QuickActionCard,
   LoadingSpinner,
 } from "@/components/ui";
+import OnboardingChecklist from "@/components/OnboardingChecklist";
 
 interface Activity {
   id: string;
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkProfileAndRedirect = async () => {
@@ -39,6 +41,7 @@ export default function Dashboard() {
             window.location.href = "/dashboard/profile";
             return;
           }
+          setHasProfile(hasProfile);
         }
       } catch (error) {
         console.error("Error checking profile:", error);
@@ -174,6 +177,17 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
+        {/* First-run onboarding checklist (auto-hides once complete) */}
+        {!isLoading && hasProfile !== null && (
+          <OnboardingChecklist
+            hasProfile={hasProfile}
+            customers={stats.customers}
+            items={stats.items}
+            bills={stats.bills}
+            userId={(session?.user as { id?: string } | undefined)?.id}
+          />
+        )}
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-6 sm:mb-8">
           {isLoading ? (

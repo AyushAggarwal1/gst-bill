@@ -35,8 +35,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid OTP or expired' }, { status: 400 });
     }
 
+    // Cap brute-force: invalidate the code after too many wrong guesses
+    const MAX_OTP_ATTEMPTS = 5;
+    if (recentRequest.attempts >= MAX_OTP_ATTEMPTS) {
+      await prisma.passwordResetRequest.update({
+        where: { id: recentRequest.id },
+        data: { usedAt: new Date() },
+      });
+      return NextResponse.json(
+        { message: 'Too many incorrect attempts. Please request a new code.' },
+        { status: 429 }
+      );
+    }
+
     const isValid = await compare(otp, recentRequest.otpHash);
     if (!isValid) {
+      await prisma.passwordResetRequest.update({
+        where: { id: recentRequest.id },
+        data: { attempts: { increment: 1 } },
+      });
       return NextResponse.json({ message: 'Invalid OTP or expired' }, { status: 400 });
     }
 

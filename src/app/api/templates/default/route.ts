@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import fs from 'fs';
-import path from 'path';
+import { resolveTemplatePath } from "@/lib/templatePath";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -21,15 +21,10 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Validate that the template file exists
-    let templatePath: string;
-    if (defaultTemplate.startsWith('backup-templates/')) {
-      templatePath = path.join(process.cwd(), 'public', defaultTemplate);
-    } else {
-      templatePath = path.join(process.cwd(), 'public', 'templates', defaultTemplate);
-    }
-    
-    if (!fs.existsSync(templatePath)) {
+    // Validate the template name and that the file exists — also blocks a
+    // traversal value (e.g. "../../.env") from being stored and later read.
+    const templatePath = resolveTemplatePath(defaultTemplate);
+    if (!templatePath || !fs.existsSync(templatePath)) {
       return NextResponse.json(
         { error: "Template file not found" },
         { status: 404 }

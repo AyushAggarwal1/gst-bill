@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, address, deliveryAddress, gstNo } = await req.json();
+    const { name, address, deliveryAddress, gstNo, phone, email } = await req.json();
 
     // Validate input
     if (!name || !address || !gstNo) {
@@ -72,6 +72,20 @@ export async function POST(req: Request) {
       );
     }
 
+    if (phone && !/^[0-9+\-() ]{7,18}$/.test(phone)) {
+      return NextResponse.json(
+        { error: "Invalid phone number" },
+        { status: 400 }
+      );
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
+        { status: 400 }
+      );
+    }
+
     // Create the customer
     const customer = await prisma.customer.create({
       data: {
@@ -79,6 +93,8 @@ export async function POST(req: Request) {
         address,
         deliveryAddress: deliveryAddress || null,
         gstNo,
+        phone: phone || null,
+        email: email || null,
         userId: currentUser.id,
         tenantId: currentUser.tenantId,
       },
