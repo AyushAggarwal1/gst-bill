@@ -32,6 +32,43 @@ function getRequiredFeature(path: string): string | null {
   return null
 }
 
+interface TenantFeatureFlag {
+  feature: string
+  enabled: boolean
+}
+
+// Per-tenant flag cache so navigations don't pay a flags-service round-trip every time.
+const flagsCache = new Map<string, { flags: TenantFeatureFlag[]; ts: number }>()
+const FLAGS_CACHE_TTL = 60_000
+
+// Returns null when flags can't be fetched (fail open) — a slow or down flags
+// service must never block navigation, so the fetch is capped at 3 seconds.
+async function getTenantFlags(tenantId: string): Promise<TenantFeatureFlag[] | null> {
+  const baseUrl = process.env.FLAGS_SERVICE_URL?.replace(/\/+$/, '')
+  if (!baseUrl) return null
+
+  const cached = flagsCache.get(tenantId)
+  if (cached && Date.now() - cached.ts < FLAGS_CACHE_TTL) {
+    return cached.flags
+  }
+
+  try {
+    const response = await fetch(`${baseUrl}/api/tenants/${tenantId}/features`, {
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(3000),
+    })
+    if (!response.ok) return null
+
+    const flags: TenantFeatureFlag[] = await response.json()
+    flagsCache.set(tenantId, { flags, ts: Date.now() })
+    return flags
+  } catch (error) {
+    console.warn('Failed to fetch feature flags:', error)
+    return null
+  }
+}
+
 export default auth(async function proxy(request: NextRequest & { auth: any }) {
   const path = request.nextUrl.pathname
   const session = request.auth
@@ -57,33 +94,26 @@ export default auth(async function proxy(request: NextRequest & { auth: any }) {
       const requiredFeature = getRequiredFeature(path)
 
       if (requiredFeature) {
-        try {
-          const baseUrl = process.env.FLAGS_SERVICE_URL
-          if (baseUrl) {
-            const response = await fetch(`${baseUrl}/api/tenants/${tenantId}/features`, {
-              cache: 'no-store',
-              headers: { 'Content-Type': 'application/json' },
-            })
+        const flags = await getTenantFlags(tenantId)
 
-            if (response.ok) {
-              const flags = await response.json()
-              const featureFlag = flags.find((flag: any) => flag.feature === requiredFeature)
+        if (flags) {
+          const featureFlag = flags.find((flag) => flag.feature === requiredFeature)
 
-              if (featureFlag && !featureFlag.enabled) {
-                const enabledFeatures = new Set<string>()
-                for (const flag of flags) {
-                  if (flag.enabled) enabledFeatures.add(flag.feature)
-                }
-                const redirectPath = findFirstAvailableFeature(enabledFeatures)
-                const url = new URL(redirectPath, request.url)
-                url.searchParams.set('message', 'feature_redirected')
-                url.searchParams.set('from', requiredFeature)
-                return NextResponse.redirect(url)
-              }
+          if (featureFlag && !featureFlag.enabled) {
+            const enabledFeatures = new Set<string>()
+            for (const flag of flags) {
+              if (flag.enabled) enabledFeatures.add(flag.feature)
+            }
+            const redirectPath = findFirstAvailableFeature(enabledFeatures)
+            // If the fallback resolves to the path we're already blocking,
+            // allow the request through instead of redirecting to ourselves forever.
+            if (redirectPath !== path) {
+              const url = new URL(redirectPath, request.url)
+              url.searchParams.set('message', 'feature_redirected')
+              url.searchParams.set('from', requiredFeature)
+              return NextResponse.redirect(url)
             }
           }
-        } catch (error) {
-          console.warn('Failed to fetch feature flags:', error)
         }
       }
     }

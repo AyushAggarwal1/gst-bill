@@ -5,7 +5,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function SignOutPage() {
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(2);
   const [error, setError] = useState("");
   const [isSigningOut, setIsSigningOut] = useState(true);
 

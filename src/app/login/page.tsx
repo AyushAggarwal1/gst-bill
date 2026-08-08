@@ -2,12 +2,11 @@
 
 import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,24 +39,29 @@ function LoginForm() {
 
       if (res?.error) {
         setError("Invalid credentials or organization name");
-      } else {
-        // Check if user has a profile
+        setIsLoading(false);
+        return;
+      }
+
+      // Decide where to land: profile setup for first-time users, dashboard otherwise.
+      let destination = "/dashboard";
+      try {
         const profileCheck = await fetch("/api/auth/check-profile");
         if (profileCheck.ok) {
           const { hasProfile } = await profileCheck.json();
-          if (hasProfile) {
-            router.push("/dashboard");
-          } else {
-            router.push("/dashboard/profile");
+          if (!hasProfile) {
+            destination = "/dashboard/profile";
           }
-        } else {
-          // Fallback to dashboard if profile check fails
-          router.push("/dashboard");
         }
+      } catch {
+        // Profile check is best-effort; fall through to the dashboard.
       }
+
+      // Hard navigation so the fresh session cookie is applied on a clean load.
+      // Keep isLoading true — the button stays in "Signing in..." until the page unloads.
+      window.location.href = destination;
     } catch (error) {
       setError("An error occurred. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };

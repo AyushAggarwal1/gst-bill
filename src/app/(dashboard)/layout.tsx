@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -62,6 +62,14 @@ export default function DashboardLayout({
   
   const typedSession = session as { user: SessionUser } | null;
   const isAdmin = typedSession?.user?.isAdmin || typedSession?.user?.role === 'ADMIN'; // Adjust as needed
+
+  // Sign out in one step (clears the session cookie, then hard-redirects)
+  // instead of bouncing through /api/auth/signout -> /signout -> countdown.
+  const handleSignOut = () => {
+    setMenuOpen(false);
+    setIsMobileNavOpen(false);
+    signOut({ redirectTo: "/login" });
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -510,16 +518,16 @@ export default function DashboardLayout({
                       </svg>
                       Change Password
                     </Link>
-                    <Link
-                      href="/api/auth/signout"
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
-                      onClick={() => setMenuOpen(false)}
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="w-full text-left flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
                     >
                       <svg className="h-4 w-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
                       Sign Out
-                    </Link>
+                    </button>
                   </div>
                 </Transition>
               </div>
@@ -662,16 +670,16 @@ export default function DashboardLayout({
                     <span className="text-sm">Change Password</span>
                   </Link>
                   
-                  <Link
-                    href="/api/auth/signout"
-                    onClick={() => setIsMobileNavOpen(false)}
-                    className="flex items-center px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-full text-left flex items-center px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200"
                   >
                     <svg className="h-4 w-4 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     <span className="text-sm">Sign out</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

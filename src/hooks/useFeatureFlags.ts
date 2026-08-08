@@ -67,7 +67,11 @@ export function useFeatureFlags(): UseFeatureFlagsReturn {
 
   const isFeatureEnabled = (feature: string): boolean => {
     if (!feature) return true
-    return enabledFeatures ? enabledFeatures.has(feature) : true
+    // Fail open when flags couldn't be fetched OR the tenant has no flags
+    // configured at all — matches the middleware, which only blocks a route
+    // when an explicit flag row exists with enabled=false.
+    if (!enabledFeatures || enabledFeatures.size === 0) return true
+    return enabledFeatures.has(feature)
   }
 
   const refetch = async () => {
