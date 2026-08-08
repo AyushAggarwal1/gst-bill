@@ -10,6 +10,8 @@ import { PrintIcon, DownloadIcon, DeleteIcon } from "@/components/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import NumberToWords from "@/components/NumberToWords";
 import { buildUpiBlockHtml, buildUpiUri, generateUpiQrDataUrl } from "@/lib/upi";
+import { buildWhatsAppUrl } from "@/lib/utils";
+import { buildTaxRowsHtml, getTaxBreakup } from "@/lib/taxRows";
 
 // @ayushaggarwal1 this is original code for number to words
 // Helper function to convert number to words
@@ -86,10 +88,13 @@ interface Bill {
   id: string;
   billNumber: string;
   billDate: string;
+  publicToken?: string | null;
   customer: {
     name: string;
     address: string;
     gstNo: string;
+    phone?: string | null;
+    email?: string | null;
   };
   items: BillItem[];
   subtotal: number;
@@ -122,6 +127,7 @@ export default function BillDetailPage({ params }: BillParams) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [emailSending, setEmailSending] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,6 +142,10 @@ export default function BillDetailPage({ params }: BillParams) {
         }
         const billData = await billRes.json();
         setBill(billData);
+        // If a share link already exists for this bill, surface it right away
+        if (billData.publicToken) {
+          setShareUrl(`${window.location.origin}/i/${billData.publicToken}`);
+        }
 
         // Fetch profile data
         const profileRes = await fetch("/api/profile");
@@ -173,7 +183,6 @@ export default function BillDetailPage({ params }: BillParams) {
       const templateResponse = await fetch(`/api/templates/serve?template=${encodeURIComponent(userTemplate)}`);
       if (!templateResponse.ok) throw new Error('Failed to load template');
       let htmlTemplate = await templateResponse.text();
-    const taxRate = bill?.items && bill.items.length > 0 ? bill.items[0].item.taxRate : 0;
       const itemsTableHTML = bill?.items.map((item, index) => `
                 <tr>
                   <td class="text-center">${index + 1}</td>
@@ -186,21 +195,8 @@ export default function BillDetailPage({ params }: BillParams) {
                   <td class="text-right">₹${item.taxAmount.toFixed(2)}</td>
                 </tr>
       `).join('') || '';
-      const taxRowsHTML = bill?.isIGST ? `
-                <tr>
-                  <td>IGST (${taxRate}%):</td>
-                  <td>₹${bill?.igst.toFixed(2) || '0.00'}</td>
-                </tr>
-              ` : `
-                <tr>
-                  <td>CGST (${taxRate / 2}%):</td>
-                  <td>₹${bill?.cgst.toFixed(2) || '0.00'}</td>
-                </tr>
-                <tr>
-                  <td>SGST (${taxRate / 2}%):</td>
-                  <td>₹${bill?.sgst.toFixed(2) || '0.00'}</td>
-                </tr>
-      `;
+      // Rate-wise rows: one CGST/SGST pair (or IGST line) per distinct GST rate
+      const taxRowsHTML = buildTaxRowsHtml(bill?.items || [], !!bill?.isIGST);
       const bankDetailsHTML = profile?.bankDetails ? `<div class="bank-details"><h3>Bank Details</h3><p>${(profile.bankDetails || '').replace(/\n/g, '<br>')}</p></div>` : '';
       const deliveryAddressHTML = bill?.deliveryAddress ? `<div style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px;"><p style="font-weight: 600;">Delivery Address:</p><p>${(bill.deliveryAddress).replace(/\n/g, '<br>')}</p></div>` : '';
       
@@ -284,11 +280,47 @@ export default function BillDetailPage({ params }: BillParams) {
     }
   };
 
+  // The tab is opened before the await so popup blockers still see the user gesture.
   const handleWhatsAppShare = async () => {
+    if (!bill) return;
+    const win = window.open("", "_blank");
     const url = await ensureShareUrl();
-    if (!url || !bill) return;
+    if (!url) {
+      win?.close();
+      return;
+    }
     const message = `Invoice ${bill.billNumber} from ${profile?.firmName || "us"} for ₹${bill.total.toFixed(2)}\n${url}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+    const waHref = buildWhatsAppUrl(message, bill.customer.phone);
+    if (win) {
+      win.location.href = waHref;
+    } else {
+      window.open(waHref, "_blank", "noopener");
+    }
+  };
+
+  const handleEmailInvoice = async () => {
+    setEmailSending(true);
+    try {
+      const res = await fetch(`/api/bills/${id}/send-email`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send email");
+      toast.success(data.message || "Invoice emailed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send email");
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  const handleRevokeLink = async () => {
+    try {
+      const res = await fetch(`/api/bills/${id}/share`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to disable link");
+      setShareUrl(null);
+      toast.success("Share link disabled — the old link no longer works");
+    } catch {
+      toast.error("Could not disable the link. Please try again.");
+    }
   };
 
   const openDeleteDialog = () => setShowDeleteConfirm(true);
@@ -508,6 +540,17 @@ export default function BillDetailPage({ params }: BillParams) {
                 <span className="ml-2">WhatsApp</span>
               </button>
               <button
+                onClick={handleEmailInvoice}
+                disabled={emailSending}
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm transition-colors border border-gray-300 disabled:opacity-60"
+                title={bill.customer.email ? `Send to ${bill.customer.email}` : "Add an email on the customer's page to enable one-click sending"}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="ml-2">{emailSending ? "Sending..." : "Email Invoice"}</span>
+              </button>
+              <button
                 onClick={handlePrint}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm transition-colors border border-gray-300"
               >
@@ -525,11 +568,37 @@ export default function BillDetailPage({ params }: BillParams) {
                 onClick={openDeleteDialog}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-sm transition-colors border border-red-200"
               >
-                <DeleteIcon /> 
+                <DeleteIcon />
                 <span className="ml-2">Delete Bill</span>
               </button>
             </div>
           </div>
+
+          {shareUrl && (
+            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <div className="flex items-center min-w-0 text-sm text-gray-600">
+                <svg className="w-4 h-4 mr-2 flex-shrink-0 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                <span className="mr-1 text-gray-500 flex-shrink-0">Public link:</span>
+                <span className="truncate font-mono text-xs text-gray-700">{shareUrl}</span>
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <button
+                  onClick={handleCopyLink}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                >
+                  Copy
+                </button>
+                <button
+                  onClick={handleRevokeLink}
+                  className="text-sm font-medium text-red-600 hover:text-red-700"
+                >
+                  Disable link
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Invoice Content */}
@@ -654,23 +723,12 @@ export default function BillDetailPage({ params }: BillParams) {
                     <span className="text-sm font-medium text-gray-900">₹{bill.subtotal.toFixed(2)}</span>
                 </div>
                   
-                {bill.isIGST ? (
-                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                      <span className="text-sm text-gray-600">IGST ({bill.items.length > 0 ? bill.items[0].item.taxRate : 0}%)</span>
-                      <span className="text-sm font-medium text-gray-900">₹{bill.igst.toFixed(2)}</span>
+                {getTaxBreakup(bill.items, bill.isIGST).map((line) => (
+                    <div key={line.label} className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-sm text-gray-600">{line.label}</span>
+                      <span className="text-sm font-medium text-gray-900">₹{line.amount.toFixed(2)}</span>
                     </div>
-                ) : (
-                    <>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                        <span className="text-sm text-gray-600">CGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%)</span>
-                        <span className="text-sm font-medium text-gray-900">₹{bill.cgst.toFixed(2)}</span>
-                    </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                        <span className="text-sm text-gray-600">SGST ({bill.items.length > 0 ? bill.items[0].item.taxRate / 2 : 0}%)</span>
-                        <span className="text-sm font-medium text-gray-900">₹{bill.sgst.toFixed(2)}</span>
-                    </div>
-                    </>
-                )}
+                ))}
                   
                   <div className="flex justify-between items-center pt-3 border-t-2 border-gray-300">
                     <span className="text-lg font-bold text-gray-900">Grand Total</span>

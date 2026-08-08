@@ -12,6 +12,8 @@ export default function NewCustomerPage() {
     address: "",
     deliveryAddress: "",
     gstNo: "",
+    phone: "",
+    email: "",
   });
   const [loading, setLoading] = useState(false);
   const [fetchingGST, setFetchingGST] = useState(false);
@@ -510,6 +512,57 @@ export default function NewCustomerPage() {
                         placeholder="Enter delivery address if different from business address"
                         className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
                       />
+                    </div>
+                  </div>
+
+                  {/* Contact details — used for WhatsApp share and emailing invoices */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                        WhatsApp / Phone <span className="text-gray-400">(Optional)</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                        </div>
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          value={customer.phone}
+                          onChange={handleChange}
+                          disabled={isFormDisabled}
+                          placeholder="98XXXXXXXX"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500">Lets you share invoices straight to their WhatsApp</p>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        Email <span className="text-gray-400">(Optional)</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                          </svg>
+                        </div>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={customer.email}
+                          onChange={handleChange}
+                          disabled={isFormDisabled}
+                          placeholder="accounts@customer.com"
+                          className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder-gray-500 transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-900"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500">Lets you email invoices with one click</p>
                     </div>
                   </div>
                 </div>

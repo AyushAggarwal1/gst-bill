@@ -12,7 +12,7 @@ datasource db {
 
 model Tenant {
   id          String       @id @default(uuid())
-  name        String      // Name of the organization/business
+  name        String       @unique // Org name; login resolves the tenant by name, so it must be unique
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   users       User[]
@@ -99,6 +99,8 @@ model Customer {
   address         String
   deliveryAddress String?
   gstNo           String
+  phone           String? // For direct WhatsApp share (wa.me deep link)
+  email           String? // For emailing invoices
   userId          String
   tenantId        String  // Every customer belongs to a tenant
   tenant          Tenant  @relation(fields: [tenantId], references: [id])
@@ -179,6 +181,7 @@ model PasswordResetRequest {
   otpHash    String
   expiresAt  DateTime
   usedAt     DateTime?
+  attempts   Int      @default(0) // failed OTP verifications; caps brute-force
   createdAt  DateTime @default(now())
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -198,6 +201,7 @@ model SignupVerification {
   otpHash           String
   expiresAt         DateTime
   usedAt            DateTime?
+  attempts          Int      @default(0) // failed OTP verifications; caps brute-force
   createdAt         DateTime @default(now())
 
   @@index([email])

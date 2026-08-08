@@ -49,7 +49,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, address, deliveryAddress, gstNo } = await req.json();
+    const { name, address, deliveryAddress, gstNo, phone, email } = await req.json();
 
     // Validate input
     if (!name || !address || !gstNo) {
@@ -64,6 +64,20 @@ export async function PUT(req: Request, { params }: RouteParams) {
     if (!gstRegex.test(gstNo)) {
       return NextResponse.json(
         { error: "Invalid GST Number format" },
+        { status: 400 }
+      );
+    }
+
+    if (phone && !/^[0-9+\-() ]{7,18}$/.test(phone)) {
+      return NextResponse.json(
+        { error: "Invalid phone number" },
+        { status: 400 }
+      );
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email address" },
         { status: 400 }
       );
     }
@@ -90,6 +104,8 @@ export async function PUT(req: Request, { params }: RouteParams) {
         address,
         deliveryAddress: deliveryAddress || null,
         gstNo,
+        phone: phone || null,
+        email: email || null,
       },
     });
 

@@ -323,7 +323,12 @@ export default function NewBillPage() {
 
       // Clear draft after successful save
       clearDraft();
-      router.push("/dashboard/bills");
+      // Land on the new bill's page so it can be shared/printed right away
+      if (data.bill?.id) {
+        router.push(`/dashboard/bills/${data.bill.id}`);
+      } else {
+        router.push("/dashboard/bills");
+      }
     } catch (error) {
       console.error("Error creating bill:", error);
       setError(error instanceof Error ? error.message : "Failed to create bill");

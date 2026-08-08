@@ -64,6 +64,7 @@ export async function GET(req: Request) {
           select: {
             name: true,
             gstNo: true,
+            phone: true,
           },
         },
       },

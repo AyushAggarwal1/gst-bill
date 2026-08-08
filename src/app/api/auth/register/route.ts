@@ -54,6 +54,18 @@ export async function POST(req: Request) {
 
       tenantId = invitation.tenantId; // Use the tenant ID from the invitation
     } else {
+      // Organization names must be unique — login resolves the tenant by name,
+      // so a duplicate would make the second org's users unable to sign in.
+      const existingTenant = await prisma.tenant.findFirst({
+        where: { name: organizationName },
+      });
+      if (existingTenant) {
+        return NextResponse.json(
+          { message: "Organization name already exists" },
+          { status: 409 }
+        );
+      }
+
       // Create a new tenant for the organization
       const tenant = await prisma.tenant.create({
         data: {
@@ -237,8 +249,25 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ message: "Invalid or expired OTP" }, { status: 400 });
     }
 
+    // Cap brute-force: invalidate the code after too many wrong guesses
+    const MAX_OTP_ATTEMPTS = 5;
+    if (attempt.attempts >= MAX_OTP_ATTEMPTS) {
+      await prisma.signupVerification.update({
+        where: { id: attempt.id },
+        data: { usedAt: new Date() },
+      });
+      return NextResponse.json(
+        { message: "Too many incorrect attempts. Please request a new code." },
+        { status: 429 }
+      );
+    }
+
     const isValid = await (await import("bcrypt")).compare(otp, attempt.otpHash);
     if (!isValid) {
+      await prisma.signupVerification.update({
+        where: { id: attempt.id },
+        data: { attempts: { increment: 1 } },
+      });
       return NextResponse.json({ message: "Invalid or expired OTP" }, { status: 400 });
     }
 

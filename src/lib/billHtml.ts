@@ -3,6 +3,8 @@ import path from "path";
 import { format } from "date-fns";
 import NumberToWords from "@/components/NumberToWords";
 import { buildUpiBlockHtml, buildUpiUri, generateUpiQrDataUrl } from "./upi";
+import { buildTaxRowsHtml } from "./taxRows";
+import { resolveTemplatePath } from "./templatePath";
 
 // Server-side invoice renderer shared by the bulk-HTML API and the public
 // invoice page. Fills the tenant's template with bill/profile data; templates
@@ -10,28 +12,20 @@ import { buildUpiBlockHtml, buildUpiUri, generateUpiQrDataUrl } from "./upi";
 // appended before </body> when a UPI ID is configured.
 export async function renderBillHtml(bill: any, profile: any): Promise<string> {
   try {
-    // Use user's default template if available, otherwise fall back to billFormat.html
+    // Use user's default template if available, otherwise fall back to billFormat.html.
+    // resolveTemplatePath contains the read to the template directories — a stored
+    // traversal value (e.g. "../../.env") resolves to null and we fall back.
     const templateFilename = profile?.defaultTemplate || 'billFormat.html';
+    const templatePath = resolveTemplatePath(templateFilename);
+    const defaultTemplatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
 
-    // Check if it's a backup template
-    let templatePath: string;
-    if (templateFilename.startsWith('backup-templates/')) {
-      templatePath = path.join(process.cwd(), 'public', templateFilename);
-    } else {
-      templatePath = path.join(process.cwd(), 'public', 'templates', templateFilename);
-    }
-
-    // Check if the template file exists, fall back to default if not
     let htmlTemplate: string;
-    if (fs.existsSync(templatePath)) {
+    if (templatePath && fs.existsSync(templatePath)) {
       htmlTemplate = fs.readFileSync(templatePath, 'utf8');
     } else {
-      console.warn(`Template ${templateFilename} not found, falling back to billFormat.html`);
-      const defaultTemplatePath = path.join(process.cwd(), 'public', 'templates', 'billFormat.html');
+      console.warn(`Template ${templateFilename} not found or invalid, falling back to billFormat.html`);
       htmlTemplate = fs.readFileSync(defaultTemplatePath, 'utf8');
     }
-
-    const taxRate = bill?.items && bill.items.length > 0 && bill.items[0].item ? bill.items[0].item.taxRate : 0;
 
     const itemsTableHTML = bill?.items.map((item: any, index: number) => `
       <tr>
@@ -46,21 +40,8 @@ export async function renderBillHtml(bill: any, profile: any): Promise<string> {
       </tr>
     `).join('') || '';
 
-    const taxRowsHTML = bill?.isIGST ? `
-      <tr>
-        <td>IGST (${taxRate}%):</td>
-        <td>₹${bill?.igst?.toFixed(2) || '0.00'}</td>
-      </tr>
-    ` : `
-      <tr>
-        <td>CGST (${taxRate / 2}%):</td>
-        <td>₹${bill?.cgst?.toFixed(2) || '0.00'}</td>
-      </tr>
-      <tr>
-        <td>SGST (${taxRate / 2}%):</td>
-        <td>₹${bill?.sgst?.toFixed(2) || '0.00'}</td>
-      </tr>
-    `;
+    // Rate-wise rows: one CGST/SGST pair (or IGST line) per distinct GST rate
+    const taxRowsHTML = buildTaxRowsHtml(bill?.items || [], !!bill?.isIGST);
 
     const bankDetailsHTML = profile?.bankDetails ? `
       <div class="bank-details">

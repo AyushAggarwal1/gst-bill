@@ -39,7 +39,10 @@ export async function POST(req: NextRequest) {
           folder: 'gst-bill-profiles',
           public_id: `${currentUser.id}_${Date.now()}`,
           transformation: [
-            { width: 300, height: 300, crop: 'fill' },
+            // 'limit' scales the logo down to fit within these bounds while
+            // preserving its aspect ratio — it never crops (unlike 'fill'), so
+            // wide/tall logos (e.g. a business card) keep all their content.
+            { width: 600, height: 400, crop: 'limit' },
             { quality: 'auto' }
           ]
         },

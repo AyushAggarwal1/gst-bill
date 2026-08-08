@@ -1,32 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
-import path from 'path';
+import { resolveTemplatePath } from '@/lib/templatePath';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const templateName = searchParams.get('template');
-    
+
     if (!templateName) {
       return NextResponse.json({ error: 'Template name is required' }, { status: 400 });
     }
-    
-    let templatePath: string;
-    
-    // Check if it's a backup template
-    if (templateName.startsWith('backup-templates/')) {
-      // Remove the prefix and get the actual filename
-      const actualFilename = templateName.replace('backup-templates/', '');
-      templatePath = path.join(process.cwd(), 'public', 'backup-templates', actualFilename);
-    } else {
-      // Main template (from external repository)
-      templatePath = path.join(process.cwd(), 'public', 'templates', templateName);
-    }
-    
-    // Check if template exists
-    if (!fs.existsSync(templatePath)) {
-      return NextResponse.json({ 
-        error: `Template ${templateName} not found` 
+
+    // Guard against path traversal (e.g. ?template=../../.env)
+    const templatePath = resolveTemplatePath(templateName);
+    if (!templatePath || !fs.existsSync(templatePath)) {
+      return NextResponse.json({
+        error: `Template ${templateName} not found`
       }, { status: 404 });
     }
     
