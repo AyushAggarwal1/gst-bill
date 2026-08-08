@@ -30,7 +30,8 @@
       "{{COMPANY_PHONE}}",
       "{{DELIVERY_ADDRESS}}",
       "{{BANK_DETAILS}}",
-      "{{PROFILE_PHOTO}}"
+      "{{PROFILE_PHOTO}}",
+      "{{UPI_QR}}"
     ]
   },
   "autoUpdate": {

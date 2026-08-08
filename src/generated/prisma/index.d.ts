@@ -115,7 +115,9 @@ export const Permission: typeof $Enums.Permission
  * Type-safe database client for TypeScript & Node.js
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Tenants
  * const tenants = await prisma.tenant.findMany()
  * ```
@@ -136,7 +138,9 @@ export class PrismaClient<
    * Type-safe database client for TypeScript & Node.js
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more Tenants
    * const tenants = await prisma.tenant.findMany()
    * ```
@@ -145,7 +149,7 @@ export class PrismaClient<
    * Read more in our [docs](https://pris.ly/d/client).
    */
 
-  constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
+  constructor(optionsArg ?: Prisma.PrismaClientConstructorArgs<ClientOptions>);
   $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): PrismaClient;
 
   /**
@@ -216,9 +220,9 @@ export class PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
 
@@ -385,8 +389,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.1.0
-   * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
+   * Prisma Client JS version: 7.9.1
+   * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
    */
   export type PrismaVersion = {
     client: string
@@ -521,6 +525,19 @@ export namespace Prisma {
   };
 
   /**
+   * Resolved type of the argument passed to the `PrismaClient` constructor.
+   *
+   * When called without a narrower options type (the common case), this resolves
+   * to `PrismaClientOptions` directly, which produces a clear TypeScript error
+   * message (`not assignable to parameter of type 'PrismaClientOptions'`) when
+   * the argument is missing or incomplete. When the user supplies a narrower
+   * options type (e.g. via a literal), it falls back to `Subset` to keep
+   * filtering out unknown properties.
+   */
+  export type PrismaClientConstructorArgs<Options extends PrismaClientOptions> =
+    [PrismaClientOptions] extends [Options] ? PrismaClientOptions : Subset<Options, PrismaClientOptions>;
+
+  /**
    * SelectSubset
    * @desc From `T` pick properties that exist in `U`. Simple version of Intersection.
    * Additionally, it validates, if both select and include are present. If the case, it errors.
@@ -552,7 +569,7 @@ export namespace Prisma {
   type XOR<T, U> =
     T extends object ?
     U extends object ?
-      (Without<T, U> & U) | (Without<U, T> & T)
+      ((Without<T, U> & U) | (Without<U, T> & T)) & object
     : U : T
 
 
@@ -1681,11 +1698,26 @@ export namespace Prisma {
       isolationLevel?: Prisma.TransactionIsolationLevel
     }
     /**
-     * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
+     * A driver adapter that PrismaClient uses to connect to your database, such as the ones provided by `@prisma/adapter-pg`, `@prisma/adapter-libsql`, `@prisma/adapter-planetscale`, etc.
+     * 
+     * A driver adapter is **required** unless you connect to your database through Prisma Accelerate (in which case use `accelerateUrl` instead).
+     * 
+     * Learn more: https://pris.ly/d/driver-adapters
+     * 
+     * @example
+     * ```ts
+     * import { PrismaPg } from '@prisma/adapter-pg'
+     * import { PrismaClient } from './generated/prisma/client'
+     * 
+     * const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+     * const prisma = new PrismaClient({ adapter })
+     * ```
      */
     adapter?: runtime.SqlDriverAdapterFactory
     /**
-     * Prisma Accelerate URL allowing the client to connect through Accelerate instead of a direct database.
+     * The Prisma Accelerate connection URL. Use this option to connect to your database through Prisma Accelerate instead of using a driver adapter to connect directly.
+     * 
+     * Learn more: https://pris.ly/d/accelerate
      */
     accelerateUrl?: string
     /**
@@ -2899,6 +2931,11 @@ export namespace Prisma {
      * Skip the first `n` Tenants.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tenants.
+     */
     distinct?: TenantScalarFieldEnum | TenantScalarFieldEnum[]
   }
 
@@ -4166,6 +4203,11 @@ export namespace Prisma {
      * Skip the first `n` Users.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
@@ -5415,6 +5457,11 @@ export namespace Prisma {
      * Skip the first `n` UserRoles.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserRoles.
+     */
     distinct?: UserRoleScalarFieldEnum | UserRoleScalarFieldEnum[]
   }
 
@@ -6576,6 +6623,11 @@ export namespace Prisma {
      * Skip the first `n` Invitations.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Invitations.
+     */
     distinct?: InvitationScalarFieldEnum | InvitationScalarFieldEnum[]
   }
 
@@ -6831,6 +6883,7 @@ export namespace Prisma {
     phoneNo: string | null
     bankDetails: string | null
     profilePhoto: string | null
+    upiId: string | null
     defaultTemplate: string | null
     userId: string | null
   }
@@ -6843,6 +6896,7 @@ export namespace Prisma {
     phoneNo: string | null
     bankDetails: string | null
     profilePhoto: string | null
+    upiId: string | null
     defaultTemplate: string | null
     userId: string | null
   }
@@ -6855,6 +6909,7 @@ export namespace Prisma {
     phoneNo: number
     bankDetails: number
     profilePhoto: number
+    upiId: number
     defaultTemplate: number
     userId: number
     _all: number
@@ -6869,6 +6924,7 @@ export namespace Prisma {
     phoneNo?: true
     bankDetails?: true
     profilePhoto?: true
+    upiId?: true
     defaultTemplate?: true
     userId?: true
   }
@@ -6881,6 +6937,7 @@ export namespace Prisma {
     phoneNo?: true
     bankDetails?: true
     profilePhoto?: true
+    upiId?: true
     defaultTemplate?: true
     userId?: true
   }
@@ -6893,6 +6950,7 @@ export namespace Prisma {
     phoneNo?: true
     bankDetails?: true
     profilePhoto?: true
+    upiId?: true
     defaultTemplate?: true
     userId?: true
     _all?: true
@@ -6978,6 +7036,7 @@ export namespace Prisma {
     phoneNo: string | null
     bankDetails: string | null
     profilePhoto: string | null
+    upiId: string | null
     defaultTemplate: string | null
     userId: string
     _count: ProfileCountAggregateOutputType | null
@@ -7007,6 +7066,7 @@ export namespace Prisma {
     phoneNo?: boolean
     bankDetails?: boolean
     profilePhoto?: boolean
+    upiId?: boolean
     defaultTemplate?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7020,6 +7080,7 @@ export namespace Prisma {
     phoneNo?: boolean
     bankDetails?: boolean
     profilePhoto?: boolean
+    upiId?: boolean
     defaultTemplate?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7033,6 +7094,7 @@ export namespace Prisma {
     phoneNo?: boolean
     bankDetails?: boolean
     profilePhoto?: boolean
+    upiId?: boolean
     defaultTemplate?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7046,11 +7108,12 @@ export namespace Prisma {
     phoneNo?: boolean
     bankDetails?: boolean
     profilePhoto?: boolean
+    upiId?: boolean
     defaultTemplate?: boolean
     userId?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "phoneNo" | "bankDetails" | "profilePhoto" | "defaultTemplate" | "userId", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmName" | "address" | "gstNo" | "phoneNo" | "bankDetails" | "profilePhoto" | "upiId" | "defaultTemplate" | "userId", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -7074,6 +7137,7 @@ export namespace Prisma {
       phoneNo: string | null
       bankDetails: string | null
       profilePhoto: string | null
+      upiId: string | null
       defaultTemplate: string | null
       userId: string
     }, ExtArgs["result"]["profile"]>
@@ -7507,6 +7571,7 @@ export namespace Prisma {
     readonly phoneNo: FieldRef<"Profile", 'String'>
     readonly bankDetails: FieldRef<"Profile", 'String'>
     readonly profilePhoto: FieldRef<"Profile", 'String'>
+    readonly upiId: FieldRef<"Profile", 'String'>
     readonly defaultTemplate: FieldRef<"Profile", 'String'>
     readonly userId: FieldRef<"Profile", 'String'>
   }
@@ -7705,6 +7770,11 @@ export namespace Prisma {
      * Skip the first `n` Profiles.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Profiles.
+     */
     distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
   }
 
@@ -8829,6 +8899,11 @@ export namespace Prisma {
      * Skip the first `n` Customers.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Customers.
+     */
     distinct?: CustomerScalarFieldEnum | CustomerScalarFieldEnum[]
   }
 
@@ -10011,6 +10086,11 @@ export namespace Prisma {
      * Skip the first `n` Items.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Items.
+     */
     distinct?: ItemScalarFieldEnum | ItemScalarFieldEnum[]
   }
 
@@ -10295,6 +10375,7 @@ export namespace Prisma {
     igst: number | null
     total: number | null
     deliveryAddress: string | null
+    publicToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10313,6 +10394,7 @@ export namespace Prisma {
     igst: number | null
     total: number | null
     deliveryAddress: string | null
+    publicToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10331,6 +10413,7 @@ export namespace Prisma {
     igst: number
     total: number
     deliveryAddress: number
+    publicToken: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -10367,6 +10450,7 @@ export namespace Prisma {
     igst?: true
     total?: true
     deliveryAddress?: true
+    publicToken?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10385,6 +10469,7 @@ export namespace Prisma {
     igst?: true
     total?: true
     deliveryAddress?: true
+    publicToken?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10403,6 +10488,7 @@ export namespace Prisma {
     igst?: true
     total?: true
     deliveryAddress?: true
+    publicToken?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10508,6 +10594,7 @@ export namespace Prisma {
     igst: number
     total: number
     deliveryAddress: string | null
+    publicToken: string | null
     createdAt: Date
     updatedAt: Date
     _count: BillCountAggregateOutputType | null
@@ -10545,6 +10632,7 @@ export namespace Prisma {
     igst?: boolean
     total?: boolean
     deliveryAddress?: boolean
+    publicToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -10568,6 +10656,7 @@ export namespace Prisma {
     igst?: boolean
     total?: boolean
     deliveryAddress?: boolean
+    publicToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -10589,6 +10678,7 @@ export namespace Prisma {
     igst?: boolean
     total?: boolean
     deliveryAddress?: boolean
+    publicToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -10610,11 +10700,12 @@ export namespace Prisma {
     igst?: boolean
     total?: boolean
     deliveryAddress?: boolean
+    publicToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billNumber" | "billDate" | "customerId" | "userId" | "tenantId" | "isIGST" | "subtotal" | "cgst" | "sgst" | "igst" | "total" | "deliveryAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billNumber" | "billDate" | "customerId" | "userId" | "tenantId" | "isIGST" | "subtotal" | "cgst" | "sgst" | "igst" | "total" | "deliveryAddress" | "publicToken" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
@@ -10655,6 +10746,7 @@ export namespace Prisma {
       igst: number
       total: number
       deliveryAddress: string | null
+      publicToken: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["bill"]>
@@ -11097,6 +11189,7 @@ export namespace Prisma {
     readonly igst: FieldRef<"Bill", 'Float'>
     readonly total: FieldRef<"Bill", 'Float'>
     readonly deliveryAddress: FieldRef<"Bill", 'String'>
+    readonly publicToken: FieldRef<"Bill", 'String'>
     readonly createdAt: FieldRef<"Bill", 'DateTime'>
     readonly updatedAt: FieldRef<"Bill", 'DateTime'>
   }
@@ -11295,6 +11388,11 @@ export namespace Prisma {
      * Skip the first `n` Bills.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bills.
+     */
     distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
   }
 
@@ -12457,6 +12555,11 @@ export namespace Prisma {
      * Skip the first `n` BillItems.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BillItems.
+     */
     distinct?: BillItemScalarFieldEnum | BillItemScalarFieldEnum[]
   }
 
@@ -13562,6 +13665,11 @@ export namespace Prisma {
      * Skip the first `n` PasswordResetRequests.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PasswordResetRequests.
+     */
     distinct?: PasswordResetRequestScalarFieldEnum | PasswordResetRequestScalarFieldEnum[]
   }
 
@@ -14650,6 +14758,11 @@ export namespace Prisma {
      * Skip the first `n` SignupVerifications.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SignupVerifications.
+     */
     distinct?: SignupVerificationScalarFieldEnum | SignupVerificationScalarFieldEnum[]
   }
 
@@ -14916,6 +15029,7 @@ export namespace Prisma {
     phoneNo: 'phoneNo',
     bankDetails: 'bankDetails',
     profilePhoto: 'profilePhoto',
+    upiId: 'upiId',
     defaultTemplate: 'defaultTemplate',
     userId: 'userId'
   };
@@ -14967,6 +15081,7 @@ export namespace Prisma {
     igst: 'igst',
     total: 'total',
     deliveryAddress: 'deliveryAddress',
+    publicToken: 'publicToken',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -15469,6 +15584,7 @@ export namespace Prisma {
     phoneNo?: StringNullableFilter<"Profile"> | string | null
     bankDetails?: StringNullableFilter<"Profile"> | string | null
     profilePhoto?: StringNullableFilter<"Profile"> | string | null
+    upiId?: StringNullableFilter<"Profile"> | string | null
     defaultTemplate?: StringNullableFilter<"Profile"> | string | null
     userId?: StringFilter<"Profile"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -15482,6 +15598,7 @@ export namespace Prisma {
     phoneNo?: SortOrderInput | SortOrder
     bankDetails?: SortOrderInput | SortOrder
     profilePhoto?: SortOrderInput | SortOrder
+    upiId?: SortOrderInput | SortOrder
     defaultTemplate?: SortOrderInput | SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -15499,6 +15616,7 @@ export namespace Prisma {
     phoneNo?: StringNullableFilter<"Profile"> | string | null
     bankDetails?: StringNullableFilter<"Profile"> | string | null
     profilePhoto?: StringNullableFilter<"Profile"> | string | null
+    upiId?: StringNullableFilter<"Profile"> | string | null
     defaultTemplate?: StringNullableFilter<"Profile"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
@@ -15511,6 +15629,7 @@ export namespace Prisma {
     phoneNo?: SortOrderInput | SortOrder
     bankDetails?: SortOrderInput | SortOrder
     profilePhoto?: SortOrderInput | SortOrder
+    upiId?: SortOrderInput | SortOrder
     defaultTemplate?: SortOrderInput | SortOrder
     userId?: SortOrder
     _count?: ProfileCountOrderByAggregateInput
@@ -15529,6 +15648,7 @@ export namespace Prisma {
     phoneNo?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     bankDetails?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     profilePhoto?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    upiId?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     defaultTemplate?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     userId?: StringWithAggregatesFilter<"Profile"> | string
   }
@@ -15714,6 +15834,7 @@ export namespace Prisma {
     igst?: FloatFilter<"Bill"> | number
     total?: FloatFilter<"Bill"> | number
     deliveryAddress?: StringNullableFilter<"Bill"> | string | null
+    publicToken?: StringNullableFilter<"Bill"> | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -15736,6 +15857,7 @@ export namespace Prisma {
     igst?: SortOrder
     total?: SortOrder
     deliveryAddress?: SortOrderInput | SortOrder
+    publicToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
@@ -15746,6 +15868,7 @@ export namespace Prisma {
 
   export type BillWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    publicToken?: string
     billNumber_tenantId?: BillBillNumberTenantIdCompoundUniqueInput
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
@@ -15768,7 +15891,7 @@ export namespace Prisma {
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     items?: BillItemListRelationFilter
-  }, "id" | "billNumber_tenantId">
+  }, "id" | "publicToken" | "billNumber_tenantId">
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
@@ -15784,6 +15907,7 @@ export namespace Prisma {
     igst?: SortOrder
     total?: SortOrder
     deliveryAddress?: SortOrderInput | SortOrder
+    publicToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BillCountOrderByAggregateInput
@@ -15810,6 +15934,7 @@ export namespace Prisma {
     igst?: FloatWithAggregatesFilter<"Bill"> | number
     total?: FloatWithAggregatesFilter<"Bill"> | number
     deliveryAddress?: StringNullableWithAggregatesFilter<"Bill"> | string | null
+    publicToken?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
   }
@@ -16387,6 +16512,7 @@ export namespace Prisma {
     phoneNo?: string | null
     bankDetails?: string | null
     profilePhoto?: string | null
+    upiId?: string | null
     defaultTemplate?: string | null
     user: UserCreateNestedOneWithoutProfileInput
   }
@@ -16399,6 +16525,7 @@ export namespace Prisma {
     phoneNo?: string | null
     bankDetails?: string | null
     profilePhoto?: string | null
+    upiId?: string | null
     defaultTemplate?: string | null
     userId: string
   }
@@ -16411,6 +16538,7 @@ export namespace Prisma {
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    upiId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutProfileNestedInput
   }
@@ -16423,6 +16551,7 @@ export namespace Prisma {
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    upiId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
@@ -16435,6 +16564,7 @@ export namespace Prisma {
     phoneNo?: string | null
     bankDetails?: string | null
     profilePhoto?: string | null
+    upiId?: string | null
     defaultTemplate?: string | null
     userId: string
   }
@@ -16447,6 +16577,7 @@ export namespace Prisma {
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    upiId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -16458,6 +16589,7 @@ export namespace Prisma {
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    upiId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
@@ -16645,6 +16777,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutBillsInput
@@ -16667,6 +16800,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: BillItemUncheckedCreateNestedManyWithoutBillInput
@@ -16683,6 +16817,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutBillsNestedInput
@@ -16705,6 +16840,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
@@ -16724,6 +16860,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16739,6 +16876,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16757,6 +16895,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17369,6 +17508,7 @@ export namespace Prisma {
     phoneNo?: SortOrder
     bankDetails?: SortOrder
     profilePhoto?: SortOrder
+    upiId?: SortOrder
     defaultTemplate?: SortOrder
     userId?: SortOrder
   }
@@ -17381,6 +17521,7 @@ export namespace Prisma {
     phoneNo?: SortOrder
     bankDetails?: SortOrder
     profilePhoto?: SortOrder
+    upiId?: SortOrder
     defaultTemplate?: SortOrder
     userId?: SortOrder
   }
@@ -17393,6 +17534,7 @@ export namespace Prisma {
     phoneNo?: SortOrder
     bankDetails?: SortOrder
     profilePhoto?: SortOrder
+    upiId?: SortOrder
     defaultTemplate?: SortOrder
     userId?: SortOrder
   }
@@ -17538,6 +17680,7 @@ export namespace Prisma {
     igst?: SortOrder
     total?: SortOrder
     deliveryAddress?: SortOrder
+    publicToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17564,6 +17707,7 @@ export namespace Prisma {
     igst?: SortOrder
     total?: SortOrder
     deliveryAddress?: SortOrder
+    publicToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17582,6 +17726,7 @@ export namespace Prisma {
     igst?: SortOrder
     total?: SortOrder
     deliveryAddress?: SortOrder
+    publicToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19045,6 +19190,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customer: CustomerCreateNestedOneWithoutBillsInput
@@ -19065,6 +19211,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: BillItemUncheckedCreateNestedManyWithoutBillInput
@@ -19273,6 +19420,7 @@ export namespace Prisma {
     igst?: FloatFilter<"Bill"> | number
     total?: FloatFilter<"Bill"> | number
     deliveryAddress?: StringNullableFilter<"Bill"> | string | null
+    publicToken?: StringNullableFilter<"Bill"> | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
   }
@@ -19381,6 +19529,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutBillsInput
@@ -19401,6 +19550,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: BillItemUncheckedCreateNestedManyWithoutBillInput
@@ -19563,6 +19713,7 @@ export namespace Prisma {
     phoneNo?: string | null
     bankDetails?: string | null
     profilePhoto?: string | null
+    upiId?: string | null
     defaultTemplate?: string | null
   }
 
@@ -19574,6 +19725,7 @@ export namespace Prisma {
     phoneNo?: string | null
     bankDetails?: string | null
     profilePhoto?: string | null
+    upiId?: string | null
     defaultTemplate?: string | null
   }
 
@@ -19795,6 +19947,7 @@ export namespace Prisma {
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    upiId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -19806,6 +19959,7 @@ export namespace Prisma {
     phoneNo?: NullableStringFieldUpdateOperationsInput | string | null
     bankDetails?: NullableStringFieldUpdateOperationsInput | string | null
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    upiId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultTemplate?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -20309,6 +20463,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutBillsInput
@@ -20329,6 +20484,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: BillItemUncheckedCreateNestedManyWithoutBillInput
@@ -20963,6 +21119,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutBillsInput
@@ -20984,6 +21141,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21044,6 +21202,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutBillsNestedInput
@@ -21065,6 +21224,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21301,6 +21461,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21456,6 +21617,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneRequiredWithoutBillsNestedInput
@@ -21476,6 +21638,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
@@ -21494,6 +21657,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21583,6 +21747,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21652,6 +21817,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutBillsNestedInput
@@ -21672,6 +21838,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
@@ -21690,6 +21857,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21873,6 +22041,7 @@ export namespace Prisma {
     igst?: number
     total: number
     deliveryAddress?: string | null
+    publicToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21888,6 +22057,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutBillsNestedInput
@@ -21908,6 +22078,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: BillItemUncheckedUpdateManyWithoutBillNestedInput
@@ -21926,6 +22097,7 @@ export namespace Prisma {
     igst?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
     deliveryAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

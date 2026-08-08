@@ -87,6 +87,7 @@ model Profile {
   phoneNo         String?
   bankDetails     String?
   profilePhoto    String?
+  upiId           String? // UPI VPA for payment QR on invoices (e.g. name@bank)
   defaultTemplate String? @default("billFormat.html")
   userId          String  @unique
   user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -107,6 +108,7 @@ model Customer {
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+  @@index([tenantId, name])
 }
 
 model Item {
@@ -141,6 +143,7 @@ model Bill {
   igst            Float      @default(0)
   total           Float
   deliveryAddress String?
+  publicToken     String?    @unique // Unguessable token for the public invoice link
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   customer        Customer   @relation(fields: [customerId], references: [id])
@@ -149,6 +152,8 @@ model Bill {
 
   @@unique([billNumber, tenantId]) // Bill numbers are unique within a tenant
   @@index([tenantId])
+  @@index([tenantId, billDate])
+  @@index([tenantId, createdAt])
 }
 
 model BillItem {
@@ -161,6 +166,9 @@ model BillItem {
   amount    Float
   bill      Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
   item      Item   @relation(fields: [itemId], references: [id])
+
+  @@index([billId])
+  @@index([itemId])
 }
 
 model PasswordResetRequest {
