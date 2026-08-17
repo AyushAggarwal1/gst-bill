@@ -1,0 +1,8 @@
+[functions]
+  node_bundler = "esbuild"
+
+[[scheduled.functions]]
+  name = "fetch-templates"
+  cron = "0 * * * *" # hourly; adjust if you want 24h
+
+

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/get_bill_html_templates/run-if-enabled.js",
     "build": "next build",
     "start": "node .next/standalone/server.js",
     "lint": "next lint",
